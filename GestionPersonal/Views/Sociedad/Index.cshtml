@@ -1,0 +1,50 @@
+﻿@model IEnumerable<GPSInformation.Models.Sociedad>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="d-flex align-items-center justify-content-between mg-b-30">
+    <h4 class="tx-15 mg-b-0">@ViewData["Title"]</h4>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <h2 class="tx-15 mg-b-0"></h2>
+        <a asp-action="Create" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Crear nuevo</a>
+    </div>
+</div>
+<hr />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdSociedad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IdSociedad)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Direccion)
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Edit", new { id = item.IdSociedad }) @*|
+                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

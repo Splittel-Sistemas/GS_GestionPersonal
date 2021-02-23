@@ -1,0 +1,85 @@
+﻿@model IEnumerable<GPSInformation.Models.IncidenciaPermiso>
+
+@{
+    ViewData["Title"] = "Index";
+}
+@if (Model.Count() == 0)
+{
+    <div class="alert alert-primary mg-b-0" role="alert">
+        Sin solicitudes de permisos 
+    </div>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Folio)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.IdPersona)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Inicio)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fin)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Estatus)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Folio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EmpleadoNombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Inicio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fin)
+                    </td>
+                    <td>
+                        @if (item.Estatus == 1)
+                        {
+                            <span class="badge badge-primary">En proceso</span>
+                        }
+                        else if (item.Estatus == 2)
+                        {
+                            <span class="badge badge-danger">Cancelada</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-primary">Completada</span>
+                        }
+                    </td>
+                    <td>
+                        @Html.ActionLink("Detalles", "Details", "IncidenciaPermiso", new { id = item.IdIncidenciaPermiso }) |
+                        @if (item.Estatus == 1)
+                        {
+                            @Html.ActionLink("Cancelar", "Cancel", "IncidenciaPermiso", new { id = item.IdIncidenciaPermiso })<span>|</span>
+                        }
+                    <a href="#modalActividadPermisos" data-toggle="modal" onclick="app_incidencias.ActividadPermisos(@item.IdIncidenciaPermiso)">Actividad</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

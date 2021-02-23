@@ -1,0 +1,459 @@
+﻿
+@{
+    ViewData["Title"] = "Reservaciones de salas";
+    bool AccesoAdmin = (bool)ViewBag.access;
+    int IdPersona = (int)ViewBag.IdPersona;
+}
+
+@section Style{
+<link href="~/template/lib/fullcalendar/fullcalendar.min.css" rel="stylesheet">
+<link rel="stylesheet" href="~/template/assets/css/dashforge.calendar.css">
+@*<link rel="stylesheet" href="~/template/assets/css/dashforge.contacts.css">*@
+<style>
+    .fc-widget-content {
+        height: 140px !important;
+    }
+</style>
+}
+<button href="#" onclick="window.location.reload()" style="display:none" id="btn_refrescar" type="button" class="btn btn-white"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Refrescar</button>
+<div id="App_calendar" class="">
+    <div class="calendar-wrapper">
+        <div class="calendar-sidebar">
+            <div class="calendar-sidebar-header">
+                <button href="#" onclick="history.go(-1)" class="btn btn-danger btn-block" title="agregar nueva sala">Regresar</button>
+            </div><!-- calendar-sidebar-header -->
+            <div id="calendarSidebarBody" class="calendar-sidebar-body">
+                <div class="pd-y-20 pd-x-15">
+                    <button href="#modalCreateEvent" id="btn_createNew" data-toggle="modal" class="btn btn-primary btn-block" title="agregar nueva sala">Nueva Reservación</button>
+                </div>
+                <div class="pd-y-20 pd-x-15">
+                    <nav class="calendar-nav" v-if="Salas.length">
+                        <div class="schedule-group">
+                            <label id="contactA" class="contact-list-divider">Lista de salas</label>
+                            <div class="media active" v-for="(item, index) in Salas">
+                                <div class="alert alert-solid alert-warning col-12" role="alert">
+                                    <span class="">{{ item.nombre }}</span>
+                                    <h6>Capacidad para: {{ item.capacidad }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div><!-- calendar-sidebar-body -->
+        </div><!-- calendar-sidebar -->
+
+        <div class="calendar-content">
+            <div id="calendar" class="calendar-content-body"></div>
+        </div><!-- calendar-content -->
+    </div>
+    <div class="modal calendar-modal-create fade effect-scale" id="modalCreateEvent" role="dialog" data-backdrop="false" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body pd-20 pd-sm-30">
+                    <button type="button" class="close pos-absolute t-20 r-20" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i data-feather="x"></i></span>
+                    </button>
+
+                    <h5 class="tx-18 tx-sm-20 mg-b-20 mg-sm-b-30">Crear nueva reservación</h5>
+
+                    <form id="formCalendar" method="post" action="app-calendar.html">
+                        <div class="form-group" id="Mesnaje_result">
+
+                        </div><!-- form-group -->
+                        <div class="form-group">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Titulo</label>
+                            <input type="text" class="form-control" id="Motivo" placeholder="Agregar titulo">
+                        </div><!-- form-group -->
+                        <div class="form-group mg-t-30">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Fecha</label>
+                            <input type="date" class="form-control" id="FechaInicio" placeholder="Fecha">
+                        </div><!-- form-group -->
+                        <div class="form-group">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Hora de Inicio y fin </label>
+                            <div class="row row-xs">
+                                <div class="col-6">
+                                    <input type="time" id="HoraIncio" value="" class="form-control" placeholder="Select date">
+                                </div><!-- col-7 -->
+                                <div class="col-6">
+                                    <input id="HolaFin" type="time" value="" class="form-control" placeholder="Select date">
+                                </div><!-- col-5 -->
+                            </div><!-- row -->
+                        </div><!-- form-group -->
+                        <div class="form-group mg-t-30">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Sala</label>
+                            <select class="form-control" id="IdSala">
+                                <option v-for="option in Salas" v-if="Salas.length" v-bind:value="option.idSala">
+                                    {{ option.nombre }}
+                                </option>
+                            </select>
+                        </div><!-- form-group -->
+                        <div class="form-group mg-t-30">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Comentarios</label>
+                            <textarea class="form-control" id="Comentarios"></textarea>
+                        </div><!-- form-group -->
+                    </form>
+                </div><!-- modal-body -->
+                <div class="modal-footer">
+                    <a href="" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+                    <button type="button" class="btn btn-primary mg-r-5" v-on:click="AddReservacion()">Agregar</button>
+                </div><!-- modal-footer -->
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
+    <a href="#modal3" id="btn_detailsrserv" class="btn btn-dark" style="display:none" data-toggle="modal">Extra Large Modal</a>
+    <div class="modal calendar-modal-create fade effect-scale" id="modalCreateSala" role="dialog" data-backdrop="false" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body pd-20 pd-sm-30">
+                    <button type="button" class="close pos-absolute t-20 r-20" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i data-feather="x"></i></span>
+                    </button>
+
+                    <h5 class="tx-18 tx-sm-20 mg-b-20 mg-sm-b-30">Crear nueva reservación</h5>
+
+                    <form id="formCalendar" method="post" action="app-calendar.html" v-if="Salas[salaselected] != null && salaselected != null">
+                        <div class="form-group">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Nombre</label>
+                            <input type="text" class="form-control" v-model="Salas[salaselected].nombre" placeholder="Agregar titulo">
+                        </div><!-- form-group -->
+                        <div class="form-group mg-t-30">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Cantidad</label>
+                            <input type="number" class="form-control" v-model="Salas[salaselected].capacidad" placeholder="Fecha">
+
+                        </div><!-- form-group -->
+                        <div class="form-group mg-t-30">
+                            <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Sala</label>
+                            <input type="checkbox" class="form-control" v-model="Salas[salaselected].activa" placeholder="Fecha">
+                        </div><!-- form-group -->
+                    </form>
+                </div><!-- modal-body -->
+                <div class="modal-footer">
+                    <a href="#" id="addRev_cre" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+                    <button type="button" class="btn btn-primary mg-r-5" v-on:click="AddReservacion()">Agregar</button>
+                </div><!-- modal-footer -->
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
+    <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered " role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel3">Detalle de reservacion</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="details_reservation">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    @section Scripts {
+
+        <script src="~/template/lib/moment/min/moment.min.js"></script>
+        <script src="~/template/lib/fullcalendar/fullcalendar.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
+        <script src="~/template/assets/js/calendar-events.js"></script>
+        <script>
+        var App_calendar = new Vue({
+            el: "#App_calendar",
+            data: {
+                Reservaciones: [],
+                Salas: [],
+                salaselected: null,
+                Sala: null,
+                Details: null
+            },
+            async mounted () {
+                await this.GetSalas();
+                await this.GetReservaciones();
+                this.StartCalendar();
+            },
+            methods: {
+                AddReservacion: async function () {
+                    document.getElementById("Mesnaje_result").innerHTML = ''
+                    var elemento = {
+                        IdSala: document.getElementById("IdSala").value,
+                        Motivo: document.getElementById("Motivo").value,
+                        FechaInicio: document.getElementById("FechaInicio").value,
+                        HoraIncio: document.getElementById("HoraIncio").value,
+                        HolaFin: document.getElementById("HolaFin").value,
+                        Comentarios: document.getElementById("Comentarios").value,
+                    }
+                    await axios.post('@Url.Action("CreateReservacion","Sala")', elemento, null).then(response => {
+                        ShowMessageErrorShort("Reservación registrada", "success")
+                        document.getElementById("addRev_cre").click();
+                        document.getElementById("IdSala").value = "";
+                        document.getElementById("FechaInicio").value = "";
+                         document.getElementById("HoraIncio").value = "";
+                         document.getElementById("HolaFin").value = "";
+                        document.getElementById("Comentarios").value = "";
+                        document.getElementById("Mesnaje_result").innerHTML = ''
+                        document.getElementById("btn_refrescar").click();
+                        //this.GetReservaciones();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                document.getElementById("Mesnaje_result").innerHTML = '<div class="alert alert-warning" role="alert">' + error.response.data + '</div>'
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                    }).finally()
+                    await this.GetReservaciones();
+                    this.StartCalendar();
+
+                },
+                GetSalas: async function () {
+                    await axios.post('@Url.Action("GetList","Sala")', null, null).then(response => {
+                        ShowMessageErrorShort("Salas obtenidas, procesando...", "success")
+                        this.Salas = response.data;
+                        console.log(response.data)
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                    }).finally()
+                },
+                IsMine: async function (id) {
+                    await axios.get('@Url.Action("Ismine","Sala")/' + id, null, null).then(response => {
+                        ShowMessageErrorShort("Salas obtenidas, procesando...", "success")
+                        this.Sala = response.data
+                        console.log(response.data)
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                        this.Sala = null;
+                    }).finally()
+
+
+
+                    if (this.Sala != null) {
+                        this.Delete(this.Sala.idSalaReservacion)
+                    }
+                },
+                GetDetails: async function (id) {
+                    await axios.get('@Url.Action("DetailsReservacion", "Sala")/' + id, null, null).then(response => {
+                        ShowMessageErrorShort("Salas obtenidas, procesando...", "success")
+                        this.Details = response.data
+                        console.log(response.data)
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                        this.Details = null;
+                    }).finally()
+                },
+                GetDetailsReservac: async function (id) {
+                    document.getElementById("btn_detailsrserv").click()
+                    document.getElementById("details_reservation").innerHTML = "Buscando detalles, espere por favor..."
+                    await axios.get('@Url.Action("DetailsSalaReservacion", "Sala")/' + id, null, null).then(response => {
+                        ShowMessageErrorShort("Salas obtenidas, procesando...", "success")
+                        document.getElementById("details_reservation").innerHTML = response.data
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                        this.Details = null;
+                    }).finally()
+                },
+                Delete: async function (id) {
+                    Swal.fire({
+                        title: "¿Deseas eliminar esta reservación?",
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si!'
+                    }).then(async (result) => {
+                        if (result.value) {
+                            await axios.get('@Url.Action("Delete", "Sala")/' + id, null, null).then(response => {
+                                ShowMessageErrorShort("Salas obtenidas, procesando...", "success")
+                                console.log(response.data)
+                                document.getElementById("btn_refrescar").click();
+                            }).catch(error => {
+                                if (error.response) {
+                                    if (error.response.status === 400) {
+                                        ShowMessageErrorShort(error.response.data,"error")
+                                    }
+                                }
+                            }).finally()
+
+                            await this.GetReservaciones();
+                            this.StartCalendar();
+                        }
+                    })
+
+                },
+                GetReservaciones: async function () {
+                    await axios.post('@Url.Action("GetListReservacion","Sala")', null, null).then(response => {
+                        ShowMessageErrorShort("Eventos obtenidos, procesando...", "success")
+                        this.Reservaciones = {
+                            id: 1,
+                            backgroundColor: 'rgba(1,104,250, .15)',
+                            borderColor: '#0168fa',
+                            events: []
+                        }
+                        response.data.forEach((e, i) => {
+                            var reservacion = {
+                                id: e.idSalaReservacion,
+                                start: e.fechaInicio.substring(0,10)+"T"+e.horaIncio,
+                                end: e.fechaInicio.substring(0,10)+"T"+e.horaFin,
+                                title: e.motivo,
+                                description: e.comentarios,
+                                idSala: e.idSala,
+                                idPersona: e.idPersona
+                            }
+                            this.Reservaciones.events.push(reservacion);
+                        })
+                        console.log(response.data)
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                    }).finally()
+                },
+                StartCalendar: function () {
+                    $('#calendar').fullCalendar('destroy');
+                    $('#calendar').fullCalendar('render');
+                    $('#calendar').fullCalendar({
+                        header: {
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'month,agendaWeek,agendaDay,listWeek'
+                        },
+                        navLinks: true,
+                        selectable: true,
+                        selectLongPressDelay: 100,
+                        editable: true,
+                        nowIndicator: true,
+                        defaultView: 'listMonth',
+                        views: {
+                            agenda: {
+                                columnHeaderHtml: function (mom) {
+                                    return '<span>' + mom.format('ddd') + '</span>' +
+                                        '<span>' + mom.format('DD') + '</span>';
+                                }
+                            },
+                            day: { columnHeader: false },
+                            listMonth: {
+                                listDayFormat: 'ddd DD',
+                                listDayAltFormat: false
+                            },
+                            listWeek: {
+                                listDayFormat: 'ddd DD',
+                                listDayAltFormat: false
+                            },
+                            agendaThreeDay: {
+                                type: 'agenda',
+                                duration: { days: 3 },
+                                titleFormat: 'MMMM YYYY'
+                            }
+                        },
+
+                        eventSources: [this.Reservaciones],
+                        eventAfterAllRender: function (view) {
+                            if (view.name === 'listMonth' || view.name === 'listWeek') {
+                                var dates = view.el.find('.fc-list-heading-main');
+                                dates.each(function () {
+                                    var text = $(this).text().split(' ');
+                                    var now = moment().format('DD');
+
+                                    $(this).html(text[0] + '<span>' + text[1] + '</span>');
+                                    if (now === text[1]) { $(this).addClass('now'); }
+                                });
+                            }
+
+                            //console.log(view.el);
+                        },
+                        eventRender: function (event, element) {
+
+                            if (event.description) {
+                                element.find('.fc-list-item-title').append('<span class="fc-desc">' + event.description + '</span>');
+                                element.find('.fc-content').append('<span class="fc-desc">' + event.description + '</span>');
+                            }
+
+                            var eBorderColor = (event.source.borderColor) ? event.source.borderColor : event.borderColor;
+                            element.find('.fc-list-item-time').css({
+                                color: eBorderColor,
+                                borderColor: eBorderColor
+                            });
+
+                            element.find('.fc-list-item-title').css({
+                                borderColor: eBorderColor
+                            });
+
+                            element.css('borderLeftColor', eBorderColor);
+                        },
+                    });
+                    var calendar = $('#calendar').fullCalendar('getCalendar');
+
+                    // change view to week when in tablet
+                    if (window.matchMedia('(min-width: 576px)').matches) {
+                        calendar.changeView('agendaWeek');
+                    }
+
+                    // change view to month when in desktop
+                    if (window.matchMedia('(min-width: 992px)').matches) {
+                        calendar.changeView('month');
+                    }
+
+                    // change view based in viewport width when resize is detected
+                    calendar.option('windowResize', function (view) {
+                        if (view.name === 'listWeek') {
+                            if (window.matchMedia('(min-width: 992px)').matches) {
+                                calendar.changeView('month');
+                            } else {
+                                calendar.changeView('listWeek');
+                            }
+                        }
+                    });
+                    // Display calendar event modal
+                    calendar.on('eventClick', function (calEvent, jsEvent, view) {
+                        App_calendar.GetDetailsReservac(calEvent.id)
+                    });
+
+                    calendar.option('select', function (startDate, endDate) {
+                        document.getElementById("btn_createNew").click()
+                        $('#FechaInicio').val(App_calendar.formatDate(endDate));
+                        console.log(App_calendar.formatDate(startDate))
+                        console.log(App_calendar.formatDate(endDate))
+                    });
+
+                },
+                formatDate: function(date) {
+                    var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+
+                    if(month.length < 2)
+                    month = '0' + month;
+                    if (day.length < 2)
+                        day = '0' + day;
+
+                    return [year, month, day].join('-');
+                }
+            }
+        });
+
+
+        </script>
+
+
+    }
+

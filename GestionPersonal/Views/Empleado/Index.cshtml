@@ -1,0 +1,58 @@
+﻿@model IEnumerable<GPSInformation.Views.View_empleado>
+
+@{
+    ViewData["Title"] = "Lista de empleados";
+}
+<div class="d-flex align-items-center justify-content-between mg-b-30">
+    <h4 class="tx-15 mg-b-0">@ViewData["Title"]</h4>
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <h2 class="tx-15 mg-b-0"></h2>
+        <a asp-action="Create" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Crear nuevo</a>
+    </div>
+</div>
+<hr />
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Nomina</th>
+            <th>Empleado</th>
+            <th>Departamento</th>
+            <th>Puesto</th>
+            <th>Tipo Nomina</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>@item.NumeroNomina</td>
+            <td>@item.NombreCompleto</td>
+            <td>@item.NombreDepartamento</td>
+            <td>@item.PuestoNombre</td>
+            <td>
+                @item.TipoNomina
+                @if (item.IdEstatus != 19)
+                {
+                    <span class="badge badge-danger">@item.EstatusDescripcion</span>
+                }
+            </td>
+            <td>
+
+
+                <div class="dropdown">
+                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropleftMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Opciones
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropleftMenuButton">
+                        @Html.ActionLink("Editar", "Edit", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Acceso", "Create", "Usuario", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Contrato", "Index", "Contrato", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                        @Html.ActionLink("Expediente", "Expediente", "Expediente", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                    </div>
+                </div>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<GPSInformation.Models.Modulo>
+
+@foreach (var item in Model)
+{ 
+    if (item.SubModulos.Count > 0 && item.SubModulos.Where(a => a.AccesosSistema.TieneAcceso).ToList().Count > 0)
+    {
+        <li class="nav-item @Html.Raw(item.SubModulos.Where(a => a.Activemenu).ToList().Count > 0 ? "show" : "show")">
+            <a href="#" class="nav-link with-sub @Html.Raw(item.SubModulos.Where(a => a.Activemenu).ToList().Count > 0 ? "active" : "")">
+                @Html.Raw(item.Icono)  @item.Nombre
+            </a>
+            <nav class="nav">
+                @foreach (var sub in item.SubModulos)
+                {
+                    if (sub.AccesosSistema.TieneAcceso)
+                    {
+                        if (sub.Activemenu)
+                        {
+                            <a href="@Url.Action(sub.Accion,sub.Controllador)" class="active">@sub.Nombre</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action(sub.Accion,sub.Controllador)">@sub.Nombre</a>
+                        }
+                    }
+                }
+
+            </nav>
+        </li>
+    }
+}
