@@ -381,11 +381,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GPSInformation\\GPSInformation.csproj",
+      "projectUniqueName": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GPSInformation\\GPSInformation.csproj",
       "projectName": "GPSInformation",
-      "projectPath": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GPSInformation\\GPSInformation.csproj",
+      "projectPath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GPSInformation\\GPSInformation.csproj",
       "packagesPath": "C:\\Users\\Luis Martinez\\.nuget\\packages\\",
-      "outputPath": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GPSInformation\\obj\\",
+      "outputPath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GPSInformation\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",

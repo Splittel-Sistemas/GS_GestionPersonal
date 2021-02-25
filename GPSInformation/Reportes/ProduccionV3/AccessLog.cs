@@ -25,7 +25,7 @@ namespace GPSInformation.Reportes.ProduccionV3
         public string ComentariosSistema { get; set; }
         public DateTime Fecha { get; set; }
         public DateTime Salida { get; set; }
-        public string GrupoName { get { return IdGrupo == 86 ? "Gris" : IdGrupo == 87 ? "Rojo" : IdGrupo == 88 ? "Verde" : "Sin asginar"; } }
+        public string GrupoName { get; set; }
     }
 
     public enum TipoAcceso

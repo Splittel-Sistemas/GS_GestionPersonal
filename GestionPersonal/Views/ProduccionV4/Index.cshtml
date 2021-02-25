@@ -72,6 +72,9 @@
                     Puesto
                 </th>
                 <th>
+                    Turno Actual
+                </th>
+                <th>
                     Hrs.Score
                 </th>
                 <th>
@@ -83,20 +86,52 @@
         <tbody>
             @foreach (var item in Model.EmpleadoProds)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NumeroNomina)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NombreCompleto)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PuestoNombre)
-                    </td>
-                    <td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumeroNomina)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreCompleto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PuestoNombre)
+                </td>
+                <td>
+                    @if (item.GrupoCambios.Count == 0)
+                    {
+                        <span class="badge badge-default">Sin turno</span>
+                    }
+                    else
+                    {
+                        var JornadaGrupos = item.JornadaGrupos.Find(a => DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd")) == DateTime.Parse(a.Fecha.ToString("yyyy-MM-dd")));
+                        if (JornadaGrupos != null)
+                        {
+                            <span class="badge badge-@Html.Raw(JornadaGrupos.GrupoName == "Gris" ? "secondary" : JornadaGrupos.GrupoName == "Rojo" ? "danger" : "success")">Grupo @JornadaGrupos.GrupoName</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-warning">Dia no encontrado</span>
+                        }
+                    }
+                </td>
+                <td>
+                    @if (item.GrupoCambios.Count == 0)
+                    {
+                        <span class="badge badge-default">--</span>
+                    }
+                    else
+                    {
                         <span class="badge badge-@Html.Raw(item.HorasScore > 0 ? "danger" : "success")">@Html.DisplayFor(model => item.HorasScore)</span>
-                    </td>
-                    <td>
+                    }
+
+                </td>
+                <td>
+                    @if (item.GrupoCambios.Count == 0)
+                    {
+                        <span class="badge badge-warning">Info</span>
+                    }
+                    else
+                    {
                         @if ((item.Accessos.Count(a => a.Activo) % 2) != 0 || item.JornadaGrupos.Count <= 0)
                         {
                             <span class="badge badge-warning">Info</span>
@@ -105,11 +140,12 @@
                         {
                             <span class="badge badge-primary">Ok</span>
                         }
-                    </td>
-                    <td>
-                        @Html.ActionLink("Administrar", "Details", new { IdPersona = item.IdPersona, Inicio = item.Incio })
-                    </td>
-                </tr>
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink("Administrar", "Details", new { IdPersona = item.IdPersona, Inicio = item.Incio })
+                </td>
+            </tr>
             }
         </tbody>
     </table>

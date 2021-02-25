@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "dr8a/SukG88tT0kd/Knl7jN/YGe/od5HyLTXC9oft84mtIOJC/PESzYIxJWCrSCbDXYxym483VxyNg6o/gR8KQ==",
+  "dgSpecHash": "YiCfa31zvfRMz7Yx1UxjLcnr30KXOZ3fczUIFdN5uF/rHNPwrbaE9fsCo9ZmPNRcG+TK0+eTbKBzWbxxtSYtkg==",
   "success": true,
-  "projectFilePath": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GPSInformation\\GPSInformation.csproj",
+  "projectFilePath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GPSInformation\\GPSInformation.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Luis Martinez\\.nuget\\packages\\microsoft.aspnet.mvc\\5.2.7\\microsoft.aspnet.mvc.5.2.7.nupkg.sha512",
     "C:\\Users\\Luis Martinez\\.nuget\\packages\\microsoft.aspnet.razor\\3.2.7\\microsoft.aspnet.razor.3.2.7.nupkg.sha512",

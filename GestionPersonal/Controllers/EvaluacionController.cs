@@ -9,6 +9,7 @@ using GPSInformation.Controllers;
 using GPSInformation.Exceptions;
 using GPSInformation.Models;
 using GPSInformation.Reportes;
+using GPSInformation.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -63,6 +64,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return View(ex.Message);
             }
             finally
@@ -84,6 +86,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return View(ex.Message);
             }
             finally
@@ -106,6 +109,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return NotFound(ex.Message);
             }
             finally
@@ -164,6 +168,7 @@ namespace GestionPersonal.Controllers
                 ViewData["Modelos"] = new SelectList(EvaluacionCtrl.GetModelos().ToList(), "IdEvaluacionTemplate", "Nombre", Evaluacion.IdEvaluacionTemplate);
                 ViewData["Empleados"] = new SelectList(EvaluacionCtrl.GetEmpleados().ToList(), "IdPersona", "NombreCompleto", Evaluacion.IdPersona);
                 ModelState.AddModelError("", ex.Message);
+                Funciones.EscribeLog(ex.ToString());
                 return View(Evaluacion);
             }
             finally
@@ -187,6 +192,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return View(ex.Message);
             }
             finally
@@ -243,6 +249,7 @@ namespace GestionPersonal.Controllers
                 ViewData["Modelos"] = new SelectList(EvaluacionCtrl.GetModelos().ToList(), "IdEvaluacionTemplate", "Nombre", Evaluacion.IdEvaluacionTemplate);
                 ViewData["Empleados"] = new SelectList(EvaluacionCtrl.GetEmpleados().ToList(), "IdPersona", "NombreCompleto", Evaluacion.IdPersona);
                 ModelState.AddModelError("", ex.Message);
+                Funciones.EscribeLog(ex.ToString());
                 return View(Evaluacion);
             }
             finally
@@ -266,6 +273,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return View(ex.Message);
             }
             finally
@@ -303,6 +311,7 @@ namespace GestionPersonal.Controllers
             catch (GpExceptions ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                Funciones.EscribeLog(ex.ToString());
                 return View(evaluacionEmpleado);
             }
             finally
@@ -341,6 +350,7 @@ namespace GestionPersonal.Controllers
             catch (GpExceptions ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                Funciones.EscribeLog(ex.ToString());
                 return View(evaluacionEmpleado);
             }
             finally
@@ -378,6 +388,7 @@ namespace GestionPersonal.Controllers
             catch (GpExceptions ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                Funciones.EscribeLog(ex.ToString());
                 return View(evaluacionEmpleado);
             }
             finally
@@ -406,6 +417,7 @@ namespace GestionPersonal.Controllers
             catch (GpExceptions ex)
             {
                 ModelState.AddModelError("", ex.Message);
+                Funciones.EscribeLog(ex.ToString());
                 return View(evaluacionEmpleado);
             }
             finally
@@ -432,6 +444,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return BadRequest(ex.Message);
             }
             finally
@@ -455,6 +468,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 ModelState.AddModelError("", ex.Message);
                 return View();
             }
@@ -476,6 +490,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return View(ex.Message);
             }
             finally
@@ -512,6 +527,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return NotFound(ex.Message);
             }
             finally
@@ -545,6 +561,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return BadRequest(ex.Message);
             }
             finally
@@ -565,6 +582,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return NotFound(ex.Message);
             }
             finally
@@ -595,6 +613,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GpExceptions ex)
             {
+                Funciones.EscribeLog(ex.ToString());
                 return NotFound(ex.Message);
             }
             finally

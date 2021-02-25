@@ -60,11 +60,11 @@ namespace GestionPersonal.Controllers
         }
         //[AccessDataSession]
         [HttpPost]
-        public IActionResult RegisterIncidencia([FromBody] GrupoProdIncidencia GrupoProdIncidencia)
+        public IActionResult RegisterIncidencia( GrupoProdIncidencia GrupoProdIncidencia)
         {
             try
             {
-                ProduccionV4Ctrl.RegisterIncidencia(GrupoProdIncidencia);
+                ProduccionV4Ctrl.RegisterIncidenciaAsync(GrupoProdIncidencia);
                 return Ok("Cambios guardados");
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
@@ -72,6 +72,24 @@ namespace GestionPersonal.Controllers
                 ProduccionV4Ctrl.Terminar();
                 return BadRequest(ex.Message);
             }
+        }
+        /// <summary>
+        /// Descargar
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public ActionResult Dowload(string fileName)
+        {
+            try
+            {
+                byte[] fileBytes = ProduccionV4Ctrl.GetFileInc(fileName);
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
+
         }
         #endregion
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -28,6 +29,8 @@ namespace GPSInformation.Tools
         private MailPriority MailPryority_ { get; set; }
         private SmtpClient SmtpClient_ { get; set; }
         private Attachment Attachment_ { get; set; }
+        private readonly string PathScript = @"C:\Splittel\GestionPersonal\Scripts\ManualEmail.ps1";
+        private readonly string PathText = @"C:\Splittel\GestionPersonal\Scripts\DraftEmailManual.txt";
         #endregion
 
         #region Contructores
@@ -43,6 +46,59 @@ namespace GPSInformation.Tools
         #endregion
 
         #region Metodos
+        private void CreateScript(string Body, string SubJec)
+        {
+            string ScriptPS = File.ReadAllText(PathText);
+            ScriptPS = ScriptPS.Replace("@Server", this.Server);
+            ScriptPS = ScriptPS.Replace("@Accout", this.Account);
+            ScriptPS = ScriptPS.Replace("@Subject", SubJec);
+            ScriptPS = ScriptPS.Replace("@IsHtml", true ? "true" : "false");
+            ScriptPS = ScriptPS.Replace("@Body", Body.Replace("#","'#"));
+            ScriptPS = ScriptPS.Replace("@Password", this.Password);
+            ScriptPS = ScriptPS.Replace("@Port", this.Port + "");
+            ScriptPS = ScriptPS.Replace("@SSL", this.ActiveSSL ? "true" : "false");
+
+            string DireccionesTo = "";
+            string DireccionesCC = "";
+            string DireccionesBcc = "";
+            string DireccionesReply = "";
+
+            if (ListReply != null)
+            {
+                ListReply.ForEach(a => DireccionesReply += $"$Email.ReplyToList.Add('{a}');");
+            }
+            if (ListBCC != null)
+            {
+                ListBCC.ForEach(a => DireccionesBcc += $"$Email.Bcc.Add('{a}');");
+            }
+            if (ListCC != null)
+            {
+                ListCC.ForEach(a => DireccionesCC += $"$Email.CC.Add('{a}');");
+            }
+            if (ListTo != null)
+            {
+                ListTo.ForEach(a => DireccionesTo += $"$Email.To.Add('{a}');");
+            }
+            ScriptPS = ScriptPS.Replace("@DireccionesTo", DireccionesTo);
+            ScriptPS = ScriptPS.Replace("@DireccionesCC", DireccionesCC);
+            ScriptPS = ScriptPS.Replace("@DireccionesBcc", DireccionesBcc);
+            ScriptPS = ScriptPS.Replace("@DireccionesReply", DireccionesReply);
+
+            StreamWriter sw = new StreamWriter(PathScript, false, System.Text.Encoding.GetEncoding(1252));
+            sw.Write(ScriptPS);
+            sw.Close();
+        }
+        public void Senda(string Body, string SubJec)
+        {
+            CreateScript(Body, SubJec);
+            var startInfo = new ProcessStartInfo()
+            {
+                FileName = "powershell.exe",
+                Arguments = $"-NoProfile -ExecutionPolicy unrestricted \"{PathScript}\"",
+                UseShellExecute = false
+            };
+            Process.Start(startInfo);
+        }
         public void Send(string Body, string SubJect)
         {
             try

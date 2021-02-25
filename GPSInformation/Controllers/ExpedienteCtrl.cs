@@ -55,15 +55,29 @@ namespace GPSInformation.Controllers
         }
         public byte[] GetFile(int IdPersona, int IdExpedienteArchivo)
         {
-            var Archivo_re = darkManager.ExpedienteEmpleado.Get(
-                     "IdPersona", "" + IdPersona,
-                    "IdExpedienteArchivo", "" + IdExpedienteArchivo);
-            if (Archivo_re is null)
+            try
             {
-                throw new Exceptions.GpExceptions(string.Format("No se encontró el registro"));
+                var Archivo_re = darkManager.ExpedienteEmpleado.Get(
+                         "IdPersona", "" + IdPersona,
+                        "IdExpedienteArchivo", "" + IdExpedienteArchivo);
+                if (Archivo_re is null)
+                {
+                    throw new Exceptions.GpExceptions(string.Format("No se encontró el registro"));
+                }
+                string PathEmp = string.Format(@"{0}\{1}\Expediente\", Path, IdPersona);
+
+                if (!File.Exists($"{PathEmp}{Archivo_re.Ruta}"))
+                {
+                    throw new Exceptions.GpExceptions($"Error, no fue encontrado el archivo : {Archivo_re.Ruta}");
+                }
+
+                return  System.IO.File.ReadAllBytes(string.Format(@"{0}{1}", PathEmp, Archivo_re.Ruta));
             }
-            string PathEmp = string.Format(@"{0}\{1}\Expediente\", Path, IdPersona);
-            return  System.IO.File.ReadAllBytes(string.Format(@"{0}{1}", PathEmp, Archivo_re.Ruta));
+            catch (Exceptions.GpExceptions)
+            {
+                throw;
+            }
+
         }
         public ExpedienteEmpleado GetFileDetails(int IdPersona, int IdExpedienteArchivo)
         {

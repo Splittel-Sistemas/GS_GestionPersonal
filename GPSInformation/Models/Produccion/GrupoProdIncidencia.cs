@@ -1,4 +1,5 @@
 ﻿using GPSInformation.Attributes;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,5 +47,21 @@ namespace GPSInformation.Models.Produccion
 
         [ColumnDB(IsMapped = false, IsKey = false)]
         public string NameTipoPermiso { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Adjunto { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public IFormFile AdjuntoFile { get; set; }
+
+
+
+        //otros
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public DateTime CorteInicio { get; set; }
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public DateTime CorteFin { get; set; }
+
     }
 }

@@ -45,11 +45,19 @@ namespace GestionPersonal.Controllers
         }
 
         // GET: ExpedienteController/Create
-        public FileResult Dowload(int IdPersona, int IdExpedienteArchivo)
+        public ActionResult Dowload(int IdPersona, int IdExpedienteArchivo)
         {
-            byte[] fileBytes = ExpedienteCtrl.GetFile(IdPersona, IdExpedienteArchivo);
-            string fileName = ExpedienteCtrl.GetFileDetails(IdPersona, IdExpedienteArchivo).Ruta;
-            return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            try
+            {
+                byte[] fileBytes = ExpedienteCtrl.GetFile(IdPersona, IdExpedienteArchivo);
+                string fileName = ExpedienteCtrl.GetFileDetails(IdPersona, IdExpedienteArchivo).Ruta;
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         // POST: ExpedienteController/Create
@@ -60,7 +68,7 @@ namespace GestionPersonal.Controllers
             try
             {
                 await ExpedienteCtrl.AddArchivoAsync(IdPersona, IdExpedienteArchivo, Archivo);
-                return RedirectToAction(nameof(Index), new { id = IdPersona });
+                return RedirectToAction(nameof(Expediente), new { id = IdPersona });
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {

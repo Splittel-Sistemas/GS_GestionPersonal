@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "rkcp7DpktpYIQln5kSpmH4Ze4BWzcRTAZlukvsXdqPt4bmIWSuEuDMUHC20J9jU+1qGVLnk4it0NmloRa0vIYQ==",
+  "dgSpecHash": "x0zQFcrkpDRmlzAOoWsuzTnnDkN8lU74x4tfN8X6zG/gAZGsJdQIiE3fQxTqXHLP2wt/OZyO1CE5LTJFgMX7sQ==",
   "success": true,
-  "projectFilePath": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GestionPersonal\\GestionPersonal.csproj",
+  "projectFilePath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GestionPersonal\\GestionPersonal.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Luis Martinez\\.nuget\\packages\\bouncycastle.netcore\\1.8.3\\bouncycastle.netcore.1.8.3.nupkg.sha512",
     "C:\\Users\\Luis Martinez\\.nuget\\packages\\epplus.core\\1.5.4\\epplus.core.1.5.4.nupkg.sha512",

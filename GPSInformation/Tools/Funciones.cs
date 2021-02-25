@@ -205,7 +205,7 @@ namespace GPSInformation.Tools
             return n + getMiles(miles);
         }
 
-    public static double GetAntiguedad(DateTime fechaInicio)
+        public static double GetAntiguedad(DateTime fechaInicio)
         {
             TimeSpan antiguedad = DateTime.Now - fechaInicio;
             return antiguedad.TotalDays / 365;

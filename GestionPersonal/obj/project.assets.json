@@ -13716,11 +13716,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GestionPersonal\\GestionPersonal.csproj",
+      "projectUniqueName": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GestionPersonal\\GestionPersonal.csproj",
       "projectName": "GestionPersonal",
-      "projectPath": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GestionPersonal\\GestionPersonal.csproj",
+      "projectPath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GestionPersonal\\GestionPersonal.csproj",
       "packagesPath": "C:\\Users\\Luis Martinez\\.nuget\\packages\\",
-      "outputPath": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GestionPersonal\\obj\\",
+      "outputPath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GestionPersonal\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",
@@ -13741,8 +13741,8 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GPSInformation\\GPSInformation.csproj": {
-              "projectPath": "C:\\Luis Martinez backup\\Personal\\Developments\\NET\\GrupoSplittel\\GrupoSplittel\\GPSInformation\\GPSInformation.csproj"
+            "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GPSInformation\\GPSInformation.csproj": {
+              "projectPath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GPSInformation\\GPSInformation.csproj"
             }
           }
         }

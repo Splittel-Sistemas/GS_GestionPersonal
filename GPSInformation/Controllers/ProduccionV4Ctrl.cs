@@ -6,12 +6,14 @@ using System.Text;
 using GPSInformation.Models.Produccion;
 using System.Linq;
 using GPSInformation.Tools;
+using System.IO;
 
 namespace GPSInformation.Controllers
 {
     public class ProduccionV4Ctrl
     {
         #region Atributos
+        private readonly string PathIncidenceFiles = @"C:\Splittel\GestionPersonal\Produccion";
         public DarkManager darkManager;
         #endregion
 
@@ -112,6 +114,11 @@ namespace GPSInformation.Controllers
             {
                 throw new Exceptions.GpExceptions("Error al guardar los cambios");
             }
+
+            if (File.Exists($@"{PathIncidenceFiles}\{res.Adjunto}"))
+            {
+                File.Delete($@"{PathIncidenceFiles}\{res.Adjunto}");
+            }
         }
         /// <summary>
         /// Detalles de incidencia
@@ -125,34 +132,120 @@ namespace GPSInformation.Controllers
             return res;
         }
         /// <summary>
+        /// DeleteFile
+        /// </summary>
+        /// <param name="Adjunto"></param>
+        /// <returns></returns>
+        public byte[] GetFileInc(string Adjunto)
+        {
+            try
+            {
+                string PathEmp = $@"{PathIncidenceFiles}\{Adjunto}";
+
+                if (!File.Exists(PathEmp))
+                {
+                    throw new Exceptions.GpExceptions($"Error, no fue encontrado el archivo : {Adjunto}");
+                }
+
+                return System.IO.File.ReadAllBytes(PathEmp);
+            }
+            catch (Exceptions.GpExceptions)
+            {
+                throw;
+            }
+
+        }
+        /// <summary>
         /// Registrar incidencias
         /// </summary>
         /// <param name="GrupoProdIncidencia"></param>
-        public void RegisterIncidencia(GrupoProdIncidencia GrupoProdIncidencia)
+        public void RegisterIncidenciaAsync(GrupoProdIncidencia GrupoProdIncidencia)
         {
-            if(GrupoProdIncidencia is null)
-                throw new Exceptions.GpExceptions("Datos incorrectos");
-            if (string.IsNullOrEmpty(GrupoProdIncidencia.Comentarios))
-                throw new Exceptions.GpExceptions("Por favor introduce algun comentario");
+            darkManager.StartTransaction();
+            try
+            {
+                if (GrupoProdIncidencia is null)
+                    throw new Exceptions.GpExceptions("Datos incorrectos");
+                if (string.IsNullOrEmpty(GrupoProdIncidencia.Comentarios))
+                    throw new Exceptions.GpExceptions("Por favor introduce algun comentario");
 
-            darkManager.GrupoProdIncidencia.Element = GrupoProdIncidencia;
-            if (GrupoProdIncidencia.IdGrupoProdIncidencia == 0)
-            {
-                darkManager.GrupoProdIncidencia.Element.Creado = DateTime.Now;
-                darkManager.GrupoProdIncidencia.Element.Modificado = DateTime.Now;
-                if (!darkManager.GrupoProdIncidencia.Add())
+                darkManager.GrupoProdIncidencia.Element = GrupoProdIncidencia;
+                if (GrupoProdIncidencia.IdGrupoProdIncidencia == 0)
                 {
-                    throw new Exceptions.GpExceptions("Error al guardar los cambios");
+
+                    if(GrupoProdIncidencia.TipoIncidecia.Trim() == "Per")
+                    {
+                        GrupoProdIncidencia.FechaPermiso = DateTime.Parse(GrupoProdIncidencia.FechaPermiso.ToString("yyyy-MM-dd 08:00:00"));
+                        if(!(GrupoProdIncidencia.CorteInicio <= GrupoProdIncidencia.FechaPermiso && GrupoProdIncidencia.FechaPermiso <= GrupoProdIncidencia.CorteFin))
+                        {
+                            throw new Exceptions.GpExceptions("Error, Fecha del permiso fuera del periodo");
+                        }
+                    }
+                    else
+                    {
+                        GrupoProdIncidencia.FechaRegVac = DateTime.Parse(GrupoProdIncidencia.FechaRegVac.ToString("yyyy-MM-dd 08:00:00"));
+                        GrupoProdIncidencia.FechaSalVac = DateTime.Parse(GrupoProdIncidencia.FechaSalVac.ToString("yyyy-MM-dd 08:00:00"));
+
+                        if (!(GrupoProdIncidencia.CorteInicio <= GrupoProdIncidencia.FechaSalVac && GrupoProdIncidencia.FechaSalVac <= GrupoProdIncidencia.CorteFin))
+                        {
+                            throw new Exceptions.GpExceptions("Error, Fecha Salida esta fuera del periodo");
+                        }
+
+                        if (!(GrupoProdIncidencia.CorteInicio <= GrupoProdIncidencia.FechaRegVac && GrupoProdIncidencia.FechaRegVac <= GrupoProdIncidencia.CorteFin))
+                        {
+                            throw new Exceptions.GpExceptions("Error, Fecha Ultimo dia esta fuera del periodo");
+                        }
+                        
+
+                    }
+
+                    darkManager.GrupoProdIncidencia.Element.Creado = DateTime.Now;
+                    darkManager.GrupoProdIncidencia.Element.Modificado = DateTime.Now;
+                    if (GrupoProdIncidencia.AdjuntoFile != null && GrupoProdIncidencia.AdjuntoFile.Length <= 0)
+                        throw new Exceptions.GpExceptions($"Error, el archivo '{GrupoProdIncidencia.AdjuntoFile.FileName}' esta dañado");
+
+                    if(GrupoProdIncidencia.AdjuntoFile != null)
+                    {
+                        if (!Directory.Exists(PathIncidenceFiles))
+                            Directory.CreateDirectory(PathIncidenceFiles);
+                        darkManager.GrupoProdIncidencia.Element.Adjunto = $"{DateTime.Now.ToString("MMddHHmmss")}_{GrupoProdIncidencia.AdjuntoFile.FileName}";
+                        using (var stream = System.IO.File.Create($@"{PathIncidenceFiles}\{darkManager.GrupoProdIncidencia.Element.Adjunto}"))
+                        {
+                            GrupoProdIncidencia.AdjuntoFile.CopyTo(stream);
+                        }
+                    }
+
+                    if (!darkManager.GrupoProdIncidencia.Add())
+                    {
+                        throw new Exceptions.GpExceptions("Error al guardar los cambios");
+                    }
                 }
-            }
-            else
-            {
-                darkManager.GrupoProdIncidencia.Element.Modificado = DateTime.Now;
-                if (!darkManager.GrupoProdIncidencia.Update())
+                else
                 {
-                    throw new Exceptions.GpExceptions("Error al guardar los cambios");
+                    darkManager.GrupoProdIncidencia.Element.Modificado = DateTime.Now;
+                    if (!darkManager.GrupoProdIncidencia.Update())
+                    {
+                        throw new Exceptions.GpExceptions("Error al guardar los cambios");
+                    }
                 }
+
+                darkManager.Commit();
             }
+            catch (Exceptions.GpExceptions ex)
+            {
+                darkManager.RolBack();
+                Tools.Funciones.EscribeLog(ex.ToString());
+                throw ex;
+            }
+            catch (Exception ex)
+            {
+                darkManager.RolBack();
+                Tools.Funciones.EscribeLog(ex.ToString());
+                throw new Exceptions.GpExceptions(ex.Message);
+            }
+            
+
+            
         }
         /// <summary>
         /// Eliminar evento
@@ -288,7 +381,8 @@ namespace GPSInformation.Controllers
 
             #region Procesar dias por grupo asginado
             DateTime Corte = DateTime.Parse(EmpleadoProd.Incio.ToString("yyyy-MM-dd 00:00:00"));
-            while (Corte <= EmpleadoProd.Fin)
+            DateTime Fin = DateTime.Parse(EmpleadoProd.Fin.ToString("yyyy-MM-dd 00:00:00"));
+            while (Corte < Fin)
             {
                 var UltimoCambio = GetUltimoCambio(Corte, Empleado.IdPersona);
 
@@ -304,7 +398,7 @@ namespace GPSInformation.Controllers
                         Fecha = Corte + DiaHorario_re.Entrada,
                         ComentariosSistema = $"cambio de turno aplicado desde el dia: {UltimoCambio.Creado.ToString("F")}"
                     };
-
+                    diaLog.GrupoName = GetNameGrup(diaLog.IdGrupo);
                     diaLog.Salida = diaLog.Fecha.AddHours(diaLog.HorasMeta);
                     EmpleadoProd.JornadaGrupos.Add(diaLog);
                 }
