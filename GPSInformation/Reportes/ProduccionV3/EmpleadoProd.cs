@@ -14,7 +14,7 @@ namespace GPSInformation.Reportes.ProduccionV3
         public string PuestoNombre { get; set; }
         public double Antiguedad { get; set; }
         [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
-        [Display(Name="Hrs.Meta")]
+        [Display(Name="Hrs.Meta(Nomina)")]
         public double HorasMeta { get; set; }
         [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
         [Display(Name = "Hrs.Justificadas")]
@@ -23,7 +23,7 @@ namespace GPSInformation.Reportes.ProduccionV3
         [Display(Name = "Hrs.Trabajadas")]
         public double HorasReal { get; set; }
         [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
-        [Display(Name = "Hrs.Score")]
+        [Display(Name = "Dif.Nomina")]
         public double HorasScore { get { return HorasMeta - HorasAprobadas - HorasReal; } }
         public DateTime Incio { get; set; }
         public DateTime Fin { get; set; }

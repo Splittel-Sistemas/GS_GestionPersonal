@@ -158,7 +158,7 @@ namespace GestionPersonal.Controllers
                 }
                 if (Inicio < Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00"))))
                 {
-                    if (Permisos.Find(a => a.IdSubModulo == 58).Autorization == false && Permisos.Find(a => a.IdSubModulo == 53).Autorization == false)
+                    if (Permisos.Find(a => a.IdSubModulo == 1052).Autorization == false && Permisos.Find(a => a.IdSubModulo == 1048).Autorization == false)
                     {
                         Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
                     }
@@ -189,7 +189,7 @@ namespace GestionPersonal.Controllers
                 }
                 if (DateTime.Now < Inicio)
                 {
-                    if (Permisos.Find(a => a.IdSubModulo == 58).Autorization == false && Permisos.Find(a => a.IdSubModulo == 53).Autorization == false)
+                    if (Permisos.Find(a => a.IdSubModulo == 1052).Autorization == false && Permisos.Find(a => a.IdSubModulo == 1048).Autorization == false)
                     {
                         Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
                     }

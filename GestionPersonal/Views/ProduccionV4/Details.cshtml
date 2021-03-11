@@ -29,17 +29,6 @@
         </h4>
         <div class="btn-group" role="group" aria-label="Basic example">
             <h2 class="tx-15 mg-b-0"></h2>
-            @*@if (Model.GrupoProdCorteLast != null)
-        {
-            @if (Model.GrupoProdCorteAct is null)
-            {
-                <a href="#" v-on:click="CrearCorte()" class="btn btn-outline-warning btn-sm d-flex align-items-center">Crear Corte</a>
-            }
-            else
-            {
-                <a href="#" class="btn btn-outline-warning btn-sm d-flex align-items-center disabled">Crear Corte</a>
-            }
-        }*@
 
             <a href="@Url.Action("Index", "produccionv4", new {Inicio = Model.Incio})" class="btn btn-outline-primary btn-sm d-flex align-items-center">Lista</a>
             @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization && Permisos.Find(a => a.IdSubModulo == 1052).Autorization || Permisos.Find(a => a.IdSubModulo == 1050).Autorization && Permisos.Find(a => a.IdSubModulo == 1052).Autorization)
@@ -58,13 +47,13 @@
                     @Html.DisplayNameFor(model => model.Incio)
                 </dt>
                 <dd>
-                    @Model.Incio.ToString("F")
+                    @Model.Incio.ToString("D")
                 </dd>
                 <dt>
                     @Html.DisplayNameFor(model => model.Fin)
                 </dt>
                 <dd>
-                    @Model.Fin.ToString("F")
+                    @Model.Fin.ToString("D")
                 </dd>
             </dl>
         </div>
@@ -117,7 +106,7 @@
                         else
                         {
                             @string.Format("{0:#.####} (hrs)", (Model.GrupoProdCorteLast.Score + Model.HorasScore))
-                <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="Score de la semana  anterior " data-content="@string.Format("{0:#.####} (hrs)", (Model.GrupoProdCorteLast.Score))" class="link-03 lh-0"><i class="icon ion-ios-navigate"></i></a>
+                            <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="Score de la semana  anterior " data-content="@string.Format("{0:#.####} (hrs)", (Model.GrupoProdCorteLast.Score))" class="link-03 lh-0"><i class="icon ion-ios-navigate"></i></a>
                         }
                     }
                     else
@@ -306,6 +295,9 @@
                                     </div>
                                     <div class="activity-body">
                                         <p class="mg-b-2">
+                                            <span class="">@item.Fecha.ToString("D")</span>
+                                        </p>
+                                        <p class="mg-b-2">
                                             <span class="badge badge-@Html.Raw(item.GrupoName == "Gris" ? "secondary" : item.GrupoName == "Rojo" ? "danger" : "success")">Grupo @item.GrupoName</span>
                                             <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="Turno asignado: Grupo @item.GrupoName" data-content="@item.ComentariosSistema" class="link-03 lh-0"><i class="icon ion-ios-navigate"></i></a>
                                         </p>
@@ -341,6 +333,7 @@
                                     @if (Model.GrupoProdCorteAct is null)
                                     {
                                         <a class="dropdown-item" href="#modal4" data-toggle="modal">Registrar nueva</a>
+                                        <a class="dropdown-item" href="#modal6" data-toggle="modal">Nueva incidencia</a>
                                     }
                                 </div>
                             </div>
@@ -350,7 +343,7 @@
                 </div>
                 <div class="card-body pd-20">
                     @if (Model.GrupoProdIncidencias.Count <= 0)
-                                    {
+                    {
                         <div class="alert alert-solid alert-info" role="alert">
                             Sin incidencias
                         </div>
@@ -358,7 +351,7 @@
                     <ul class="list-group list-group-flush tx-13">
                         @foreach (var item in Model.GrupoProdIncidencias)
                         {
-                                    @if (item.TipoIncidecia == "Per")
+                            @if (item.TipoIncidecia == "Per")
                             {
                                 <li class="list-group-item d-flex pd-sm-x-20">
                                     <div class="avatar d-none d-sm-block"><span class="avatar-initial rounded-circle bg-indigo op-5"><i class="icon ion-md-bookmarks"></i></span></div>
@@ -383,12 +376,12 @@
                                     </div>
                                     <div class="mg-l-auto text-right">
                                         <p class="tx-medium mg-b-2">@item.HorasJustific (hrs)</p>
-                                        
+
                                     </div>
                                 </li>
                             }
                             else
-                                {
+                            {
                                 <li class="list-group-item d-flex pd-sm-x-20">
                                     <div class="avatar d-none d-sm-block"><span class="avatar-initial rounded-circle bg-orange op-5"><i class="icon ion-md-sunny"></i></span></div>
                                     <div class="pd-sm-l-10">
@@ -484,7 +477,7 @@
                         <label>Comentarios</label>
                         <textarea name="inp_commArreglo" id="inp_commArreglo_2" class="form-control"></textarea>
                     </div>
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
@@ -585,7 +578,7 @@
                         <div class="form-group">
                             <label>Elegir archivo</label>
                             <input type="file" name="name" value="" id="customFile" class="form-control" />
-                            
+
                         </div>
                     </form>
                 </div>
@@ -655,6 +648,28 @@
                                 <textarea id="inp_commentsCG" class="form-control"></textarea>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="CreateCambio()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal6" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Registrar cambio de grupo</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                       
                     </div>
                 </div>
                 <div class="modal-footer">
