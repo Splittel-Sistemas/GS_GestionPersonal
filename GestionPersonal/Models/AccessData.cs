@@ -19,7 +19,7 @@ namespace GestionPersonal.Models
         public int[] IdAction { get; set; }
         public AccessDataSession()
         {
-            darkManager = new DarkManager("Data Source=192.168.3.160;User ID=infra;Password=SAPca+Ah*76U19$*;Initial Catalog=GestionPersonal; Integrated Security=false; Connect timeout=60;Encrypt=False;TrustServerCertificate=false;ApplicationIntent=ReadWrite;MultiSubnetfailover=False");
+            //darkManager = new DarkManager("Data Source=192.168.3.160;User ID=infra;Password=SAPca+Ah*76U19$*;Initial Catalog=GestionPersonal; Integrated Security=false; Connect timeout=60;Encrypt=False;TrustServerCertificate=false;ApplicationIntent=ReadWrite;MultiSubnetfailover=False");
            
         }
         public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -28,6 +28,7 @@ namespace GestionPersonal.Models
             {
                 if (IdAction.Length > 0)
                 {
+                    darkManager = new DarkManager(filterContext.HttpContext.Session.GetString("user_gpsdev"));
                     darkManager.OpenConnection();
                     darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
                     var result = darkManager.AccesosSistema.Get("" + filterContext.HttpContext.Session.GetInt32("user_id_permiss"), nameof(darkManager.AccesosSistema.Element.IdUsuario));
@@ -73,17 +74,19 @@ namespace GestionPersonal.Models
 
         public AccessMultipleView()
         {
-            darkManager = new DarkManager("Data Source=192.168.3.160;User ID=infra;Password=SAPca+Ah*76U19$*;Initial Catalog=GestionPersonal; Integrated Security=false; Connect timeout=60;Encrypt=False;TrustServerCertificate=false;ApplicationIntent=ReadWrite;MultiSubnetfailover=False");
+            
             //darkManager.OpenConnection();
             //darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
         }
         
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+
             if (filterContext.HttpContext.Session.IsAvailable && filterContext.HttpContext.Session.GetInt32("user_id_permiss") != null)
             {
                 if(IdAction.Length > 0)
                 {
+                    darkManager = new DarkManager(filterContext.HttpContext.Session.GetString("user_gpsdev"));
                     darkManager.OpenConnection();
                     darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
                     var result = darkManager.AccesosSistema.Get("" + filterContext.HttpContext.Session.GetInt32("user_id_permiss"), nameof(darkManager.AccesosSistema.Element.IdUsuario));
@@ -114,7 +117,7 @@ namespace GestionPersonal.Models
                 var isHtps = filterContext.HttpContext.Request.IsHttps;
                 var Host = filterContext.HttpContext.Request.Host;
                 var Path = filterContext.HttpContext.Request.Path;
-                string url = string.Format("{0}//{1}{2}",(isHtps ? "https:" : "http:"), Host, Path);
+                string url = string.Format("{0}//{1}{2}{3}",(isHtps ? "https:" : "http:"), Host, Path, filterContext.HttpContext.Request.QueryString);
                 filterContext.HttpContext.Session.SetString("url_next",url);
                 filterContext.Result = new RedirectResult("~/");
                 return;
@@ -133,7 +136,7 @@ namespace GestionPersonal.Models
 
         public AccessView()
         {
-            darkManager = new DarkManager("Data Source=192.168.3.160;User ID=infra;Password=SAPca+Ah*76U19$*;Initial Catalog=GestionPersonal; Integrated Security=false; Connect timeout=60;Encrypt=False;TrustServerCertificate=false;ApplicationIntent=ReadWrite;MultiSubnetfailover=False");
+            //darkManager = new DarkManager("Data Source=192.168.3.160;User ID=infra;Password=SAPca+Ah*76U19$*;Initial Catalog=GestionPersonal; Integrated Security=false; Connect timeout=60;Encrypt=False;TrustServerCertificate=false;ApplicationIntent=ReadWrite;MultiSubnetfailover=False");
             //darkManager.OpenConnection();
             //darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
         }

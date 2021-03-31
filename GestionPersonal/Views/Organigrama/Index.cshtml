@@ -63,7 +63,7 @@
                             }
                         </td>
                         <td>
-                            @Html.ActionLink("Editar", "Edit", new { id=item.IdOrganigramaVersion }) 
+                            @Html.ActionLink((bool)ViewBag.AccesoEdit5 == true ? "Editar" : "Ver", "Edit", new { id=item.IdOrganigramaVersion }) 
                         </td>
                     </tr>
                 }

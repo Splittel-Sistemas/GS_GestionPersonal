@@ -7,7 +7,10 @@
     <h4 class="tx-15 mg-b-0">@ViewData["Title"]</h4>
     <div class="btn-group" role="group" aria-label="Basic example">
         <h2 class="tx-15 mg-b-0"></h2>
-        <a asp-action="Create" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Crear nuevo</a>
+        @if ((bool)ViewBag.AccesoEdit == true)
+        {
+            <a asp-action="Create" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Crear nuevo</a>
+        }
     </div>
 </div>
 <hr />
@@ -45,10 +48,15 @@
                         Opciones
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropleftMenuButton">
-                        @Html.ActionLink("Editar", "Edit", new { id = item.IdPersona }, new { @class = "dropdown-item" })
-                        @Html.ActionLink("Acceso", "Create", "Usuario", new { id = item.IdPersona }, new { @class = "dropdown-item" })
-                        @Html.ActionLink("Contrato", "Index", "Contrato", new { id = item.IdPersona }, new { @class = "dropdown-item" })
-                        @Html.ActionLink("Expediente", "Expediente", "Expediente", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                        @Html.ActionLink((bool)ViewBag.AccesoEdit == true ? "Editar": "Ver", "Edit", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                        @if ((bool)ViewBag.AccesoEdit == true)
+                        {
+                            @Html.ActionLink("Acceso", "Create", "Usuario", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                            @Html.ActionLink("Contrato", "Index", "Contrato", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                            @Html.ActionLink("Expediente", "Expediente", "Expediente", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                            @Html.ActionLink("Ver peridos", "Periodos", "IncidenciaVacacion", new { id = item.NumeroNomina }, new { @class = "dropdown-item" })
+                        }
+
                     </div>
                 </div>
             </td>

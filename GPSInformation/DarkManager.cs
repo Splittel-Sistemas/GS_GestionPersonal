@@ -18,7 +18,7 @@ namespace GPSInformation
         public EmailServ EmailServ_ { get; set; }
         public string IpPublic { get; internal set; }
         protected string DefaultAccess { get; set; }
-        protected string StringConnectionDb { get; set; }
+        public string StringConnectionDb { get; internal set; }
         protected string Server { get; set; }
         protected string From { get; set; }
         protected string Port { get; set; }
@@ -83,16 +83,20 @@ namespace GPSInformation
         public virtual DarkAttributes<GrupoArreglo> GrupoArreglo { get; set; }
         public virtual DarkAttributes<GrupoProdIncidencia> GrupoProdIncidencia { get; set; }
         public virtual DarkAttributes<GrupoProdCorte> GrupoProdCorte { get; set; }
+        public virtual DarkAttributes<GrupoIncidencia> GrupoIncidencia { get; set; }
+        public virtual DarkAttributes<GrupoIncidenciaDetalle> GrupoIncidenciaDetalle { get; set; }
+        public virtual DarkAttributes<GrupoCorte> GrupoCorte { get; set; }
 
 
         private string CorreosBCC { get; set; }
+        private bool ModeProduction { get; set; }
 
         #endregion
 
         #region Constructtores
         public DarkManager(IConfiguration Configuration)
         {
-            bool ModeProduction = Configuration.GetSection("ModeProduction").Value == "true" ? true : false;
+            ModeProduction = Configuration.GetSection("ModeProduction").Value == "true" ? true : false;
             IpPublic = Configuration.GetSection("IpPublic").Value;
             this.StringConnectionDb = ModeProduction ? Configuration.GetConnectionString("Production") : Configuration.GetConnectionString("Test");
             this.DefaultAccess = Configuration.GetConnectionString("DefaultAccess");
@@ -109,6 +113,10 @@ namespace GPSInformation
             CorreosBCC = Configuration.GetSection(SMTP).GetSection("Bcc").Value;
             EmailServ_ = new EmailServ(Server, From,Port,User,Password,UserSSL);
             EmailServ_.AddListBCC(CorreosBCC);
+        }
+        public string Ambiente()
+        {
+            return ModeProduction ? "" : "Pruebas y desarrollo GPS";
         }
         public DarkManager(string DBconnection)
         {
@@ -359,6 +367,18 @@ namespace GPSInformation
             else if (gpsManagerObjects == GpsManagerObjects.GrupoProdCorte)
             {
                 GrupoProdCorte = new DarkAttributes<GrupoProdCorte>(dBConnection);
+            } 
+            else if (gpsManagerObjects == GpsManagerObjects.GrupoIncidencia)
+            {
+                GrupoIncidencia = new DarkAttributes<GrupoIncidencia>(dBConnection);
+            } 
+            else if (gpsManagerObjects == GpsManagerObjects.GrupoIncidenciaDetalle)
+            {
+                GrupoIncidenciaDetalle = new DarkAttributes<GrupoIncidenciaDetalle>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.GrupoCorte)
+            {
+                GrupoCorte = new DarkAttributes<GrupoCorte>(dBConnection);
             }
         }
         public void OpenConnection()
@@ -469,5 +489,8 @@ namespace GPSInformation
         GrupoArreglo = 54,
         GrupoProdIncidencia = 55,
         GrupoProdCorte = 56,
+        GrupoIncidencia = 57,
+        GrupoIncidenciaDetalle = 58,
+        GrupoCorte = 59,
     }
 }

@@ -221,7 +221,7 @@
                                                 @if (item.Estatus == 1 && nive2 != null && nive2.Revisada == false)
                                                 {
                                                     <a class="dropdown-item" href="@Url.Action("Aprobar", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion, Mode = 2 })">Aprobar</a>
-                                                    <a class="dropdown-item" href="@Url.Action("Rechazar", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion, Mode = 2 })">Rechazar</a>
+                                                    @*<a class="dropdown-item" href="@Url.Action("Rechazar", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion, Mode = 2 })">Rechazar</a>*@
                                                 }
                                                 <a class="dropdown-item" href="#modalActividadVacaciones" data-toggle="modal" onclick="app_incidencias.ActividadVacacion(@item.IdIncidenciaVacacion)">Actividad</a>
                                             </div>

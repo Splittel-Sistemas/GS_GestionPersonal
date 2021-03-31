@@ -20,6 +20,7 @@
                 <div class="wd-100p">
                     <h1 class="tx-color-01 mg-b-5 text-center">Grupo Splittel</h1>
                     <p class="tx-color-03 tx-16 mg-b-40 mt-5">Bienvenido a GPS, por favor inicia sesión para continuar.</p>
+                    <span class="badge-danger  text-cente">@ViewBag.Ambiente</span>
                     <form asp-action="DoLogin" asp-controller="Login">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="form-group">
@@ -37,8 +38,8 @@
                         </div>
                         <button type="submit" class="btn btn-brand-02 btn-block">Iniciar</button>
                         @*<div class="divider-text">or</div>
-                        <button class="btn btn-outline-facebook btn-block">Sign In With Facebook</button>
-                        <button class="btn btn-outline-twitter btn-block">Sign In With Twitter</button>*@
+                            <button class="btn btn-outline-facebook btn-block">Sign In With Facebook</button>
+                            <button class="btn btn-outline-twitter btn-block">Sign In With Twitter</button>*@
                         @*<div class="tx-13 mg-t-20 tx-center">Don't have an account? <a href="page-signup.html">Create an Account</a></div>*@
                     </form>
                 </div>

@@ -258,6 +258,7 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\CreateCambio.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\CreateIncidencia.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\Details.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\Details2.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\Index.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\ListCambiosGrupo.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\MiReporte.cshtml.g.cs
@@ -318,3 +319,4 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.dll
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.pdb
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.genruntimeconfig.cache
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\EditSalaReservacion.cshtml.g.cs

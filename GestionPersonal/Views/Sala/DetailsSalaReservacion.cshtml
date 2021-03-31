@@ -1,7 +1,9 @@
 ﻿@model GPSInformation.Models.SalaReservacion
 @{
     GPSInformation.Models.Sala Sala = (GPSInformation.Models.Sala)ViewBag.Sala;
+    DateTime dateTime = DateTime.Parse(Model.FechaInicio.ToString("yyyy-MM-dd 00:00:00"));
 
+    dateTime = dateTime.Date + Model.HoraIncio;
 }
 
 <div data-label="Detalle" class="df-example demo-forms" id="app_createPermiso">
@@ -9,7 +11,7 @@
     <hr />
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
     @*@await Component.InvokeAsync("EmpleadoBasic", new { id = Model.IdPersona })*@
-    <h4>II. Detalle de la reservación</h4>
+    <h4>II. Detalle de la reservación @dateTime</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -51,11 +53,22 @@
     </dl>
     @if ((int)ViewBag.IdPersona == Model.IdPersona)
     {
-        <div class="form-group row mg-b-0">
-            <div class="col-sm-12 text-right">
-                <button type="button" onclick="App_calendar.Delete(@Model.IdSalaReservacion)" class="btn btn-sm btn-danger">Eliminar</button>
+        @if (DateTime.Now < dateTime)
+        {
+            <div class="form-group row mg-b-0">
+                <div class="col-sm-12 text-right">
+                    <button type="button" onclick="App_calendar.EditReservacion(@Model.IdSalaReservacion)" class="btn btn-sm btn-primary">Editar</button>
+                    <button type="button" onclick="App_calendar.Delete(@Model.IdSalaReservacion)" class="btn btn-sm btn-danger">Eliminar</button>
+                </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="alert  alert-warning col-12" role="alert">
+                <p>Solo lectura, la reservación ha comenzado o ha finalizado</p>
+            </div>
+        }
+
     }
 </div>
 

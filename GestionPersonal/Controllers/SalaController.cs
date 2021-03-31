@@ -7,6 +7,7 @@ using GPSInformation;
 using GPSInformation.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 
 namespace GestionPersonal.Controllers
@@ -188,7 +189,8 @@ namespace GestionPersonal.Controllers
 
                 darkManager.dBConnection.StartProcedure($"SP_Salas", new List<ProcedureModel>
                 {
-                    new ProcedureModel { Namefield = "IdSala", value = Lastid }
+                    new ProcedureModel { Namefield = "IdSala", value = Lastid },
+                    new ProcedureModel { Namefield = "Mode", value = "Create" }
                 });
 
                 if(darkManager.dBConnection.ErrorCode != 0)
@@ -208,30 +210,70 @@ namespace GestionPersonal.Controllers
         [HttpPost]
         //[ValidateAntiForgeryToken]
         [AccessDataSession(IdAction = new int[] { 33 })]
-        public ActionResult EditReservacion(SalaReservacion SalaReservacion)
+        public ActionResult EditReservacion([FromBody] SalaReservacion SalaReservacion)
         {
+            darkManager.StartTransaction();
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return BadRequest("Algunos campos son invalidos");
                 }
                 darkManager.SalaReservacion.Element = SalaReservacion;
-                if (darkManager.Sala.Update())
+                darkManager.SalaReservacion.Element.IdPersona = (int)HttpContext.Session.GetInt32("user_id");
+                darkManager.SalaReservacion.Element.Activa = true;
+                if (!darkManager.SalaReservacion.Update())
                 {
-                    return Ok(darkManager.GetLastMessage());
+                    //return BadRequest(darkManager.GetLastMessage());
+                    throw new GPSInformation.Exceptions.GpExceptions(darkManager.GetLastMessage());
                 }
-                else
+
+                int Lastid = darkManager.SalaReservacion.GetLastId();
+
+                darkManager.dBConnection.StartProcedure($"SP_Salas", new List<ProcedureModel>
                 {
-                    return BadRequest(darkManager.GetLastMessage());
+                    new ProcedureModel { Namefield = "IdSala", value = Lastid },
+                    new ProcedureModel { Namefield = "Mode", value = "Edit" }
+                });
+
+                if (darkManager.dBConnection.ErrorCode != 0)
+                {
+                    throw new GPSInformation.Exceptions.GpExceptions(darkManager.GetLastMessage());
                 }
+                darkManager.Commit();
+                return Ok(Lastid);
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                darkManager.RolBack();
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet]
+        //[ValidateAntiForgeryToken]
+        [AccessDataSession(IdAction = new int[] { 33 })]
+        public ActionResult EditSalaReservacion(int id)
+        {
+            try
+            {
+                var result = darkManager.SalaReservacion.Get(id);
+                if (result == null)
+                {
+                    return BadRequest("No se encontró ninguna sala");
+                }
+                if (result.IdPersona != (int)HttpContext.Session.GetInt32("user_id"))
+                {
+                    return BadRequest("No es tu reservación");
+                }
+                ViewData["IdPersona"] = (int)HttpContext.Session.GetInt32("user_id");
+                ViewData["Salas"] = new SelectList(darkManager.Sala.Get(), "IdSala", "Nombre", result.IdSala);
+                return PartialView(result);
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpGet]
         //[ValidateAntiForgeryToken]
         [AccessDataSession(IdAction = new int[] { 33 })]

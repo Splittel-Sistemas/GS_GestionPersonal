@@ -82,6 +82,7 @@ namespace GestionPersonal.Controllers
         public ActionResult Edit(int id)
         {
             var persona = darkManager.Usuario.GetByColumn("" + id, nameof(darkManager.Usuario.Element.IdPersona));
+            ViewData["AccesoEdit"] = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 19").TieneAcceso;
             return View(new UsuarioPermisos { IdPersona = persona.IdPersona, Modulos = new List<GPSInformation.Models.Modulo>() }); ;
         }
 

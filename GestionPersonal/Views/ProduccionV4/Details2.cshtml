@@ -1,0 +1,1327 @@
+﻿@model GPSInformation.Reportes.ProduccionV3.EmpleadoProd
+@using System.Globalization
+@{
+    ViewData["Title"] = "Detalle de horas trabajadas";
+    System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo("es-ES");
+    System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("es-ES");
+    List<GPSInformation.Reportes.ProduccionV3.PermisosBloq> Permisos = (List<GPSInformation.Reportes.ProduccionV3.PermisosBloq>)ViewBag.Permisos;
+    int totalCols = 1;
+    var ModelData = Model.Accessos;
+}
+
+<link rel="stylesheet" href="~/template/assets/css/dashforge.contacts.css">
+<style>
+    .contact-content-header {
+        right: 0px !important;
+        padding: 0 25px;
+    }
+
+    .contact-content-body {
+        right: 0px !important;
+    }
+
+    .calendarioIn border {
+        width: 4px !important;
+    }
+
+    .table th, .table td {
+        padding: 0.18rem !important;
+        vertical-align: top;
+        /*height: 0.40rem !important;*/
+        border-top: 1px solid rgba(72, 94, 144, 0.16);
+    }
+
+    .contact-content-body .tab-pane > .row {
+        max-width: 100% !important;
+    }
+
+    .map-col-text {
+        font-size: 9px;
+    }
+    label {
+        display: inline-block;
+        margin-bottom: 0 !important;
+    }
+</style>
+
+<div id="app_horariosEmp" class="row">
+    <div class="col-lg-12">
+        @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
+    </div>
+    <div class="col-lg-12 ">
+        <div class="d-flex align-items-center justify-content-between m-b-10">
+            <h4 class="tx-15 mg-b-0">
+                @ViewData["Title"]
+                @if (DateTime.Now >= Model.Incio && DateTime.Now <= Model.Fin)
+                {
+                    <span class="badge badge-success">Semana en curso</span>
+                }
+                else
+                {
+                    @if (Model.Incio <= DateTime.Now && Model.Fin <= DateTime.Now)
+                    {
+                        <span class="badge badge-warning">Semana concluida </span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-info">Semana por procesar</span>
+                    }
+
+                }
+            </h4>
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <h2 class="tx-15 mg-b-0"></h2>
+
+                <a href="@Url.Action("Index", "produccionv4", new {Inicio = Model.Incio})" class="btn btn-outline-primary btn-sm d-flex align-items-center">Lista</a>
+                @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization && Permisos.Find(a => a.IdSubModulo == 1052).Autorization || Permisos.Find(a => a.IdSubModulo == 1050).Autorization && Permisos.Find(a => a.IdSubModulo == 1052).Autorization)
+                {
+                    <a href="@Url.Action("Details2", "produccionv4", new {IdPersona = Model.IdPersona, Inicio = Model.Incio.AddDays(-7)})" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i data-feather="chevron-left"></i></a>
+                    <a href="@Url.Action("Details2", "produccionv4", new {IdPersona = Model.IdPersona, Inicio = Model.Incio.AddDays(7)})" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i data-feather="chevron-right"></i></a>
+                }
+
+            </div>
+        </div>
+        <hr />
+    </div>
+    <div class="col-lg-12">
+        @if (Model.JornadaGrupos.Count <= 0)
+        {
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">Estimado: @ViewBag.Autor</h4>
+                <p>L@@ colaborador@@: <strong>@Model.NombreCompleto</strong> no cuenta con Grupo de producción, por favor contacta al administrador de Grupos De producción para asginar el correspondiente ya que de lo contrario no se hará el calculo correcto de horas.</p>
+                <hr>
+                <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-12 row">
+        <div class="col-lg-2 ">
+            <label class="tx-sans tx-10 tx-semibold tx-uppercase tx-color-01 tx-spacing-1 ">Corte semanal</label>
+            <hr />
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">@Html.DisplayNameFor(model => model.Incio)</label>
+            <p class="mg-b-0 tx-color-03 mb-2">@Model.Incio.ToString("yyyy-MM-dd")</p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">@Html.DisplayNameFor(model => model.Fin)</label>
+            <p class="mg-b-0 tx-color-03 mb-2">@Model.Fin.ToString("yyyy-MM-dd")</p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">
+                @Html.DisplayNameFor(model => model.GrupoCorte.HrsGrupo) <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Horas definidas por grupo asignado" class=""><i class="icon ion-ios-navigate"></i></a>
+            </label>
+            <p class="mg-b-0 tx-color-03 mb-2">
+                @Html.DisplayFor(model => model.GrupoCorte.HrsGrupo)
+            </p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                @Html.DisplayNameFor(model => model.GrupoCorte.HrsReal)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Horas trabajdas(Control de accesos)" class=""><i class="icon ion-ios-navigate"></i></a>
+            </label>
+            <p class="mg-b-0 tx-color-03 mb-2">
+                @Html.DisplayFor(model => model.GrupoCorte.HrsReal)
+            </p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                @Html.DisplayNameFor(model => model.GrupoCorte.HrsNomina)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="suma de [horas reales] + [Permisos|Vacaciones|Incapacidades] nota: permisos sin goce de sueldo no se sumarán" class=""><i class="icon ion-ios-navigate"></i></a>
+            </label>
+            <p class="mg-b-0 tx-color-03 mb-2">
+                @Html.DisplayFor(model => model.GrupoCorte.HrsNomina)
+            </p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                @Html.DisplayNameFor(model => model.GrupoCorte.HrsExtra)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Exceso de Hrs [Hrs.Reales] - [Hrs.Grupo]" class=""><i class="icon ion-ios-navigate"></i></a>
+            </label>
+            <p class="mg-b-0 tx-color-03 mb-2">
+                @Html.DisplayFor(model => model.GrupoCorte.HrsExtra)
+                @if (Model.GrupoCorte.HrsExtra > 0)
+                {
+                    <a href="#modal7" data-toggle="modal" title="Mover horas extras" class="link-03 lh-0"><i class="icon ion-ios-navigate"></i></a>
+                }
+            </p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                @Html.DisplayNameFor(model => model.GrupoCorte.HrsTxT)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Cantidad de Hrs para acumulado de tiempo por tiempo" class=""><i class="icon ion-ios-navigate"></i></a>
+            </label>
+            <p class="mg-b-0 tx-color-03 mb-2">
+                @Html.DisplayFor(model => model.GrupoCorte.HrsTxT)
+            </p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                @Html.DisplayNameFor(model => model.GrupoCorte.HrsScoreGen)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Cantidad de Hrs para acumulado score general" class=""><i class="icon ion-ios-navigate"></i></a>
+            </label>
+            <p class="mg-b-0 tx-color-03 mb-2">
+                @Html.DisplayFor(model => model.GrupoCorte.HrsScoreGen)
+            </p>
+
+            <label class="tx-sans tx-10 tx-semibold tx-uppercase tx-color-01 tx-spacing-1 mt-3">Acumulados</label>
+            <hr />
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">@Html.DisplayNameFor(model => model.HrsTxt)</label>
+            <p class="mg-b-0 tx-color-03 mb-2">@Html.DisplayFor(model => model.HrsTxt)</p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">@Html.DisplayNameFor(model => model.HrsScoreGen)</label>
+            <p class="mg-b-0 tx-color-03 mb-2">@Html.DisplayFor(model => model.HrsScoreGen)</p>
+        </div>
+
+        <div class="col-lg-10 border-left">
+            <div class="contact-content-header">
+                <nav class="nav">
+                    <a href="#contactInformation" class="nav-link active" data-toggle="tab">Horarios y turnos</a>
+                    <a href="#contactLogs" class="nav-link " data-toggle="tab">Incidencias</a>
+                </nav>
+                <a href="" id="contactOptions" class="text-secondary mg-l-auto d-xl-none"><i data-feather="more-horizontal"></i></a>
+            </div><!-- contact-content-header -->
+            <div class="contact-content-body">
+                <div class="tab-content">
+
+                    <div id="contactInformation" class="tab-pane show active pd-20 pd-xl-25">
+                        <div class="d-flex align-items-center justify-content-between mg-b-25">
+                            <h4 class="mg-b-0 ">Comparativa de horarios y grupo laboral asignado</h4>
+                            <div class="d-flex">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="table-responsive col-lg-12">
+                                <table class="table " border="0">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            @{
+                                                DateTime InicioDate = DateTime.Parse(Model.Incio.ToString("yyy-MM-dd 05:00:00"));
+                                                DateTime FinDate = DateTime.Parse(Model.Fin.AddDays(-1).ToString("yyy-MM-dd 23:59:59"));
+                                                int ColNum = 0;
+                                                string DayActual = InicioDate.ToString("dddd");
+                                            }
+                                            @while (InicioDate <= FinDate)
+                                            {
+                                                InicioDate = InicioDate.AddHours(1);
+                                                ColNum++;
+                                                totalCols++;
+                                                if (DayActual != InicioDate.ToString("dddd"))
+                                                {
+                                                    <th class="border" colspan="@ColNum">@DayActual</th>
+                                                    DayActual = InicioDate.ToString("dddd");
+                                                    ColNum = 0;
+                                                }
+
+                                            }
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            InicioDate = DateTime.Parse(Model.Incio.ToString("yyy-MM-dd 05:00:00"));
+                                            FinDate = DateTime.Parse(Model.Fin.AddDays(-1).ToString("yyy-MM-dd 23:59:59"));
+
+                                            DateTime HoraEntrada;
+                                            DateTime HoraFin;
+
+
+                                            bool dia = false;
+                                            int indexAcceso = 0;
+                                            bool showDay = false;
+                                            ColNum = 1;
+                                            Model.Accessos = Model.Accessos.Where(a => a.Activo).ToList();
+                                        }
+                                        <tr>
+                                            <td class="map-col-text" title="Esquema de entradas y salidas realizadas por el colaborador">A</td>
+                                            @while (InicioDate <= FinDate)
+                                            {
+                                                if (indexAcceso < Model.Accessos.Count)
+                                                {
+                                                    if (Model.Accessos[indexAcceso].TipoAcceso == GPSInformation.Reportes.ProduccionV3.TipoAcceso.Entrada)
+                                                    {
+                                                        if (InicioDate <= Model.Accessos[indexAcceso].Fecha && Model.Accessos[indexAcceso].Fecha <= InicioDate.AddHours(1))
+                                                        {
+
+                                                            <td colspan="1" class="calendarioIn border border bg-success" id="eventoIn_ @ColNum" data-event="@Model.Accessos[indexAcceso].IdAccessLog" title="Entrada: @Model.Accessos[indexAcceso].Fecha.ToString("F")"></td>
+                                                            HoraEntrada = Model.Accessos[indexAcceso].Fecha;
+                                                            dia = true;
+                                                            indexAcceso++;
+                                                        }
+                                                        else
+                                                        {
+                                                            if (dia)
+                                                            {
+                                                                <td colspan="1" class="calendarioIn border bg-success" title="dia: @ColNum"></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td colspan="1" class="calendarioIn border"></td>
+                                                            }
+                                                        }
+                                                    }
+                                                    else if (Model.Accessos[indexAcceso].TipoAcceso == GPSInformation.Reportes.ProduccionV3.TipoAcceso.Salida)
+                                                    {
+                                                        if (InicioDate <= Model.Accessos[indexAcceso].Fecha && Model.Accessos[indexAcceso].Fecha <= InicioDate.AddHours(1))
+                                                        {
+                                                            HoraFin = Model.Accessos[indexAcceso].Fecha;
+                                                            <td colspan="1" class="calendarioIn border bg-success" id="eventoFin_ @ColNum" data-event="@Model.Accessos[indexAcceso].IdAccessLog" title="Salida: @Model.Accessos[indexAcceso].Fecha.ToString("F")"></td>
+                                                            indexAcceso++;
+                                                            dia = false;
+                                                            ColNum++;
+                                                        }
+                                                        else
+                                                        {
+                                                            if (dia)
+                                                            {
+                                                                <td colspan="1" class="calendarioIn border bg-success" title="dia: @ColNum"></td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td colspan="1" class="calendarioIn border"></td>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <td colspan="1" class="calendarioIn border"></td>
+                                                }
+                                                InicioDate = InicioDate.AddHours(1);
+
+                                            }
+                                        </tr>
+                                        <tr>
+                                            <td class="map-col-text" title="Esquema del grupo asignado">G</td>
+                                            @{
+                                                InicioDate = DateTime.Parse(Model.Incio.ToString("yyy-MM-dd 05:00:00"));
+                                                FinDate = DateTime.Parse(Model.Fin.AddDays(-1).ToString("yyy-MM-dd 23:59:59"));
+                                                bool Sea_salida = false;
+                                                bool Sea_entrada = true;
+                                                bool PaintDay = false;
+                                                ColNum = 1;
+                                                indexAcceso = 0;
+                                            }
+                                            @if (Model.JornadaGrupos.Count <= 0)
+                                            {
+                                                <td colspan="@totalCols" class="border text-center text-danger">No tiene un grupo asignado</td>
+                                            }
+                                            else
+                                            {
+                                                @while (InicioDate <= FinDate)
+                                                {
+                                                    if (indexAcceso < Model.JornadaGrupos.Count)
+                                                    {
+
+                                                        var DiaCOn = Model.JornadaGrupos[indexAcceso];
+                                                        if (DiaCOn.TipoJornada == "Descanso" || DiaCOn.TipoJornada == "Cambio de turno")
+                                                        {
+                                                            indexAcceso++;
+                                                        }
+                                                        else
+                                                        {
+                                                            if (Sea_entrada && !Sea_salida)
+                                                            {
+                                                                if (InicioDate <= DiaCOn.Fecha && DiaCOn.Fecha <= InicioDate.AddHours(1))
+                                                                {
+                                                                    <td colspan="1" class="calendarioIn bg-@Html.Raw(DiaCOn.GrupoName == "Gris" ? "secondary" : DiaCOn.GrupoName == "Rojo" ? "danger" : "success") border" title="Entrada: @DiaCOn.Fecha.ToString("F")"></td>
+                                                                    Sea_entrada = false;
+                                                                    Sea_salida = true;
+                                                                    PaintDay = true;
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (PaintDay)
+                                                                    {
+                                                                        <td colspan="1" class="calendarioIn bg-@Html.Raw(DiaCOn.GrupoName == "Gris" ? "secondary" : DiaCOn.GrupoName == "Rojo" ? "danger" : "success") border"></td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td colspan="1" class="calendarioIn  border"></td>
+                                                                    }
+                                                                }
+                                                            }
+                                                            if (!Sea_entrada && Sea_salida)
+                                                            {
+                                                                if (InicioDate <= DiaCOn.Salida && DiaCOn.Salida <= InicioDate.AddHours(1))
+                                                                {
+                                                                    <td colspan="1" class="calendarioIn bg-@Html.Raw(DiaCOn.GrupoName == "Gris" ? "secondary" : DiaCOn.GrupoName == "Rojo" ? "danger" : "success") border" title="Salida: @DiaCOn.Salida.ToString("F")"></td>
+                                                                    PaintDay = false;
+                                                                    Sea_salida = false;
+                                                                    Sea_entrada = true;
+                                                                    indexAcceso++;
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (PaintDay)
+                                                                    {
+                                                                        <td colspan="1" class="calendarioIn bg-@Html.Raw(DiaCOn.GrupoName == "Gris" ? "secondary" : DiaCOn.GrupoName == "Rojo" ? "danger" : "success") border"></td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td colspan="1" class="calendarioIn  border"></td>
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <td colspan="1" class="calendarioIn  border"></td>
+                                                    }
+
+                                                    InicioDate = InicioDate.AddHours(1);
+                                                }
+                                            }
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div><!-- row -->
+
+                        <h4 class="mg-t-40 mg-b-20">Detalle de Entradas y salidas</h4>
+                        <div class="row mt-3">
+                            <div class="col-lg-4">
+                                @{
+                                    Model.Accessos = ModelData;
+                                }
+                                <div class="card mg-b-20 mg-lg-b-25">
+                                    <div class="card-header pd-y-15 pd-x-20 d-flex align-items-center justify-content-between">
+                                        <h6 class="tx-uppercase tx-semibold mg-b-0">Control de accesos</h6>
+                                        <nav class="nav nav-with-icon tx-13">
+                                            @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
+                                            {
+                                                @if (Model.GrupoProdCorteAct is null)
+                                                {
+                                                    <a class="nav-link" href="#modal3" data-toggle="modal"><i data-feather="plus"></i> Agregar</a>
+
+                                                }
+                                            }
+                                        </nav>
+                                    </div><!-- card-header -->
+                                    <div class="card-body pd-25">
+                                        @if (Model.Accessos.Count > 0)
+                                        {
+
+                                            <ul class="activity tx-13">
+                                                @{
+                                                    bool isEntrada = false;
+
+                                                }
+                                                @foreach (var item in Model.Accessos)
+                                                {
+                                                    @if (item.Activo)
+                                                    {
+                                                        @if (item.TipoAcceso == GPSInformation.Reportes.ProduccionV3.TipoAcceso.Entrada)
+                                                        {
+                                                            <li class="activity-item">
+                                                                <div class="activity-icon @Html.Raw(item.Forzado ? "bg-warning-light tx-warning" : "bg-success-light tx-success")"><i data-feather="clock"></i></div>
+                                                                <div class="activity-body">
+                                                                    <p class="mg-b-2">
+                                                                        <span class="badge badge-success">Entrada @Html.Raw(item.Forzado ? "Manual" : "")</span>
+                                                                        @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
+                                                                        {
+                                                                            @if (Model.GrupoProdCorteAct is null)
+                                                                            {
+                                                                                @if (item.Forzado)
+                                                                                {
+                                                                                    <a href="#card_e" v-on:click="DeleteArreglo(@item.IdAccessLog)" title="Eliminar este registro manual" class="link-03 lh-0"><i class="icon ion-ios-trash"></i></a>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <a href="#modal2" data-toggle="modal" v-on:click="HideArreglo('@item.Fecha.ToString("yyyy-MM-dd HH:mm:ss")',@item.IdEventChec,'@item.Fecha.ToString("F")')" title="Omitir este registro" class="link-03 lh-0"><i class="icon ion-ios-eye-off"></i></a>
+                                                                                }
+                                                                            }
+                                                                        }
+
+
+                                                                    </p>
+                                                                    <p class="mg-b-2">@item.Descripcion</p>
+                                                                    <small class="tx-color-03">@item.Fecha.ToString("F")</small>
+                                                                </div><!-- activity-body -->
+                                                            </li><!-- activity-item -->
+                                                            isEntrada = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            <li class="activity-item border-bottom">
+                                                                <div class="activity-icon @Html.Raw(item.Forzado ? "bg-warning-light tx-warning" : "bg-success-light tx-success")"><i data-feather="clock"></i></div>
+                                                                <div class="activity-body">
+                                                                    <p class="mg-b-2">
+                                                                        <span class="badge badge-info">Salida @Html.Raw(item.Forzado ? "Manual" : "")</span>
+                                                                        @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
+                                                                        {
+                                                                            @if (Model.GrupoProdCorteAct is null)
+                                                                            {
+                                                                                @if (item.Forzado)
+                                                                                {
+                                                                                    <a href="#card_e" v-on:click="DeleteArreglo(@item.IdAccessLog)" title="Eliminar este registro manual" class="link-03 lh-0"><i class="icon ion-ios-trash"></i></a>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <a href="#modal2" data-toggle="modal" v-on:click="HideArreglo('@item.Fecha.ToString("yyyy-MM-dd HH:mm:ss")',@item.IdEventChec,'@item.Fecha.ToString("F")')" title="Omitir este registro" class="link-03 lh-0"><i class="icon ion-ios-eye-off"></i></a>
+                                                                                }
+                                                                            }
+                                                                        }
+
+
+                                                                    </p>
+                                                                    <p class="mg-b-2">@item.Descripcion</p>
+                                                                    <small class="tx-color-03">@item.Fecha.ToString("F")</small>
+                                                                </div><!-- activity-body -->
+                                                            </li><!-- activity-item -->
+                                                            isEntrada = false;
+                                                        }
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <li class="activity-item">
+                                                            <div class="activity-icon bg-pink-light tx-pink">
+                                                                <i data-feather="clock"></i>
+                                                            </div>
+                                                            <div class="activity-body">
+                                                                <p class="mg-b-2">
+                                                                    <span class="badge badge-danger">Se ha omitido este registro</span>
+                                                                    @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
+                                                                    {
+                                                                        @if (Model.GrupoProdCorteAct is null)
+                                                                        {
+                                                                            <a href="#card_e" v-on:click="DeleteArreglo(@item.IdGrupoArreglo)" title="Activar este registro" class="link-03 lh-0"><i class="icon ion-md-eye"></i></a>
+                                                                        }
+                                                                    }
+
+
+                                                                </p>
+                                                                <p class="mg-b-2">@item.Descripcion</p>
+                                                                <small class="tx-color-03">@item.Fecha.ToString("F")</small>
+                                                            </div><!-- activity-body -->
+                                                        </li><!-- activity-item -->
+                                                    }
+                                                }
+                                                @if (isEntrada)
+                                                {
+                                                    <li class="activity-item">
+                                                        <div class="activity-icon bg-warning-light tx-warning"><i data-feather="clock"></i></div>
+                                                        <div class="activity-body">
+                                                            <p class="mg-b-2">
+                                                                <span class="badge badge-info">Salida </span>
+                                                            </p>
+                                                            <p class="mg-b-2 text-danger">En espera del registro</p>
+                                                            <small class="tx-color-03">-------</small>
+                                                        </div><!-- activity-body -->
+                                                    </li><!-- activity-item -->
+                                                }
+                                            </ul><!-- activity -->
+                                        }
+                                        else
+                                        {
+                                            <div class="alert alert-warning" role="alert">
+                                                Sin registros de accesos, en espera de una <strong>entrada</strong>
+                                            </div>
+                                        }
+                                    </div>
+                                </div><!-- card -->
+                            </div>
+                            <div class="col-lg-4">
+
+                                <div class="card mg-b-20 mg-lg-b-25">
+                                    <div class="card-header pd-y-15 pd-x-20 d-flex align-items-center justify-content-between">
+                                        <h6 class="tx-uppercase tx-semibold mg-b-0">Forma de trabajo durante la semana</h6>
+                                        <nav class="nav nav-with-icon tx-13">
+                                            @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization)
+                                            {
+                                                @if (Model.GrupoProdCorteAct is null)
+                                                {
+                                                    <a class="nav-link" href="#modal5" data-toggle="modal"><i data-feather="plus"></i>Asignar</a>
+                                                }
+                                            }
+                                        </nav>
+                                    </div><!-- card-header -->
+                                    <div class="card-body pd-25">
+                                        @if (Model.JornadaGrupos.Count <= 0)
+                                        {
+                                            <div class="alert alert-warning" role="alert">
+                                                No existe ninguna definición de horarios de trabajo
+                                            </div>
+                                        }
+                                        <ul class="activity tx-13">
+
+                                            @foreach (var item in Model.JornadaGrupos)
+                                            {
+                                                @if (item.TipoJornada != "Cambio de turno")
+                                                {
+                                                    <li class="activity-item">
+                                                        <div class="activity-icon bg-warning-light tx-warning">
+                                                            <i data-feather="calendar"></i>
+                                                        </div>
+                                                        <div class="activity-body">
+                                                            <p class="mg-b-2">
+                                                                <span class="">@item.Fecha.ToString("D")</span>
+                                                            </p>
+                                                            <p class="mg-b-2">
+                                                                <span class="badge badge-@Html.Raw(item.GrupoName == "Gris" ? "secondary" : item.GrupoName == "Rojo" ? "danger" : "success")">Grupo @item.GrupoName</span>
+                                                                <a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="Turno asignado: Grupo @item.GrupoName" data-content="@item.ComentariosSistema" class="link-03 lh-0"><i class="icon ion-ios-navigate"></i></a>
+                                                            </p>
+                                                            @if (item.TipoJornada != "Descanso")
+                                                            {
+                                                                <p class="mg-b-2">Entrada:  @item.Fecha.ToString("F")</p>
+                                                                <p class="mg-b-2">Salida:  @item.Salida.ToString("F")</p>
+                                                                <p class="mg-b-2">Hrs:  @item.HorasMeta</p>
+                                                            }
+
+                                                            <small class="tx-color-03">@item.TipoJornada</small>
+                                                        </div><!-- activity-body -->
+                                                    </li><!-- activity-item -->
+                                                }
+
+                                            }
+
+                                        </ul><!-- activity -->
+                                    </div>
+                                </div><!-- card -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="contactLogs" class="tab-pane  pd-20 pd-xl-25">
+                        <div class="card mg-b-20 mg-lg-b-25">
+                            <div class="card-header pd-y-15 pd-x-20 d-flex align-items-center justify-content-between">
+                                <h6 class="tx-uppercase tx-semibold mg-b-0">Historial de incidencias durante la semana</h6>
+                                <nav class="nav nav-with-icon tx-13">
+                                    <a href="#modal6" data-toggle="modal" class="nav-link"><i data-feather="plus"></i> Agregar</a>
+                                </nav>
+                            </div><!-- card-header -->
+                            <div class="card-body pd-25">
+                                @if (Model.NewIncidence.Count == 0)
+                                {
+                                    <div class="alert alert-info" role="alert">
+                                        No existen incidencias relacionadas con el emplead@@
+                                    </div>
+                                }
+                                @foreach (var item in Model.NewIncidence)
+                                {
+                                    <div class="media d-block d-sm-flex">
+                                        <div class="wd-80 ht-80 bg-ui-04 rounded d-flex align-items-center justify-content-center">
+                                            <i data-feather="briefcase" class="tx-white-7 wd-40 ht-40"></i>
+                                        </div>
+                                        <div class="media-body pd-t-25 pd-sm-t-0 pd-sm-l-25">
+                                            <h5 class="mg-b-5">Incidencia creada por: @item.Incidencia.CreadoPor  <a href="#" v-on:click="DleteIncidencia(@item.Incidencia.IdGrupoIncidencia)" title="Eliminar esta incidencia" class="link-03 lh-0"><i class="icon ion-ios-trash"></i></a></h5>
+
+                                            @if (item.Incidencia.TipoIncidencia == "Per")
+                                            {
+                                                <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Permiso: @Html.DisplayFor(model => item.Incidencia.DescPermiso)</span></p>
+                                            }
+                                            <span class="d-block tx-13 tx-color-03">@item.Incidencia.Creado.ToString("F")</span>
+
+                                            <ul class="pd-l-10 mg-0 mg-t-20 tx-13">
+                                                @foreach (var Detalle in item.Detalle)
+                                                {
+                                                    <li>@Detalle.Fecha.ToString("dddd") -Horas:  @Html.DisplayFor(model => Detalle.Horas) </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div><!-- media -->
+                                    <div class="bd bg-gray-50 pd-y-15 pd-x-15 pd-sm-x-20">
+                                        <h6 class="tx-15 mg-b-3">Comentarios: </h6>
+                                        <p class="mg-b-0 tx-14">@item.Incidencia.Descripcion</p>
+                                        <span class="tx-13 tx-color-03"><a title="descargar" href="@Url.Action("Dowload","Produccionv4", new { fileName = item.Incidencia.Adjunto})">@item.Incidencia.Adjunto</a></span>
+                                    </div>
+                                    <hr />
+                                }
+                            </div>
+                        </div><!-- card -->
+                    </div><!-- tab-pane -->
+                </div><!-- tab-content -->
+            </div><!-- contact-content-body -->
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Omitir evento</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="hidden" disabled name="inp_idEvento" id="inp_idEvento" class="form-control" value="" />
+                        <input type="hidden" disabled name="inp_fechaArreglo" id="inp_fechaArreglo" class="form-control" value="" />
+                        <input type="text" disabled name="inp_fechaArreglotext" id="inp_fechaArreglotext" class="form-control" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Comentarios</label>
+                        <textarea name="inp_commArreglo" id="inp_commArreglo" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="SaveHideArreglo()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Registrar nuevo evento</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success" role="alert">
+                        <h4 class="alert-heading">Hola!</h4>
+                        <p>Recuerda que solo podrás insertar registros de forma manual de acuerdo al siguiente bloque de fechas:</p>
+                        <p>Inicio: @Model.Incio.ToString("F")</p>
+                        <p>Fin: @Model.Fin.ToString("F")</p>
+                        <hr>
+                        <p class="mb-0">Sistema Gestión de Personal</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" name="inp_fechaArrreglo_2" id="inp_fechaArrreglo_2" class="form-control" value="" />
+                        <span id="inp_fechaArrreglo_2_span" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora</label>
+                        <input type="time" name="inp_horaArrreglo_2" id="inp_horaArrreglo_2" class="form-control" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Comentarios</label>
+                        <textarea name="inp_commArreglo" id="inp_commArreglo_2" class="form-control"></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="SaveAddArreglo()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Registrar cambio de grupo</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success" role="alert">
+                        <h4 class="alert-heading">Hola!</h4>
+                        <p>Recuerda que solo podrás insertar registros de forma manual de acuerdo al siguiente bloque de fechas:</p>
+                        <p>Inicio: @Model.Incio.ToString("F")</p>
+                        <p>Fin: @Model.Fin.ToString("F")</p>
+                        <hr>
+                        <p class="mb-0">Sistema Gestión de Personal</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="text" name="inp_fechaArrreglo_2" id="inp_fechaArrreglo_2" class="form-control" value="" />
+                        <span id="inp_fechaArrreglo_2_span" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Hora</label>
+                        <input type="text" name="inp_horaArrreglo_2" id="inp_horaArrreglo_2" class="form-control" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Comentarios</label>
+                        <textarea name="inp_commArreglo" id="inp_commArreglo_2" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="SaveAddArreglo()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Registrar incidencias</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/" method="post">
+                        <div class="form-group ">
+                            <label>Tipo de incidencia</label>
+                            <select class="form-control" v-model="DatInc.tipoIncidecia">
+                                <option value="Per" selected>Permiso</option>
+                                <option value="Vac">Vacaciones</option>
+                            </select>
+                        </div>
+                        <div class="form-group " v-if="DatInc.tipoIncidecia == 'Per'">
+                            <label>Fecha del permiso</label>
+                            <input type="date" name="name" value="" id="date1" class="form-control" v-model="DatInc.fechaPermiso" />
+                            <span id="DatInc_fechaPermiso_span" class="text-danger"></span>
+                        </div>
+                        <div class="row" v-if="DatInc.tipoIncidecia == 'Vac'">
+                            <div class="form-group col-lg-6">
+                                <label>Salida</label>
+                                <input type="date" name="name" value="" class="form-control datepickerdate" v-model="DatInc.fechaSalVac" />
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label>Ultimo dia</label>
+                                <input type="date" name="name" value="" class="form-control datepickerdate" v-model="DatInc.fechaRegVac" />
+                            </div>
+                            <span id="DatInc_fechaPermisoGen_span" class="text-danger"></span>
+                        </div>
+                        <div class="form-group " v-if="DatInc.tipoIncidecia == 'Per'">
+                            <label>Tipo de permiso</label>
+                            <select class="form-control" v-model="DatInc.tipoPermiso" asp-items="ViewBag.PagoPermisoPersonal">
+                                <option value="0">Selecciona una opción</option>
+                            </select>
+                        </div>
+                        <div class="form-group ">
+                            <label>Horas a justificar</label>
+                            <input type="text" name="name" value="" v-model="DatInc.horasJustific" class="form-control" />
+                        </div>
+                        <div class="form-group ">
+                            <label>Comentarios</label>
+                            <textarea class="form-control" v-model="DatInc.comentarios"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Elegir archivo</label>
+                            <input type="file" name="name" value="" id="customFile" class="form-control" />
+
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="SaveIncidencia()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal5" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Registrar cambio de grupo</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Grupo</th>
+                                        <th>Comentarios</th>
+                                        <th>Creado</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.GrupoCambios)
+                                    {
+                                        <tr>
+                                            <td>@item.Fecha.ToString("yyyy-MM-dd")</td>
+                                            <td><span class="badge badge-@Html.Raw(item.GrupoName == "Gris" ? "secondary" : item.GrupoName == "Rojo" ? "danger" : "success")">Grupo @item.GrupoName</span></td>
+                                            <td>@item.Comentarios</td>
+                                            <td>@item.Creado.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td>
+                                                <a href="#card_e" v-on:click="DleteCambio(@item.IdGrupoCambios)" title="Eliminar este cambio" class="link-03 lh-0"><i class="icon ion-ios-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-lg-5">
+                            <span id="sms_form5" class="text-danger"></span>
+                            <div class="form-group">
+                                <label>Fecha a aplicar turno:</label>
+                                <input type="date" name="inp_fechaCG" id="inp_fecha_cambio" class="form-control" value="" />
+                            </div>
+                            <div class="form-group">
+                                <label>Grupo:</label>
+                                <select class="form-control" id="inp_grupoCG">
+                                    <option value="2086">Gris</option>
+                                    <option value="2087">Rojo</option>
+                                    <option value="2088">Verde</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Comentarios:</label>
+                                <textarea id="inp_commentsCG" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="CreateCambio()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal6" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Nueva incidencia</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @if (Model.JornadaGrupos.Count <= 0)
+                    {
+                        <div class="alert alert-solid alert-danger" role="alert">
+                            No existe ninguna definición de horarios de trabajo
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row">
+                            <div class="form-group col-12" id="DatInc_fechaPermiso_span_v2">
+
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Incidencia para:</label>
+                                <input type="text" class="form-control" readonly name="name" value="@Model.NombreCompleto" />
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Autor:</label>
+                                <input type="text" class="form-control" readonly name="name" value="@ViewBag.Autor" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label>Tipo de incidencia</label>
+                                <select class="form-control" v-model="Incidencia.TipoIncidencia">
+                                    <option value="Per" selected>Permiso</option>
+                                    <option value="Fal">Falta</option>
+                                    <option value="Inc">Incapacidad</option>
+                                    <option value="Vac">Vacaciones</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-12" v-if="Incidencia.TipoIncidencia == 'Per'">
+                                <label>Tipo de permiso</label>
+                                <select class="form-control" v-model="Incidencia.TipoPermiso" asp-items="ViewBag.PagoPermisoPersonal">
+                                    <option value="0">Selecciona una opción</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Comentarios</label>
+                                <textarea v-model="Incidencia.Comentarios" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Adjuntar archivo</label>
+                                <input type="file" id="FileAdjunto" class="form-control" name="name" value="" />
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Dias a aplicar</label>
+                            </div>
+
+                            <div class="input-group col-12" v-for="(item, index) in Incidencia.Semana">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text  " style="width: 100px !important;">
+                                        <div class="custom-control custom-checkbox pd-l-15 ">
+                                            <input type="checkbox" class="custom-control-input" v-bind:id="'customCheck1_' + item.nombre" v-model="item.apply">
+                                            <label class="custom-control-label" v-bind:for="'customCheck1_' + item.nombre">{{ item.nombre }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="number" aria-label="First name" class="form-control" v-model="item.Horas" v-if="item.apply ==  true" placeholder="Horas">
+                            </div>
+                        </div>
+                    }
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="CreateIncidencia()">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal7" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel2">Repartir horas extras</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Hrs extras</label>
+                        <input type="text" disabled name="impt_totalextras" id="impt_totalextras" class="form-control" value="@string.Format("{0:#.##}",Model.GrupoCorte.HrsExtra)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Hrs TxT</label>
+                        <input type="number"  name="impt_totalTxt" id="impt_totalTxt" class="form-control" value="@Model.GrupoCorte.Extras" />
+                    </div>
+                    <div class="form-group">
+                        <label>Hrs Score General</label>
+                        <input type="number"  name="impt_totalScGen" id="impt_totalScGen" class="form-control" value="@Model.GrupoCorte.Score" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="SaveDivisionHrs(@Model.GrupoCorte.IdGrupoCorte)">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<button href="#" style="display: none" onclick="window.location.reload()" id="btn_refrescar" type="button" class="btn btn-white"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Refrescar</button>
+@section Scripts {
+
+    <script>
+        var app_horariosEmp = new Vue({
+            el: "#app_horariosEmp",
+            data: {
+                Fecha_inicio: new Date("@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")"),
+                Fecha_Fin: new Date("@Model.Fin.ToString("yyyy-MM-ddTHH:mm:ss")"),
+                DatInc: {
+                    idGrupoProdIncidencia: 0,
+                    idPersona: '@Model.IdPersona',
+                    tipoIncidecia: 'Per',
+                    tipoPermiso: 0,
+                    fechaPermiso: '@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")',
+                    fechaSalVac: '@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")',
+                    fechaRegVac: '@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")',
+                    horasJustific: 0,
+                    comentarios: '',
+                    creado: '@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")',
+                    modificado: '@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")',
+                    creadoPor: '',
+                    AdjuntoFile: null,
+                    CorteInicio: "@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")",
+                    CorteFin: "@Model.Fin.ToString("yyyy-MM-ddTHH:mm:ss")"
+                },
+                Incidencia: {
+                    IdPersona: '@Model.IdPersona',
+                    TipoIncidencia: 'Per',
+                    TipoPermiso: 0,
+                    Fecha: "@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")",
+                    Comentarios: "",
+                    AdjuntoFile: null,
+                    Semana: [
+                        { dia: 0, nombre: "@Html.Raw(Model.Incio.AddDays(0).ToString("dddd"))", fecha: "@Model.Incio.AddDays(0).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
+                        { dia: 1, nombre: "@Html.Raw(Model.Incio.AddDays(1).ToString("dddd"))", fecha: "@Model.Incio.AddDays(1).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
+                        { dia: 2, nombre: "@Html.Raw(Model.Incio.AddDays(2).ToString("dddd"))", fecha: "@Model.Incio.AddDays(2).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
+                        { dia: 3, nombre: "@Html.Raw(Model.Incio.AddDays(3).ToString("dddd"))", fecha: "@Model.Incio.AddDays(3).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
+                        { dia: 4, nombre: "@Html.Raw(Model.Incio.AddDays(4).ToString("dddd"))", fecha: "@Model.Incio.AddDays(4).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
+                        { dia: 5, nombre: "@Html.Raw(Model.Incio.AddDays(5).ToString("dddd"))", fecha: "@Model.Incio.AddDays(5).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
+                        { dia: 6, nombre: "@Html.Raw(Model.Incio.AddDays(6).ToString("dddd"))", fecha: "@Model.Incio.AddDays(6).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
+                    ]
+                }
+            },
+            mounted() {
+                $('[data-toggle="popover"]').popover();
+            },
+            methods: {
+                SaveDivisionHrs: async function (id) {
+                    let params = new FormData();
+                    params.append('IdCorte', id);
+                    params.append('Txt', parseFloat(document.getElementById("impt_totalTxt").value));
+                    params.append('Score', parseFloat(document.getElementById("impt_totalScGen").value));
+
+                    await axios.post('@Url.Action("SaveDivHoras", "produccionv4")', params, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then(response => {
+                        console.log(response.data)
+                        //this.access = response.data;
+                        ShowMessageErrorShort(response.data, "success")
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+                },
+                CreateIncidencia: async function () {
+
+                    this.Incidencia.IdPersona = parseInt(this.Incidencia.IdPersona)
+                    this.Incidencia.TipoPermiso = parseInt(this.Incidencia.TipoPermiso)
+
+                    await axios.post('@Url.Action("RegisterIncidenciaNew", "produccionv4")', this.GetFrmInc(), {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then(response => {
+                        console.log(response.data)
+                        //this.access = response.data;
+                        ShowMessageErrorShort(response.data, "success")
+                        document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                //document.getElementById("DatInc_fechaPermisoGen_span").innerText = error.response.data
+                                if (this.DatInc.tipoIncidecia == "Per") {
+                                    document.getElementById("DatInc_fechaPermiso_span_v2").innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Estimado usuario!</strong> ' + error.response.data + ' .<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button</div>'
+                                } else {
+                                    document.getElementById("DatInc_fechaPermiso_span_v2").innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Estimado usuario!</strong> ' + error.response.data + ' .<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button</div>'
+                                }
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+
+                },
+                GetFrmInc: function () {
+                    let params = new FormData();
+                    params.append('IdPersona', this.Incidencia.IdPersona);
+                    params.append('TipoIncidencia', this.Incidencia.TipoIncidencia);
+                    params.append('TipoPermiso', this.Incidencia.TipoPermiso);
+                    params.append('Fecha', this.Incidencia.Fecha);
+                    params.append('Comentarios', this.Incidencia.Comentarios);
+                    params.append('AdjuntoFile', document.getElementById("FileAdjunto").files.length > 0 ? document.getElementById("FileAdjunto").files[0] : null);
+
+                    app_horariosEmp.Incidencia.Semana.forEach((a, i) => {
+                        params.append('Semana[' + i + '].Dia', this.Incidencia.Semana[i].dia);
+                        params.append('Semana[' + i + '].Nombre', this.Incidencia.Semana[i].nombre);
+                        params.append('Semana[' + i + '].Fecha', this.Incidencia.Semana[i].fecha);
+                        params.append('Semana[' + i + '].Horas', this.Incidencia.Semana[i].Horas);
+                        params.append('Semana[' + i + '].Apply', this.Incidencia.Semana[i].apply);
+                        params.append('Semana[' + i + '].FechaPago', this.Incidencia.Semana[i].fechaPago);
+                    })
+
+                    return params;
+                },
+                GetFormInc: function () {
+                    let params = new FormData();
+                    params.append('IdGrupoProdIncidencia', this.DatInc.idGrupoProdIncidencia);
+                    params.append('IdPersona', this.DatInc.idPersona);
+                    params.append('TipoIncidecia', this.DatInc.tipoIncidecia);
+                    params.append('TipoPermiso', this.DatInc.tipoPermiso);
+                    params.append('FechaPermiso', this.DatInc.fechaPermiso);
+                    params.append('FechaSalVac', this.DatInc.fechaSalVac);
+                    params.append('FechaRegVac', this.DatInc.fechaRegVac);
+                    params.append('HorasJustific', this.DatInc.horasJustific);
+                    params.append('Comentarios', this.DatInc.comentarios);
+                    params.append('Creado', this.DatInc.creado);
+                    params.append('Modificado', this.DatInc.modificado);
+                    params.append('CreadoPor', this.DatInc.creadoPor);
+                    params.append('NameTipoPermiso', '');
+                    params.append('Adjunto', '');
+                    params.append('AdjuntoFile', this.DatInc.AdjuntoFile);
+                    params.append('CorteInicio', this.DatInc.CorteInicio);
+                    params.append('CorteFin', this.DatInc.CorteFin);
+
+                    return params;
+                },
+                DleteCambio: async function (id) {
+                    const params = new URLSearchParams([
+                        ['IdGrupoCambios', id],
+                            ['Idpersona', '@Model.IdPersona']
+                        ]);
+                    await axios.post('@Url.Action("DeleteCambio", "produccionv4")', params, null).then(response => {
+                        console.log(response.data)
+                        ShowMessageErrorShort(response.data, "success")
+                        document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+                },
+                CreateCambio: async function () {
+                    var data = {
+                        IdGrupoCambios: 0,
+                        IdPersona: '@Model.IdPersona',
+                        IdGrupo: parseInt(document.getElementById("inp_grupoCG").value),
+                        Fecha: new Date(document.getElementById("inp_fecha_cambio").value),
+                        Comentarios: document.getElementById("inp_commentsCG").value,
+                        Creado: new Date(),
+                        Modificado: new Date(),
+                        FechaInicio: new Date("@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")"),
+
+                    }
+                    document.getElementById("sms_form5").innerText = ""
+                    await axios.post('@Url.Action("CreateCambio", "produccionv4")', data, null).then(response => {
+                        console.log(response.data)
+                        document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                document.getElementById("sms_form5").innerText = error.response.data
+                            }
+                        }
+                    }).finally()
+                },
+                DetailsIncidencia: async function (id) {
+                    const params = new URLSearchParams([
+                        ['IdGrupoProdIncidencia', id],
+                            ['Idpersona', '@Model.IdPersona']
+                        ]);
+                    await axios.post('@Url.Action("DetailsInci", "produccionv4")', params, null).then(response => {
+                        console.log(response.data)
+                        this.DatInc = response.data;
+
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+                    console.log(this.DatInc.fechaPermiso.substring(0, 10))
+                    document.getElementById("date1").value = this.DatInc.fechaPermiso.substring(0, 10)
+                },
+                DleteIncidencia: async function (id) {
+                    Swal.fire({
+                        title: "¿Deseas eliminar esta incidencia?",
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si!'
+                    }).then(async (result) => {
+                        if (result.value) {
+                            const params = new URLSearchParams([
+                        ['Folio', id],
+                        ]);
+                        await axios.post('@Url.Action("DeleteInciNew", "produccionv4")', params, null).then(response => {
+                            ShowMessageErrorShort(response.data, "success")
+                            document.getElementById("btn_refrescar").click();
+                        }).catch(error => {
+                            if (error.response) {
+                                if (error.response.status === 400) {
+                                    ShowMessageErrorShort(error.response.data, "error")
+                                }
+                            }
+                        }).finally()
+                        }
+                    })
+
+                },
+                SaveIncidencia: async function () {
+                    if (document.getElementById("customFile").files.length > 0) {
+                        this.DatInc.AdjuntoFile = document.getElementById("customFile").files[0]
+                    }
+                    if (this.DatInc.tipoIncidecia == "Per") {
+                        document.getElementById("DatInc_fechaPermiso_span").innerText = ""
+                    } else {
+                        document.getElementById("DatInc_fechaPermisoGen_span").innerText = ""
+                    }
+                    //document.getElementById("DatInc_fechaPermisoGen_span").innerText = ""
+                    await axios.post('@Url.Action("RegisterIncidencia", "produccionv4")', this.GetFormInc(), {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then(response => {
+                        console.log(response.data)
+                        //this.access = response.data;
+                        ShowMessageErrorShort(response.data, "success")
+                        document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                //document.getElementById("DatInc_fechaPermisoGen_span").innerText = error.response.data
+                                if (this.DatInc.tipoIncidecia == "Per") {
+                                    document.getElementById("DatInc_fechaPermiso_span").innerText = error.response.data
+                                } else {
+                                    document.getElementById("DatInc_fechaPermisoGen_span").innerText = error.response.data
+                                }
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+
+                },
+                SaveAddArreglo: function() {
+                    var FechaRe = new Date(document.getElementById("inp_fechaArrreglo_2").value + "T" + document.getElementById("inp_horaArrreglo_2").value)
+                    if (FechaRe >= this.Fecha_inicio && FechaRe <= this.Fecha_Fin) {
+                        document.getElementById("inp_fechaArrreglo_2_span").innerText = ""
+                        const params = new URLSearchParams([
+                            ['Idevent', 0],
+                            ['Fecha', (document.getElementById("inp_fechaArrreglo_2").value + "T" + document.getElementById("inp_horaArrreglo_2").value)],
+                            ['Comentarios', document.getElementById("inp_commArreglo_2").value],
+                            ['Idpersona', '@Model.IdPersona']
+                        ]);
+                        axios.post('@Url.Action("AddArregloEvento", "produccionv4")', params, null).then(response => {
+                            console.log(response.data)
+                            //this.access = response.data;
+                            ShowMessageErrorShort(response.data, "success")
+                            document.getElementById("btn_refrescar").click();
+                        }).catch(error => {
+                            if (error.response) {
+                                if (error.response.status === 400) {
+                                    ShowMessageErrorShort(error.response.data, "error")
+                                }
+                            }
+                        }).finally()
+                    }
+                    else
+                    {
+                        document.getElementById("inp_fechaArrreglo_2_span").innerText = "Por favor selecciona una fecha de acuerdo al corte actual"
+                    }
+                },
+                SaveHideArreglo: function () {
+                    const params = new URLSearchParams([
+                        ['Idevent', document.getElementById("inp_idEvento").value],
+                        ['Fecha', document.getElementById("inp_fechaArreglo").value],
+                        ['Comentarios', document.getElementById("inp_commArreglo").value],
+                        ['Idpersona', '@Model.IdPersona']
+                    ]);
+                    axios.post('@Url.Action("AddArregloEvento", "produccionv4")', params, null).then(response => {
+                        console.log(response.data)
+                        //this.access = response.data;
+                        ShowMessageErrorShort(response.data, "success")
+                        document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+                },
+                HideArreglo: function (fecha, Idevento, fechaTexto) {
+                    document.getElementById("inp_fechaArreglo").value = fecha;
+                    document.getElementById("inp_idEvento").value = Idevento;
+                    document.getElementById("inp_fechaArreglotext").value = fechaTexto;
+
+                },
+                DeleteArreglo: function (id) {
+                    const params = new URLSearchParams([['IdEvent', id], ['IdPersona', '@Model.IdPersona']]);
+                    axios.post('@Url.Action("DeleteArreglo", "ProduccionV4")', params, null).then(response => {
+                        console.log(response.data)
+                        //this.Access = response.data;
+                        ShowMessageErrorShort(response.data, "success")
+                        document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+                },
+                CrearCorte: function () {
+                    const params = new URLSearchParams([['Corte', '@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")'], ['IdPersona', '@Model.IdPersona']]);
+                    axios.post('@Url.Action("CreateCorte", "ProduccionV4")', params, null).then(response => {
+                        console.log(response.data)
+                        //this.Access = response.data;
+                        ShowMessageErrorShort(response.data, "success")
+                        document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+                },
+            }
+        });
+    </script>
+}

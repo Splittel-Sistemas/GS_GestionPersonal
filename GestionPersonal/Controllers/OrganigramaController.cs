@@ -23,6 +23,7 @@ namespace GestionPersonal.Controllers
             darkManager.LoadObject(GpsManagerObjects.OrganigramaStructura);
             darkManager.LoadObject(GpsManagerObjects.Puesto);
             darkManager.LoadObject(GpsManagerObjects.Departamento);
+            darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
         }
 
         ~OrganigramaController()
@@ -41,6 +42,8 @@ namespace GestionPersonal.Controllers
         public ActionResult Index()
         {
             var result = darkManager.OrganigramaVersion.Get();
+            ViewData["AccesoEdit5"] = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 5").TieneAcceso;
+            ViewData["AccesoEdit9"] = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 9").TieneAcceso;
             return View(result);
         }
         [AccessMultipleView(IdAction = new int[] { 4, 5, 9 })]
@@ -48,12 +51,14 @@ namespace GestionPersonal.Controllers
         {
             return View();
         }
-        [AccessMultipleView(IdAction = new int[] { 5 })]
+        [AccessMultipleView(IdAction = new int[] { 4,5 })]
         public ActionResult Edit(int id)
         {
             var result = darkManager.OrganigramaVersion.Get(id);
             if (result != null)
             {
+                ViewData["AccesoEdit5"] = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 5").TieneAcceso;
+                ViewData["AccesoEdit9"] = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 9").TieneAcceso;
                 return View(result);
             }
             else

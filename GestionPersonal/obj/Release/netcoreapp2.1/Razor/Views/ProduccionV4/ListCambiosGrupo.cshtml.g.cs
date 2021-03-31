@@ -54,7 +54,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n<p>\r\n    ");
             EndContext();
             BeginContext(78, 37, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "934c47d2dd574deeb77c045aa5c1410b", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e07c081d672d4e1baad67b12438447b8", async() => {
                 BeginContext(101, 10, true);
                 WriteLiteral("Create New");
                 EndContext();

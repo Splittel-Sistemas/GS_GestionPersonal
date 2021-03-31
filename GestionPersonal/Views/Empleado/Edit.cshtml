@@ -105,9 +105,16 @@
                 },
             },
             mounted() {
-                
+                this.disabledAll();
             },
             methods: {
+                disabledAll: function () {
+                    @if ((bool)ViewBag.AccesoEdit == false)
+                    {
+                        @Html.Raw("var listaInpt = document.getElementsByTagName('input');for (var i = 0; i < listaInpt.length; i++){    listaInpt[i].disabled = true}var listaSel = document.getElementsByTagName('select');for (var i = 0; i < listaSel.length; i++){    listaSel[i].disabled = true}var listaBut = document.getElementsByTagName('button');for (var i = 0; i < listaBut.length; i++){    listaBut[i].style.display = 'none'}var listaTexa = document.getElementsByTagName('textarea');for (var i = 0; i < listaTexa.length; i++){    listaTexa[i].disabled = true}")
+                    }
+                    
+                },
                 ListContacto: function () {
                     axios.post('@Url.Action("List","PersonaContacto")', $('#formGetContacts').serialize(), null).then(response => {
                         document.getElementById("ListPersonasContacto").innerHTML = "";
@@ -149,6 +156,7 @@
                             }).finally()
                         }
                     })
+                    this.disabledAll()
                 },
                 EditContacto: function (id) {
                     Swal.fire({
@@ -178,6 +186,7 @@
                             }).finally()
                         }
                     })
+                    this.disabledAll()
                 },
                 createSplittelEmpleado: function () {
                     Swal.fire({
@@ -206,6 +215,7 @@
                             }).finally()
                         }
                     })
+                    this.disabledAll()
                 },
                 EditSplittelEmpleado: function () {
                     Swal.fire({
@@ -234,6 +244,7 @@
                             }).finally()
                         }
                     })
+                    this.disabledAll()
                 },
                 CreateInformacionMedica: function () {
                     Swal.fire({
@@ -261,6 +272,7 @@
                             }).finally()
                         }
                     })
+                    this.disabledAll()
                 },
                 EditInformacionMedica: function ( ) {
                     Swal.fire({
@@ -291,6 +303,7 @@
                             }).finally()
                         }
                     })
+                    this.disabledAll()
                 },
                 EditInformacionPersonal: function ( ) {
                     Swal.fire({
@@ -318,6 +331,7 @@
                             }).finally()
                         }
                     })
+                    this.disabledAll()
                 },
                 getFormData: function($form){
                     var unindexed_array = $form.serializeArray();

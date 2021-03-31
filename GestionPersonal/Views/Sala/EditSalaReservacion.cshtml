@@ -1,0 +1,44 @@
+﻿@model GPSInformation.Models.SalaReservacion
+
+<form asp-action="EditSalaReservacion">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group" id="Mesnaje_result1">
+
+    </div><!-- form-group -->
+    <div class="form-group">
+        <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Titulo</label>
+        <input asp-for="IdSalaReservacion" type="hidden" id="IdSalaReservacion1" class="form-control" />
+        <input asp-for="IdPersona" type="hidden" id="IdPersona1" class="form-control" />
+        <input type="text" class="form-control" asp-for="Motivo" id="Motivo1" placeholder="Agregar titulo">
+    </div><!-- form-group -->
+    <div class="form-group mg-t-30">
+        <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Fecha</label>
+        <input type="date" asp-for="FechaInicio" class="form-control" id="FechaInicio1" placeholder="Fecha">
+    </div><!-- form-group -->
+    <div class="form-group">
+        <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Hora de Inicio y fin </label>
+        <div class="row row-xs">
+            <div class="col-6">
+                <input type="time"  value="@Model.HoraIncio.ToString()" id="HoraIncio1"  class="form-control" placeholder="Select date">
+            </div><!-- col-7 -->
+            <div class="col-6">
+                <input id="HolaFin1" value="@Model.HolaFin.ToString()"  type="time"  class="form-control" placeholder="Select date">
+            </div><!-- col-5 -->
+        </div><!-- row -->
+    </div><!-- form-group -->
+    <div class="form-group mg-t-30">
+        <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Sala</label>
+        <select class="form-control" asp-for="IdSala" id="IdSala1" asp-items="ViewBag.Salas">
+        </select>
+    </div><!-- form-group -->
+    <div class="form-group mg-t-30">
+        <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Comentarios</label>
+        <textarea class="form-control" asp-for="Comentarios" id="Comentarios1"></textarea>
+    </div><!-- form-group -->
+    <div class="form-group row mg-b-0">
+        <div class="col-sm-12 text-right">
+            <a href="" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+            <button type="button" class="btn btn-primary mg-r-5" onclick="App_calendar.EditReservacionSave()">Agregar</button>
+        </div>
+    </div>
+</form>

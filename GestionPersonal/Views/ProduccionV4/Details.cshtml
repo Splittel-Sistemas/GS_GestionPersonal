@@ -662,19 +662,77 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content tx-14">
                 <div class="modal-header">
-                    <h6 class="modal-title" id="exampleModalLabel2">Registrar cambio de grupo</h6>
+                    <h6 class="modal-title" id="exampleModalLabel2">Nueva incidencia</h6>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                       
+                    @if (Model.JornadaGrupos.Count <= 0)
+                    {
+                        <div class="alert alert-solid alert-danger" role="alert">
+                            No existe ninguna definición de horarios de trabajo
+                        </div>
+                    }
+                    else
+                    {
+                <div class="row">
+                    <div class="form-group col-12" id="DatInc_fechaPermiso_span_v2">
+                        
                     </div>
+                    <div class="form-group col-12">
+                        <label>Incidencia para:</label>
+                        <input type="text" class="form-control" readonly name="name" value="@Model.NombreCompleto" />
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Autor:</label>
+                        <input type="text" class="form-control" readonly name="name" value="@ViewBag.Autor" />
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Tipo de incidencia</label>
+                        <select class="form-control" v-model="Incidencia.TipoIncidencia">
+                            <option value="Per" selected>Permiso</option>
+                            <option value="Fal">Falta</option>
+                            <option value="Inc">Incapacidad</option>
+                            <option value="Vac">Vacaciones</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-12" v-if="Incidencia.TipoIncidencia == 'Per'">
+                        <label>Tipo de permiso</label>
+                        <select class="form-control" v-model="Incidencia.TipoPermiso" asp-items="ViewBag.PagoPermisoPersonal">
+                            <option value="0">Selecciona una opción</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Comentarios</label>
+                        <textarea v-model="Incidencia.Comentarios" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Adjuntar archivo</label>
+                        <input type="file" class="form-control" name="name" value="" />
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Dias a aplicar</label>
+                    </div>
+
+                    <div class="input-group col-12" v-for="(item, index) in Incidencia.Semana">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text  " style="width: 100px !important;">
+                                <div class="custom-control custom-checkbox pd-l-15 ">
+                                    <input type="checkbox" class="custom-control-input" v-bind:id="'customCheck1_' + item.nombre" v-model="item.apply">
+                                    <label class="custom-control-label" v-bind:for="'customCheck1_' + item.nombre">{{ item.nombre }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="number" aria-label="First name" class="form-control" v-model="item.Horas" v-if="item.apply ==  true" placeholder="Horas">
+                    </div>
+                </div>
+                    }
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary tx-13" v-on:click="CreateCambio()">Guardar cambios</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="CreateIncidencia()">Guardar cambios</button>
                 </div>
             </div>
         </div>
@@ -704,21 +762,78 @@
                     AdjuntoFile: null,
                     CorteInicio: "@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")",
                     CorteFin: "@Model.Fin.ToString("yyyy-MM-ddTHH:mm:ss")"
+                },
+                Incidencia: {
+                    IdPersona: '@Model.IdPersona',
+                    TipoIncidencia: 'Per',
+                    TipoPermiso: 0,
+                    Fecha: "@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")",
+                    Comentarios: "",
+                    AdjuntoFile: null,
+                    Semana: [
+                        { dia: 0, nombre: "@Html.Raw(Model.JornadaGrupos[0].Fecha.ToString("dddd"))", fecha:"@Model.JornadaGrupos[0].Fecha.ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"},
+                        { dia: 1, nombre: "@Html.Raw(Model.JornadaGrupos[1].Fecha.ToString("dddd"))", fecha: "@Model.JornadaGrupos[1].Fecha.ToString("yyyy-MM-dd")", Horas: 0, Horas: 0, apply: false, fechaPago: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"},
+                        { dia: 2, nombre: "@Html.Raw(Model.JornadaGrupos[2].Fecha.ToString("dddd"))", fecha:"@Model.JornadaGrupos[2].Fecha.ToString("yyyy-MM-dd")", apply: false, fechaPago: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"},
+                        { dia: 3, nombre: "@Html.Raw(Model.JornadaGrupos[3].Fecha.ToString("dddd"))", fecha: "@Model.JornadaGrupos[3].Fecha.ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"},
+                        { dia: 4, nombre: "@Html.Raw(Model.JornadaGrupos[4].Fecha.ToString("dddd"))", fecha: "@Model.JornadaGrupos[4].Fecha.ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"},
+                        { dia: 5, nombre: "@Html.Raw(Model.JornadaGrupos[5].Fecha.ToString("dddd"))", fecha: "@Model.JornadaGrupos[5].Fecha.ToString("yyyy-MM-dd")", Horas: 0,apply: false, fechaPago: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"},
+                        { dia: 6, nombre: "@Html.Raw(Model.JornadaGrupos[6].Fecha.ToString("dddd"))", fecha: "@Model.JornadaGrupos[6].Fecha.ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"},
+                    ]
                 }
             },
             mounted() {
-                //var cleaveC = new Cleave('#inp_fechaArrreglo_2', {
-                //    delimiter: "-",
-                //    date: true,
-                //    datePattern: ['Y', 'm', 'd'],
-                //});
-                //var cleaveB = new Cleave('#inp_horaArrreglo_2', {
-                //    time: true,
-                //    timePattern: ['h', 'm']
-                //});
                 $('[data-toggle="popover"]').popover();
             },
             methods: {
+                CreateIncidencia: async function () {
+
+                    this.Incidencia.IdPersona = parseInt(this.Incidencia.IdPersona)
+                    this.Incidencia.TipoPermiso = parseInt(this.Incidencia.TipoPermiso)
+
+                    await axios.post('@Url.Action("RegisterIncidenciaNew", "produccionv4")', this.GetFrmInc(), {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }).then(response => {
+                        console.log(response.data)
+                        //this.access = response.data;
+                        ShowMessageErrorShort(response.data, "success")
+                        //document.getElementById("btn_refrescar").click();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                //document.getElementById("DatInc_fechaPermisoGen_span").innerText = error.response.data
+                                if (this.DatInc.tipoIncidecia == "Per") {
+                                    document.getElementById("DatInc_fechaPermiso_span_v2").innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Estimado usuario!</strong> ' + error.response.data + ' .<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button</div>'
+                                } else {
+                                    document.getElementById("DatInc_fechaPermiso_span_v2").innerHTML = '<div class="alert alert-warning alert-dismissible fade show" role="alert"><strong>Estimado usuario!</strong> ' + error.response.data + ' .<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button</div>'
+                                }
+                                ShowMessageErrorShort(error.response.data, "error")
+                            }
+                        }
+                    }).finally()
+
+                },
+                GetFrmInc: function () {
+                    let params = new FormData();
+                    params.append('IdPersona', this.Incidencia.IdPersona);
+                    params.append('TipoIncidencia', this.Incidencia.TipoIncidencia);
+                    params.append('TipoPermiso', this.Incidencia.TipoPermiso);
+                    params.append('Fecha', this.Incidencia.Fecha);
+                    params.append('Comentarios', this.Incidencia.Comentarios);
+                    params.append('AdjuntoFile', this.Incidencia.AdjuntoFile);
+
+                    app_horariosEmp.Incidencia.Semana.forEach((a, i) => {
+                        params.append('Semana[' + i + '].Dia', this.Incidencia.Semana[i].dia);
+                        params.append('Semana[' + i + '].Nombre', this.Incidencia.Semana[i].nombre);
+                        params.append('Semana[' + i + '].Fecha', this.Incidencia.Semana[i].fecha);
+                        params.append('Semana[' + i + '].Horas', this.Incidencia.Semana[i].Horas);
+                        params.append('Semana[' + i + '].Apply', this.Incidencia.Semana[i].apply);
+                        params.append('Semana[' + i + '].FechaPago', this.Incidencia.Semana[i].fechaPago);
+                    })
+
+                    return params;
+                },
                 GetFormInc: function () {
                     let params = new FormData();
                     params.append('IdGrupoProdIncidencia', this.DatInc.idGrupoProdIncidencia);

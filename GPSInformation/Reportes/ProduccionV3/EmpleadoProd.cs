@@ -1,4 +1,5 @@
-﻿using GPSInformation.Models.Produccion;
+﻿using GPSInformation.Controllers;
+using GPSInformation.Models.Produccion;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -34,5 +35,19 @@ namespace GPSInformation.Reportes.ProduccionV3
         public List<GrupoCambios> GrupoCambios { get; set; }
         public GrupoProdCorte GrupoProdCorteAct { get; set; }
         public GrupoProdCorte GrupoProdCorteLast { get; set; }
+        public GrupoCorte GrupoCorte { get; set; }
+        public List<NewIncidence> NewIncidence { get; set; }
+        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [Display(Name = "Hrs.TxT")]
+        public double HrsTxt { get; internal set; }
+        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [Display(Name = "Hrs.Score general")]
+        public double HrsScoreGen { get; internal set; }
+    }
+
+    public class NewIncidence
+    {
+        public GrupoIncidencia Incidencia { get; set; }
+        public List<GrupoIncidenciaDetalle> Detalle { get; set; }
     }
 }

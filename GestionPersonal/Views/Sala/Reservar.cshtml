@@ -143,7 +143,55 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="details_reservation">
+                <div class="modal-body" id="">
+                    <div id="details_reservation">
+
+                    </div>
+                    <div id="edit_reservation">
+                        <h5 class="tx-18 tx-sm-20 mg-b-20 mg-sm-b-30">Editar reservación</h5>
+                        <form id="formCalendar" method="post" action="app-calendar.html">
+                            <div class="form-group" id="Mesnaje_result">
+
+                            </div><!-- form-group -->
+                            <div class="form-group">
+                                <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Titulo</label>
+                                <input type="text" class="form-control" id="Motivo1" placeholder="Agregar titulo">
+                            </div><!-- form-group -->
+                            <div class="form-group mg-t-30">
+                                <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Fecha</label>
+                                <input type="date" class="form-control" id="FechaInicio1" placeholder="Fecha">
+                            </div><!-- form-group -->
+                            <div class="form-group">
+                                <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Hora de Inicio y fin </label>
+                                <div class="row row-xs">
+                                    <div class="col-6">
+                                        <input type="time" id="HoraIncio1" value="" class="form-control" placeholder="Select date">
+                                    </div><!-- col-7 -->
+                                    <div class="col-6">
+                                        <input id="HolaFin1" type="time" value="" class="form-control" placeholder="Select date">
+                                    </div><!-- col-5 -->
+                                </div><!-- row -->
+                            </div><!-- form-group -->
+                            <div class="form-group mg-t-30">
+                                <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Sala</label>
+                                <select class="form-control" id="IdSala1">
+                                    <option v-for="option in Salas" v-if="Salas.length" v-bind:value="option.idSala">
+                                        {{ option.nombre }}
+                                    </option>
+                                </select>
+                            </div><!-- form-group -->
+                            <div class="form-group mg-t-30">
+                                <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Comentarios</label>
+                                <textarea class="form-control" id="Comentarios"></textarea>
+                            </div><!-- form-group -->
+                            <div class="form-group row mg-b-0">
+                                <div class="col-sm-12 text-right">
+                                    <a href="" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+                                    <button type="button" class="btn btn-primary mg-r-5" v-on:click="EditReservacion()">Agregar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -173,6 +221,48 @@
                 this.StartCalendar();
             },
             methods: {
+                EditReservacionSave: async function () {
+                    document.getElementById("Mesnaje_result1").innerHTML = ''
+                    var elemento = {
+                        IdSalaReservacion: document.getElementById("IdSalaReservacion1").value,
+                        IdPersona: document.getElementById("IdPersona1").value,
+                        IdSala: document.getElementById("IdSala1").value,
+                        Motivo: document.getElementById("Motivo1").value,
+                        FechaInicio: document.getElementById("FechaInicio1").value,
+                        HoraIncio: document.getElementById("HoraIncio1").value,
+                        HolaFin: document.getElementById("HolaFin1").value,
+                        Comentarios: document.getElementById("Comentarios1").value,
+                    }
+                    await axios.post('@Url.Action("EditReservacion", "Sala")', elemento, null).then(response => {
+                        ShowMessageErrorShort("Reservación actualizada", "success")
+                        this.GetDetailsReservac(document.getElementById("IdSalaReservacion1").value);
+                        document.getElementById("btn_refrescar").click();
+                        //this.GetReservaciones();
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                document.getElementById("Mesnaje_result1").innerHTML = '<div class="alert alert-warning" role="alert">' + error.response.data + '</div>'
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                    }).finally()
+                    await this.GetReservaciones();
+                    this.StartCalendar();
+                },
+                EditReservacion: async function (id) {
+                    await axios.get('@Url.Action("EditSalaReservacion", "Sala")/' + id, null, null).then(response => {
+                        document.getElementById("details_reservation").style.display = "none";
+                        document.getElementById("edit_reservation").style.display = "block";
+                        document.getElementById("edit_reservation").innerHTML = response.data
+                    }).catch(error => {
+                        if (error.response) {
+                            if (error.response.status === 400) {
+                                ShowMessageErrorShort(error.response.data,"error")
+                            }
+                        }
+                        this.Sala = null;
+                    }).finally()
+                },
                 AddReservacion: async function () {
                     document.getElementById("Mesnaje_result").innerHTML = ''
                     var elemento = {
@@ -185,14 +275,7 @@
                     }
                     await axios.post('@Url.Action("CreateReservacion","Sala")', elemento, null).then(response => {
                         ShowMessageErrorShort("Reservación registrada", "success")
-                        document.getElementById("addRev_cre").click();
-                        document.getElementById("IdSala").value = "";
-                        document.getElementById("FechaInicio").value = "";
-                         document.getElementById("HoraIncio").value = "";
-                         document.getElementById("HolaFin").value = "";
-                        document.getElementById("Comentarios").value = "";
-                        document.getElementById("Mesnaje_result").innerHTML = ''
-                        document.getElementById("btn_refrescar").click();
+                        
                         //this.GetReservaciones();
                     }).catch(error => {
                         if (error.response) {
@@ -255,6 +338,9 @@
                 },
                 GetDetailsReservac: async function (id) {
                     document.getElementById("btn_detailsrserv").click()
+                    document.getElementById("details_reservation").style.display = "block";
+                    document.getElementById("edit_reservation").style.display = "none";
+
                     document.getElementById("details_reservation").innerHTML = "Buscando detalles, espere por favor..."
                     await axios.get('@Url.Action("DetailsSalaReservacion", "Sala")/' + id, null, null).then(response => {
                         ShowMessageErrorShort("Salas obtenidas, procesando...", "success")

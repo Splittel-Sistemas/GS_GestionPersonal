@@ -31,6 +31,7 @@ namespace GestionPersonal.Controllers
         // GET: Login
         public ActionResult DoLogin()
         {
+            ViewData["Ambiente"] = darkManager.Ambiente();
             return View();
         }
 
@@ -97,6 +98,8 @@ namespace GestionPersonal.Controllers
             HttpContext.Session.SetString("user_fullname", ResultUser.NombreCompelto);
             HttpContext.Session.SetString("user_puesto", darkManager.View_empleado.Get(usuario.IdPersona).PuestoNombre);
             HttpContext.Session.SetString("user_accesos", "");
+            HttpContext.Session.SetString("user_gpsdev", darkManager.StringConnectionDb);
+            HttpContext.Session.SetString("user_gpsMode", darkManager.Ambiente());
         }
 
         public ActionResult Logout()
@@ -111,6 +114,8 @@ namespace GestionPersonal.Controllers
             HttpContext.Session.Remove("user_fullname");
             HttpContext.Session.Remove("user_puesto");
             HttpContext.Session.Remove("user_accesos");
+            HttpContext.Session.Remove("user_gpsdev");
+            HttpContext.Session.Remove("user_gpsMode");
             return RedirectToAction("DoLogin");
         }
     }

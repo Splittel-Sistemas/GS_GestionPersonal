@@ -313,7 +313,7 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 32, 36 })]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Aprobar(int id, int Mode)
+        public ActionResult Aprobar(int id, int Mode, string Comentario, string Autorizada)
         {
             darkManager.StartTransaction();
             try
@@ -324,11 +324,12 @@ namespace GestionPersonal.Controllers
                 {
                     var Persona = darkManager.Persona.Get((int)HttpContext.Session.GetInt32("user_id"));
                     var nivel = result.Find(a => a.Nivel == 2);
-                    nivel.Autorizada = true;
+                    nivel.Autorizada = Autorizada == "si" ? true : false; 
                     nivel.Fecha = DateTime.Now;
                     nivel.IdPersona = (int)HttpContext.Session.GetInt32("user_id");
                     nivel.NombreEmpleado = Persona.NombreCompelto;
                     nivel.Revisada = true;
+                    nivel.Comentarios = Comentario;
                     nivel.IdIncidenciaVacacion = id;
 
                     darkManager.IncidenciaProcess.Element = nivel;
@@ -349,11 +350,12 @@ namespace GestionPersonal.Controllers
                 {
                     var Persona = darkManager.Persona.Get((int)HttpContext.Session.GetInt32("user_id"));
                     var nivel = result.Find(a => a.Nivel == 3);
-                    nivel.Autorizada = true;
+                    nivel.Autorizada = Autorizada == "si" ? true : false; ;
                     nivel.Fecha = DateTime.Now;
                     nivel.IdPersona = (int)HttpContext.Session.GetInt32("user_id");
                     nivel.NombreEmpleado = Persona.NombreCompelto;
                     nivel.Revisada = true;
+                    nivel.Comentarios = Comentario;
                     nivel.IdIncidenciaVacacion = id;
                     darkManager.IncidenciaProcess.Element = nivel;
 

@@ -43,6 +43,7 @@ namespace GestionPersonal.Controllers
             darkManager.LoadObject(GpsManagerObjects.Empleado);
             darkManager.LoadObject(GpsManagerObjects.PersonaContacto);
             darkManager.LoadObject(GpsManagerObjects.View_empleado);
+            darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
         }
 
         ~EmpleadoController()
@@ -57,8 +58,8 @@ namespace GestionPersonal.Controllers
         public ActionResult Index()
         {
             var result = darkManager.View_empleado.Get().OrderBy(a => a.NombreCompleto).ToList();
+            ViewData["AccesoEdit"] = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 20").TieneAcceso;
             darkManager.CloseConnection();
-            //ViewData["Puestos"] = darkManager.Puesto.Get().OrderBy(a => a.Nombre).ToList();
             //ViewData["Empleados"] = darkManager.Empleado.Get().OrderBy(a => a.NumeroNomina).ToList();
             return View(result);
         }
@@ -152,7 +153,7 @@ namespace GestionPersonal.Controllers
             }
         }
         // GET: Empleado/Edit
-        [AccessMultipleView(IdAction = new int[] { 20 })]
+        [AccessMultipleView(IdAction = new int[] { 19, 20 })]
         public ActionResult Edit(int id)
         {
             try
@@ -179,7 +180,7 @@ namespace GestionPersonal.Controllers
 
                 var PersonaContacto = darkManager.PersonaContacto.Get("" + result.IdPersona, "IdPersona");
                 ViewData["PersonaContacto"] = PersonaContacto;
-
+                ViewData["AccesoEdit"] = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 20").TieneAcceso;
                 return View(result);
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)

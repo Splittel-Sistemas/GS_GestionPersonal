@@ -71,18 +71,24 @@ else
             <input type="hidden" name="id" value="@Model.IdIncidenciaVacacion" />
             <span asp-validation-for="NoDias" class="text-danger"></span>
         </div>
+        <div class="col-sm-4 mb-3">
+            <select class="form-control" name="Autorizada">
+                <option value="si" selected>Aprobar</option>
+                <option value="no">Rechazar</option>
+            </select>
+        </div>
         <div class="form-group row mg-b-0">
             <div class="col-sm-12 text-right">
                 @if (ViewBag.ModeAprobar == "1")
                 {
                     <a href="@Url.Action("AprobarJefe","Incidencia")" class="btn btn-sm btn-secondary">Atras</a>
+                    <input type="submit" name="name" class="btn btn-sm btn-primary" value="Guardar en nivel Jefe inmediato" />
                 }
                 else if (ViewBag.ModeAprobar == "2")
                 {
                     <a href="@Url.Action("AprobarGPS","Incidencia")" class="btn btn-sm btn-secondary">Atras</a>
+                    <input type="submit" name="name" class="btn btn-sm btn-primary" value="Guardar en nivel Dep.GPS" />
                 }
-
-                <input type="submit" name="name" class="btn btn-sm btn-primary" value="Aprobar" />
             </div>
         </div>
     </form>

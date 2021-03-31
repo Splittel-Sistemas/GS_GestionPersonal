@@ -85,6 +85,11 @@ namespace GPSInformation.DBManagers
             return dBConnection.GetIntegerValue(string.Format("select max(Id{0}) from {0}", Nametable));
         }
 
+        public int LastInserted(string Statement)
+        {
+            return dBConnection.GetIntegerValue(Statement);
+        }
+
         public int GetLastId(string nameCol, string Value)
         {
             return dBConnection.GetIntegerValue(string.Format("select max(Id{0}) from {0} where {1} = '{2}'", Nametable, nameCol, Value));
@@ -110,6 +115,10 @@ namespace GPSInformation.DBManagers
         public object GetMax(string colMax)
         {
             return dBConnection.GetValue(string.Format("select max({1}) from {0}", Nametable, colMax));
+        }
+        public object GetValue(string Statement)
+        {
+            return dBConnection.GetValue(Statement);
         }
 
         public T Get(int? id)
