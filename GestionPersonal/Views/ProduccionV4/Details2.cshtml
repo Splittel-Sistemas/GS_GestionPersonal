@@ -88,7 +88,7 @@
         {
             <div class="alert alert-warning" role="alert">
                 <h4 class="alert-heading">Estimado: @ViewBag.Autor</h4>
-                <p>L@@ colaborador@@: <strong>@Model.NombreCompleto</strong> no cuenta con Grupo de producción, por favor contacta al administrador de Grupos De producción para asginar el correspondiente ya que de lo contrario no se hará el calculo correcto de horas.</p>
+                <p>L@@ colaborador@@: <strong>@Model.NombreCompleto</strong> no cuenta con Grupo de producción, por favor contacta al administrador de Grupos de producción para asignar el correspondiente ya que de lo contrario no se hará el calculo correcto de horas.</p>
                 <hr>
                 <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
             </div>
@@ -119,7 +119,7 @@
                 @Html.DisplayNameFor(model => model.GrupoCorte.HrsNomina)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="suma de [horas reales] + [Permisos|Vacaciones|Incapacidades] nota: permisos sin goce de sueldo no se sumarán" class=""><i class="icon ion-ios-navigate"></i></a>
             </label>
             <p class="mg-b-0 tx-color-03 mb-2">
-                @Html.DisplayFor(model => model.GrupoCorte.HrsNomina)
+                <span class="@Html.Raw(Model.GrupoCorte.HrsNomina >= Model.GrupoCorte.HrsGrupo ? "text-success": "text-danger")">@Html.DisplayFor(model => model.GrupoCorte.HrsNomina)</span>
             </p>
             <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
                 @Html.DisplayNameFor(model => model.GrupoCorte.HrsExtra)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Exceso de Hrs [Hrs.Reales] - [Hrs.Grupo]" class=""><i class="icon ion-ios-navigate"></i></a>
@@ -147,9 +147,9 @@
             <label class="tx-sans tx-10 tx-semibold tx-uppercase tx-color-01 tx-spacing-1 mt-3">Acumulados</label>
             <hr />
             <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">@Html.DisplayNameFor(model => model.HrsTxt)</label>
-            <p class="mg-b-0 tx-color-03 mb-2">@Html.DisplayFor(model => model.HrsTxt)</p>
+            <p class="mg-b-0 tx-color-03 mb-2"> <span class="@Html.Raw(Model.HrsTxt <= 0 ? "text-success": "text-danger")">@Html.DisplayFor(model => model.HrsTxt)</span></p>
             <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">@Html.DisplayNameFor(model => model.HrsScoreGen)</label>
-            <p class="mg-b-0 tx-color-03 mb-2">@Html.DisplayFor(model => model.HrsScoreGen)</p>
+            <p class="mg-b-0 tx-color-03 mb-2"><span class="@Html.Raw(Model.HrsScoreGen <= 0 ? "text-success": "text-danger")">@Html.DisplayFor(model => model.HrsScoreGen)</span></p>
         </div>
 
         <div class="col-lg-10 border-left">
@@ -223,7 +223,7 @@
                                                         if (InicioDate <= Model.Accessos[indexAcceso].Fecha && Model.Accessos[indexAcceso].Fecha <= InicioDate.AddHours(1))
                                                         {
 
-                                                            <td colspan="1" class="calendarioIn border border bg-success" id="eventoIn_ @ColNum" data-event="@Model.Accessos[indexAcceso].IdAccessLog" title="Entrada: @Model.Accessos[indexAcceso].Fecha.ToString("F")"></td>
+                                                            <td colspan="1" class="calendarioIn border border bg-info" id="eventoIn_ @ColNum" data-event="@Model.Accessos[indexAcceso].IdAccessLog" title="Entrada: @Model.Accessos[indexAcceso].Fecha.ToString("F")"></td>
                                                             HoraEntrada = Model.Accessos[indexAcceso].Fecha;
                                                             dia = true;
                                                             indexAcceso++;
@@ -232,7 +232,7 @@
                                                         {
                                                             if (dia)
                                                             {
-                                                                <td colspan="1" class="calendarioIn border bg-success" title="dia: @ColNum"></td>
+                                                                <td colspan="1" class="calendarioIn border bg-info" title="dia: @ColNum"></td>
                                                             }
                                                             else
                                                             {
@@ -245,7 +245,7 @@
                                                         if (InicioDate <= Model.Accessos[indexAcceso].Fecha && Model.Accessos[indexAcceso].Fecha <= InicioDate.AddHours(1))
                                                         {
                                                             HoraFin = Model.Accessos[indexAcceso].Fecha;
-                                                            <td colspan="1" class="calendarioIn border bg-success" id="eventoFin_ @ColNum" data-event="@Model.Accessos[indexAcceso].IdAccessLog" title="Salida: @Model.Accessos[indexAcceso].Fecha.ToString("F")"></td>
+                                                            <td colspan="1" class="calendarioIn border bg-info" id="eventoFin_ @ColNum" data-event="@Model.Accessos[indexAcceso].IdAccessLog" title="Salida: @Model.Accessos[indexAcceso].Fecha.ToString("F")"></td>
                                                             indexAcceso++;
                                                             dia = false;
                                                             ColNum++;
@@ -254,7 +254,7 @@
                                                         {
                                                             if (dia)
                                                             {
-                                                                <td colspan="1" class="calendarioIn border bg-success" title="dia: @ColNum"></td>
+                                                                <td colspan="1" class="calendarioIn border bg-info" title="dia: @ColNum"></td>
                                                             }
                                                             else
                                                             {
@@ -880,57 +880,66 @@
                     }
                     else
                     {
-                        <div class="row">
-                            <div class="form-group col-12" id="DatInc_fechaPermiso_span_v2">
+                <div class="row">
+                    <div class="form-group col-12" id="DatInc_fechaPermiso_span_v2">
 
-                            </div>
-                            <div class="form-group col-12">
-                                <label>Incidencia para:</label>
-                                <input type="text" class="form-control" readonly name="name" value="@Model.NombreCompleto" />
-                            </div>
-                            <div class="form-group col-12">
-                                <label>Autor:</label>
-                                <input type="text" class="form-control" readonly name="name" value="@ViewBag.Autor" />
-                            </div>
-                            <div class="form-group col-6">
-                                <label>Tipo de incidencia</label>
-                                <select class="form-control" v-model="Incidencia.TipoIncidencia">
-                                    <option value="Per" selected>Permiso</option>
-                                    <option value="Fal">Falta</option>
-                                    <option value="Inc">Incapacidad</option>
-                                    <option value="Vac">Vacaciones</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-12" v-if="Incidencia.TipoIncidencia == 'Per'">
-                                <label>Tipo de permiso</label>
-                                <select class="form-control" v-model="Incidencia.TipoPermiso" asp-items="ViewBag.PagoPermisoPersonal">
-                                    <option value="0">Selecciona una opción</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-12">
-                                <label>Comentarios</label>
-                                <textarea v-model="Incidencia.Comentarios" class="form-control"></textarea>
-                            </div>
-                            <div class="form-group col-12">
-                                <label>Adjuntar archivo</label>
-                                <input type="file" id="FileAdjunto" class="form-control" name="name" value="" />
-                            </div>
-                            <div class="form-group col-12">
-                                <label>Dias a aplicar</label>
-                            </div>
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Incidencia para:</label>
+                        <input type="text" class="form-control" readonly name="name" value="@Model.NombreCompleto" />
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Autor:</label>
+                        <input type="text" class="form-control" readonly name="name" value="@ViewBag.Autor" />
+                    </div>
+                    <div class="form-group col-6">
+                        <label>Tipo de incidencia</label>
+                        <select class="form-control" v-model="Incidencia.TipoIncidencia">
+                            <option value="Per" selected>Permiso</option>
+                            <option value="Fal">Falta</option>
+                            <option value="Inc">Incapacidad</option>
+                            <option value="Vac">Vacaciones</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-12" v-if="Incidencia.TipoIncidencia == 'Per'">
+                        <label>Tipo de permiso</label>
+                        <select class="form-control" v-model="Incidencia.TipoPermiso" asp-items="ViewBag.PagoPermisoPersonal">
+                            <option value="0">Selecciona una opción</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group col-12" v-if="Incidencia.TipoPermiso == 42 && Incidencia.TipoIncidencia == 'Per'">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" v-model="Incidencia.EsScoreGeneral" id="customCheck1">
+                            <label class="custom-control-label" for="customCheck1">Es para acumulado general</label>
+                        </div>
+                        <span class="text-info" v-if="Incidencia.EsScoreGeneral == true">El total de hrs de esta incidencia se afectará al acumulado <strong>Score general</strong> </span>
+                        <span class="text-info" v-if="Incidencia.EsScoreGeneral == false">El total de hrs de esta incidencia se afectará al acumulado <strong>Hrs TxT</strong> </span>
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Comentarios</label>
+                        <textarea v-model="Incidencia.Comentarios" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Adjuntar archivo</label>
+                        <input type="file" id="FileAdjunto" class="form-control" name="name" value="" />
+                    </div>
+                    <div class="form-group col-12">
+                        <label>Dias a aplicar</label>
+                    </div>
 
-                            <div class="input-group col-12" v-for="(item, index) in Incidencia.Semana">
-                                <div class="input-group-prepend">
-                                    <div class="input-group-text  " style="width: 100px !important;">
-                                        <div class="custom-control custom-checkbox pd-l-15 ">
-                                            <input type="checkbox" class="custom-control-input" v-bind:id="'customCheck1_' + item.nombre" v-model="item.apply">
-                                            <label class="custom-control-label" v-bind:for="'customCheck1_' + item.nombre">{{ item.nombre }}</label>
-                                        </div>
-                                    </div>
+                    <div class="input-group col-12" v-for="(item, index) in Incidencia.Semana">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text  " style="width: 100px !important;">
+                                <div class="custom-control custom-checkbox pd-l-15 ">
+                                    <input type="checkbox" class="custom-control-input" v-bind:id="'customCheck1_' + item.nombre" v-model="item.apply">
+                                    <label class="custom-control-label" v-bind:for="'customCheck1_' + item.nombre">{{ item.nombre }}</label>
                                 </div>
-                                <input type="number" aria-label="First name" class="form-control" v-model="item.Horas" v-if="item.apply ==  true" placeholder="Horas">
                             </div>
                         </div>
+                        <input type="number" aria-label="First name" class="form-control" v-model="item.Horas" v-if="item.apply ==  true" placeholder="Horas">
+                    </div>
+                </div>
                     }
 
                 </div>
@@ -1006,6 +1015,7 @@
                     Fecha: "@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")",
                     Comentarios: "",
                     AdjuntoFile: null,
+                    EsScoreGeneral: false,
                     Semana: [
                         { dia: 0, nombre: "@Html.Raw(Model.Incio.AddDays(0).ToString("dddd"))", fecha: "@Model.Incio.AddDays(0).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
                         { dia: 1, nombre: "@Html.Raw(Model.Incio.AddDays(1).ToString("dddd"))", fecha: "@Model.Incio.AddDays(1).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
@@ -1080,6 +1090,7 @@
                     params.append('TipoPermiso', this.Incidencia.TipoPermiso);
                     params.append('Fecha', this.Incidencia.Fecha);
                     params.append('Comentarios', this.Incidencia.Comentarios);
+                    params.append('EsScoreGeneral', this.Incidencia.EsScoreGeneral ? "true" : "false");
                     params.append('AdjuntoFile', document.getElementById("FileAdjunto").files.length > 0 ? document.getElementById("FileAdjunto").files[0] : null);
 
                     app_horariosEmp.Incidencia.Semana.forEach((a, i) => {

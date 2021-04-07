@@ -55,32 +55,32 @@ namespace GPSInformation.Models.Produccion
         public string Comentarios { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs.Grupo")]
         public double HrsGrupo { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs.Reales")]
         public double HrsReal { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs.Nomina")]
         public double HrsNomina { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs a TxT")]
         public double HrsTxT { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs.Extras")]
         public double HrsExtra { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs a Score general")]
         public double HrsScoreGen { get; set; }
 
@@ -90,12 +90,12 @@ namespace GPSInformation.Models.Produccion
         public bool EsFinal { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs.Extras en TxP")]
         public double Extras { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} hrs")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs.Extras en Score general")]
         public double Score { get; set; }
     }

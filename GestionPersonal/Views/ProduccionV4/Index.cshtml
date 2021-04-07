@@ -66,9 +66,6 @@
                     No.Nomina
                 </th>
                 <th>
-                    No.Nomina
-                </th>
-                <th>
                     Nombre
                 </th>
                 <th>
@@ -92,6 +89,8 @@
                 <th>
                     Hrs.Score general
                 </th>
+
+                <th></th>
                 <th></th>
             </tr>
         </thead>
@@ -102,9 +101,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.NumeroNomina)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IdPersona)
-                </td>
+                
                 <td>
                     @Html.DisplayFor(modelItem => item.NombreCompleto)
                 </td>
@@ -124,10 +121,17 @@
                     @string.Format("{0:#.##} hrs", (item.GrupoCorte.HrsExtra - item.GrupoCorte.Extras - item.GrupoCorte.Score))
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.HrsTxt)
+                    <span class="@Html.Raw(item.HrsTxt <= 0 ? "text-success": "text-danger")">@Html.DisplayFor(modelItem => item.HrsTxt)</span>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.HrsScoreGen)
+                    <span class="@Html.Raw(item.HrsScoreGen <= 0 ? "text-success": "text-danger")">@Html.DisplayFor(modelItem => item.HrsScoreGen)</span>
+                    
+                </td>
+                <td>
+                    @if (item.Accessos.Count(a => a.Activo) % 2 != 0 || item.GrupoCorte.HrsGrupo == 0 || item.GrupoCorteLast is null)
+                    {
+                        <span class="badge badge-warning">Inf</span>
+                    }
                 </td>
                 <td>
                     @Html.ActionLink("Administrar", "Details2", new { IdPersona = item.IdPersona, Inicio = item.Incio })

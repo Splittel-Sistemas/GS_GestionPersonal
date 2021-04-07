@@ -14,16 +14,16 @@ namespace GPSInformation.Reportes.ProduccionV3
         public string NumeroNomina { get; set; }
         public string PuestoNombre { get; set; }
         public double Antiguedad { get; set; }
-        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         [Display(Name="Hrs.Meta(Nomina)")]
         public double HorasMeta { get; set; }
-        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         [Display(Name = "Hrs.Justificadas")]
         public double HorasAprobadas { get; set; }
-        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         [Display(Name = "Hrs.Trabajadas")]
         public double HorasReal { get; set; }
-        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         [Display(Name = "Dif.Nomina")]
         public double HorasScore { get { return HorasMeta - HorasAprobadas - HorasReal; } }
         public DateTime Incio { get; set; }
@@ -36,11 +36,12 @@ namespace GPSInformation.Reportes.ProduccionV3
         public GrupoProdCorte GrupoProdCorteAct { get; set; }
         public GrupoProdCorte GrupoProdCorteLast { get; set; }
         public GrupoCorte GrupoCorte { get; set; }
+        public GrupoCorte GrupoCorteLast { get; set; }
         public List<NewIncidence> NewIncidence { get; set; }
-        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         [Display(Name = "Hrs.TxT")]
         public double HrsTxt { get; internal set; }
-        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         [Display(Name = "Hrs.Score general")]
         public double HrsScoreGen { get; internal set; }
     }

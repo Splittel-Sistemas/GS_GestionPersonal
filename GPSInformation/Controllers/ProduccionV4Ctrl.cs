@@ -330,7 +330,7 @@ namespace GPSInformation.Controllers
         /// <param name="IdPersona"></param>
         /// <param name="Inicio_"></param>
         /// <returns></returns>
-        public Reportes.ProduccionV3.EmpleadoProd ProcesarEmpleado(View_empleadoEnsamble Empleado, int IdPersona, DateTime Inicio_)
+        public EmpleadoProd ProcesarEmpleado(View_empleadoEnsamble Empleado, int IdPersona, DateTime Inicio_)
         {
             if (IdPersona != 0)
             {
@@ -474,44 +474,44 @@ namespace GPSInformation.Controllers
             #endregion
 
             #region obtener incidencias
-            var Incidencias = darkManager.GrupoProdIncidencia.GetOpenquery($"where " +
-               $"IdPersona = { Empleado.IdPersona}  and TipoIncidecia = 'Per'" +
-               $"AND FechaPermiso >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
-               $"AND FechaPermiso <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' ",
-               $"Order by FechaPermiso");
+            //var Incidencias = darkManager.GrupoProdIncidencia.GetOpenquery($"where " +
+            //   $"IdPersona = { Empleado.IdPersona}  and TipoIncidecia = 'Per'" +
+            //   $"AND FechaPermiso >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
+            //   $"AND FechaPermiso <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' ",
+            //   $"Order by FechaPermiso");
 
-            EmpleadoProd.GrupoProdIncidencias = Incidencias;
+            //EmpleadoProd.GrupoProdIncidencias = Incidencias;
 
-            var vacaciones = darkManager.GrupoProdIncidencia.GetOpenquery($"where " +
-               $"IdPersona = { Empleado.IdPersona}  and TipoIncidecia = 'Vac'" +
-               $"AND FechaSalVac >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
-               $"AND FechaSalVac <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' " +
-               $"AND FechaRegVac >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
-               $"AND FechaRegVac <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' ",
-               $"Order by FechaRegVac");
+            //var vacaciones = darkManager.GrupoProdIncidencia.GetOpenquery($"where " +
+            //   $"IdPersona = { Empleado.IdPersona}  and TipoIncidecia = 'Vac'" +
+            //   $"AND FechaSalVac >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
+            //   $"AND FechaSalVac <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' " +
+            //   $"AND FechaRegVac >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
+            //   $"AND FechaRegVac <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' ",
+            //   $"Order by FechaRegVac");
 
-            vacaciones.ForEach(eve => {
-                EmpleadoProd.GrupoProdIncidencias.Add(eve);
-            });
+            //vacaciones.ForEach(eve => {
+            //    EmpleadoProd.GrupoProdIncidencias.Add(eve);
+            //});
 
 
-            EmpleadoProd.GrupoProdIncidencias.ForEach(a => {
-                if (a.TipoIncidecia == "Per")
-                {
-                    var opc = darkManager.CatalogoOpcionesValores.Get(a.TipoPermiso);
-                    if (opc != null)
-                    {
-                        a.NameTipoPermiso = opc.Descripcion;
-                    }
-                }
+            //EmpleadoProd.GrupoProdIncidencias.ForEach(a => {
+            //    if (a.TipoIncidecia == "Per")
+            //    {
+            //        var opc = darkManager.CatalogoOpcionesValores.Get(a.TipoPermiso);
+            //        if (opc != null)
+            //        {
+            //            a.NameTipoPermiso = opc.Descripcion;
+            //        }
+            //    }
 
-                EmpleadoProd.HorasAprobadas += a.HorasJustific;
-            });
+            //    EmpleadoProd.HorasAprobadas += a.HorasJustific;
+            //});
 
             #endregion
 
-            EmpleadoProd.GrupoProdCorteAct = darkManager.GrupoProdCorte.GetOpenquerys($"where IdPersona = {Empleado.IdPersona} and FechaCorte = '{EmpleadoProd.Fin.ToString("yyyy-MM-dd")}'");
-            EmpleadoProd.GrupoProdCorteLast = darkManager.GrupoProdCorte.GetOpenquerys($"where IdPersona = {Empleado.IdPersona} and FechaCorte = '{EmpleadoProd.Incio.ToString("yyyy-MM-dd")}'");
+            //EmpleadoProd.GrupoProdCorteAct = darkManager.GrupoProdCorte.GetOpenquerys($"where IdPersona = {Empleado.IdPersona} and FechaCorte = '{EmpleadoProd.Fin.ToString("yyyy-MM-dd")}'");
+            //EmpleadoProd.GrupoProdCorteLast = darkManager.GrupoProdCorte.GetOpenquerys($"where IdPersona = {Empleado.IdPersona} and FechaCorte = '{EmpleadoProd.Incio.ToString("yyyy-MM-dd")}'");
 
 
             #region get incidencias nuevo formato
@@ -521,12 +521,19 @@ namespace GPSInformation.Controllers
                $"AND Fecha <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' ",
                $"Order by Fecha").ForEach(inc =>
                {
-                   inc.DescPermiso = darkManager.CatalogoOpcionesValores.Get(inc.TipoPermiso).Descripcion;
+                   if(inc.TipoIncidencia == "Per")
+                   {
+                       inc.DescPermiso = darkManager.CatalogoOpcionesValores.Get(inc.TipoPermiso).Descripcion;
+                   }
+                   
                    EmpleadoProd.NewIncidence.Add(new NewIncidence { Incidencia = inc, Detalle = darkManager.GrupoIncidenciaDetalle.GetOpenquery($"where IdGrupoIncidencia = {inc.IdGrupoIncidencia}", "") });
                });
             #endregion
 
             #region get corte real
+            //obtner corte anterior
+            EmpleadoProd.GrupoCorteLast = darkManager.GrupoCorte.GetOpenquerys($"where IdPersona = {Empleado.IdPersona} and Fecha = '{EmpleadoProd.Incio.AddDays(-7).ToString("yyyy-MM-dd")}'");
+            //obtener corte actual
             var CorteSave = darkManager.GrupoCorte.GetOpenquerys($"where IdPersona = {Empleado.IdPersona} and Fecha = '{EmpleadoProd.Incio.ToString("yyyy-MM-dd")}'");
             if (CorteSave != null && CorteSave.EsInicial == false && CorteSave.EsFinal == true)
             {
@@ -569,7 +576,12 @@ namespace GPSInformation.Controllers
 
                                 break;
                             case 42:
-                                EmpleadoProd.GrupoCorte.HrsTxT += total;
+                                
+                                if(inc.Incidencia.EsScoreGeneral)
+                                    EmpleadoProd.GrupoCorte.HrsScoreGen += total;
+                                else
+                                    EmpleadoProd.GrupoCorte.HrsTxT += total;
+
                                 EmpleadoProd.GrupoCorte.HrsNomina += total;
                                 break;
                             case 43:
@@ -854,7 +866,9 @@ namespace GPSInformation.Controllers
 
             try
             {
-                if (prodIncidencia.TipoPermiso == 0) throw new Exceptions.GpExceptions("Por favor selecciona alguno de los tipos de permisos");
+                if (prodIncidencia.TipoPermiso == 0 && prodIncidencia.TipoIncidencia == "Per") 
+                    throw new Exceptions.GpExceptions("Por favor selecciona alguno de los tipos de permisos");
+                
                 if (string.IsNullOrEmpty(prodIncidencia.Comentarios)) throw new Exceptions.GpExceptions("Por favor escribe un comentario para el registro de la incidencia");
                 if (prodIncidencia.Semana.Count(a => a.Apply == true) <= 0)
                 {
@@ -869,7 +883,8 @@ namespace GPSInformation.Controllers
                     Descripcion = prodIncidencia.Comentarios,
                     TipoPermiso = prodIncidencia.TipoPermiso,
                     CreadoPor = Creador,
-                    Creado = DateTime.Now
+                    Creado = DateTime.Now,
+                    EsScoreGeneral = prodIncidencia.EsScoreGeneral
                 };
 
                 if (prodIncidencia.AdjuntoFile != null && prodIncidencia.AdjuntoFile.Length <= 0)

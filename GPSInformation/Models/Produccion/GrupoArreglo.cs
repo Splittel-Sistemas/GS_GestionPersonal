@@ -65,6 +65,8 @@ namespace GPSInformation.Models.Produccion
         public string DescPermiso { get; set; }
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string Adjunto { get; set; }
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool EsScoreGeneral { get; set; }
     }
 
     [TableDB(IsMappedByLabels = false, IsStoreProcedure = false)]
@@ -81,7 +83,7 @@ namespace GPSInformation.Models.Produccion
         public DateTime Fecha { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        [DisplayFormat(DataFormatString = "{0:#.##} (hrs)")]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         public double Horas { get; set; }
 
     }

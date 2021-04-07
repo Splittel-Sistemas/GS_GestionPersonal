@@ -14,6 +14,7 @@ namespace GPSInformation.Reportes.ProduccionV3
         public string Comentarios { get; set; }
         public IFormFile AdjuntoFile { get; set; }
         public DateTime Fecha { get; set; }
+        public bool EsScoreGeneral { get; set; }
         public List<DiasProp> Semana { get; set; }
     }
 
