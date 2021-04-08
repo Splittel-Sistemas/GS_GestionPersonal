@@ -69,7 +69,7 @@ using Microsoft.AspNetCore.Http;
             WriteLiteral("nter justify-content-start\">\r\n                <a href=\"#\" class=\"avatar avatar-xxl\">");
             EndContext();
             BeginContext(1247, 122, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("img", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagOnly, "90b8ee0095374629b4b8035a8f8e0291", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("img", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagOnly, "b5677fae4bbd41c3aa649dea27b4b90d", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_Razor_TagHelpers_UrlResolutionTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.Razor.TagHelpers.UrlResolutionTagHelper>();

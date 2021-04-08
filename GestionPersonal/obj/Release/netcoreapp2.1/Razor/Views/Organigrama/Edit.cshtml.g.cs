@@ -138,7 +138,7 @@ Write(ViewData["Title"]);
             WriteLiteral("                        ");
             EndContext();
             BeginContext(1460, 273, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "3400661b5e2a4c8c8d18c18e26855c33", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "0487587980b244c29b132c12851c92a2", async() => {
                 BeginContext(1489, 67, true);
                 WriteLiteral("\r\n                            <input type=\"hidden\" name=\"IdVersion\"");
                 EndContext();
@@ -204,7 +204,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("ed>\r\n                            ");
             EndContext();
             BeginContext(2836, 181, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "aaa142283b2943f7b8c8604c502dd598", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "1005c14f382148e1bb72db9341d9684b", async() => {
                 BeginContext(2901, 107, true);
                 WriteLiteral("\r\n                                {{ option.dpu }} - {{ option.descripcion }}\r\n                            ");
                 EndContext();
@@ -226,7 +226,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                        </select>\r\n                        <label>Puesto</label>\r\n                        <select class=\"form-control select2\" id=\"ListSecond\">\r\n                            ");
             EndContext();
             BeginContext(3208, 181, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c8c709b6c5404163bfd1118e8363d4bc", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "95fd1fd4560c4e1b9c2ae712e18f613b", async() => {
                 BeginContext(3273, 107, true);
                 WriteLiteral("\r\n                                {{ option.dpu }} - {{ option.descripcion }}\r\n                            ");
                 EndContext();
@@ -253,7 +253,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
                                 ");
             EndContext();
             BeginContext(3653, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "030607b38ef747a9a308528601ee5d98", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "407c278564b84f83b4d4daf176554739", async() => {
                 BeginContext(3671, 7, true);
                 WriteLiteral("Nivel 1");
                 EndContext();
@@ -275,7 +275,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(3721, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "36761ec0263544a4a0ba6cf117fa74ea", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "6040cfc54b8d420ab05d680457b88150", async() => {
                 BeginContext(3739, 7, true);
                 WriteLiteral("Nivel 2");
                 EndContext();
@@ -297,7 +297,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(3789, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d40fab6246c943d4913550cd096c4146", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "55d49b9982e046f69f9c405ff8a3dad4", async() => {
                 BeginContext(3807, 7, true);
                 WriteLiteral("Nivel 3");
                 EndContext();
@@ -319,7 +319,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(3857, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d06adddb0e6f4e1d89ef6a079f00103f", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "1b8cd1bfae5941c7bbdc5c85d9e31f24", async() => {
                 BeginContext(3875, 7, true);
                 WriteLiteral("Nivel 4");
                 EndContext();
@@ -341,7 +341,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(3925, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "1a41723aa5b54cfda16b326b5ea1c9e9", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "662b0af21a024fc2bec11a4e673ee5f7", async() => {
                 BeginContext(3943, 7, true);
                 WriteLiteral("Nivel 5");
                 EndContext();
@@ -363,7 +363,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(3993, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "9840a609a0e143c692fdcb74b1a6b17f", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "3f0cc044e2a84eaba15c18b456df1378", async() => {
                 BeginContext(4011, 7, true);
                 WriteLiteral("Nivel 6");
                 EndContext();
@@ -385,7 +385,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(4061, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "15bca79fe10d495ca8b9fe408b10a678", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ae05395c9e6e4ce0b1cc19d0c2d48161", async() => {
                 BeginContext(4079, 7, true);
                 WriteLiteral("Nivel 7");
                 EndContext();
@@ -407,7 +407,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(4129, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e3196e5aa81b481c9ca2a30dae694c62", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b251be53200647b5928aedaedf24f6d3", async() => {
                 BeginContext(4147, 7, true);
                 WriteLiteral("Nivel 8");
                 EndContext();
@@ -429,7 +429,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(4197, 34, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "08c4bcc04099431084312fc1ce9273b4", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "461163058a7842fd853921b5ad0d85f3", async() => {
                 BeginContext(4215, 7, true);
                 WriteLiteral("Nivel 9");
                 EndContext();
@@ -451,7 +451,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
             WriteLiteral("\r\n                                ");
             EndContext();
             BeginContext(4265, 36, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "4ab33e01f7bb4639a0eabb37416d2884", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ca2901d342e64a5ea3d725c4567e51fd", async() => {
                 BeginContext(4284, 8, true);
                 WriteLiteral("Nivel 10");
                 EndContext();
@@ -526,7 +526,7 @@ WriteAttributeValue("", 1564, Model.IdOrganigramaVersion, 1564, 27, false);
                             ");
             EndContext();
             BeginContext(7017, 181, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8d3318cd68514364b33840f53dfd651c", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "28a963b0ab764fcb9c763ed82e1ff081", async() => {
                 BeginContext(7082, 107, true);
                 WriteLiteral("\r\n                                {{ option.dpu }} - {{ option.descripcion }}\r\n                            ");
                 EndContext();

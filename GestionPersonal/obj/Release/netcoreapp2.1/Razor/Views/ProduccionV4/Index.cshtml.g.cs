@@ -446,7 +446,7 @@ WriteAttributeValue("", 5173, Html.Raw(item.HrsScoreGen <= 0 ? "text-success": "
                             ");
             EndContext();
             BeginContext(6735, 55, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e4c6c544d9834689855d85794c533cf1", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "385a71628907453097860988383da65b", async() => {
                 BeginContext(6762, 19, true);
                 WriteLiteral("Secciona una opción");
                 EndContext();
@@ -480,7 +480,7 @@ WriteAttributeValue("", 5173, Html.Raw(item.HrsScoreGen <= 0 ? "text-success": "
             WriteLiteral("                                ");
             EndContext();
             BeginContext(6958, 61, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a34181a3abf44fadbaf24c9c639e76cc", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5fddd0a92c5e4a83b386ceae7ea9a9fc", async() => {
                 BeginContext(6991, 19, false);
 #line 160 "C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\Views\ProduccionV4\Index.cshtml"
                                                            Write(item.NombreCompleto);

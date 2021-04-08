@@ -595,6 +595,32 @@
                                             @if (item.Incidencia.TipoIncidencia == "Per")
                                             {
                                                 <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Permiso: @Html.DisplayFor(model => item.Incidencia.DescPermiso)</span></p>
+                                                @if (item.Incidencia.TipoPermiso == 42)
+                                                {
+                                                    @if (item.Incidencia.EsScoreGeneral)
+                                                    {
+                                                        <p class="mg-b-3 tx-color-03"><span class="tx-medium tx-color-01">El total de hrs de esta incidencia se afectará al acumulado <strong>Score general</strong></span></p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="mg-b-3 tx-color-03"><span class="tx-medium tx-color-01">El total de hrs de esta incidencia se afectará al acumulado <strong>Hrs TxT</strong></span></p>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @if (item.Incidencia.TipoIncidencia == "Fal")
+                                                {
+                                                    <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Falta</span></p>
+                                                }
+                                                else if (item.Incidencia.TipoIncidencia == "Inc")
+                                                {
+                                                    <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Incapacidad</span></p>
+                                                }
+                                                else if (item.Incidencia.TipoIncidencia == "Vac")
+                                                {
+                                                    <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Vacaciones</span></p>
+                                                }
                                             }
                                             <span class="d-block tx-13 tx-color-03">@item.Incidencia.Creado.ToString("F")</span>
 

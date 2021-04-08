@@ -1511,12 +1511,12 @@ WriteAttributeValue("", 23078, item.IdGrupoProdIncidencia, 23078, 27, false);
                     ");
             EndContext();
             BeginContext(31499, 2693, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8ac712b5f9034822957f78a94a9cc734", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "6363de69b1bd4aedb25f20d7af6d7007", async() => {
                 BeginContext(31530, 238, true);
                 WriteLiteral("\r\n                        <div class=\"form-group \">\r\n                            <label>Tipo de incidencia</label>\r\n                            <select class=\"form-control\" v-model=\"DatInc.tipoIncidecia\">\r\n                                ");
                 EndContext();
                 BeginContext(31768, 45, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "45dd738fbd454b9a86eaaad090114ffa", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ea6c7e03031c4441ae86119a266bc529", async() => {
                     BeginContext(31797, 7, true);
                     WriteLiteral("Permiso");
                     EndContext();
@@ -1541,7 +1541,7 @@ WriteAttributeValue("", 23078, item.IdGrupoProdIncidencia, 23078, 27, false);
                 WriteLiteral("\r\n                                ");
                 EndContext();
                 BeginContext(31847, 39, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "af272db954864d9ca90783a2f984f7f7", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7f3f6b4542d647419cde0f931bc23fad", async() => {
                     BeginContext(31867, 10, true);
                     WriteLiteral("Vacaciones");
                     EndContext();
@@ -1585,12 +1585,12 @@ WriteAttributeValue("", 23078, item.IdGrupoProdIncidencia, 23078, 27, false);
                             ");
                 EndContext();
                 BeginContext(33346, 219, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a7ae6140ae774618bc0fb1896224d1e8", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("select", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "05e5e7ba94d8437fa86899c476bb89b4", async() => {
                     BeginContext(33444, 34, true);
                     WriteLiteral("\r\n                                ");
                     EndContext();
                     BeginContext(33478, 48, false);
-                    __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b9d3b5884684475f8424fc0f51cc0f14", async() => {
+                    __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ae37bec4c7e84f6997bb2f9ba7d12088", async() => {
                         BeginContext(33496, 21, true);
                         WriteLiteral("Selecciona una opción");
                         EndContext();
@@ -1794,7 +1794,7 @@ WriteAttributeValue("", 36688, item.IdGrupoCambios, 36688, 20, false);
                                     ");
             EndContext();
             BeginContext(37688, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "23213a5022d34c6ca95bf0ae90a9b629", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "bed7233cbd1b40b281e28872903d2e43", async() => {
                 BeginContext(37707, 4, true);
                 WriteLiteral("Gris");
                 EndContext();
@@ -1816,7 +1816,7 @@ WriteAttributeValue("", 36688, item.IdGrupoCambios, 36688, 20, false);
             WriteLiteral("\r\n                                    ");
             EndContext();
             BeginContext(37758, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "544496a34a7d4489b504968ff245db07", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f172ed9345184e2890ad0d0f7440d4e4", async() => {
                 BeginContext(37777, 4, true);
                 WriteLiteral("Rojo");
                 EndContext();
@@ -1838,7 +1838,7 @@ WriteAttributeValue("", 36688, item.IdGrupoCambios, 36688, 20, false);
             WriteLiteral("\r\n                                    ");
             EndContext();
             BeginContext(37828, 33, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "861d6b3450944f2982e69ea8761b3659", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "9792850f83e843628513431c3fdb23a4", async() => {
                 BeginContext(37847, 5, true);
                 WriteLiteral("Verde");
                 EndContext();
