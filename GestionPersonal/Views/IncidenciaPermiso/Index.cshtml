@@ -11,7 +11,7 @@
 }
 else
 {
-
+<div class="table-responsive-sm">
     <table class="table">
         <thead>
             <tr>
@@ -75,11 +75,13 @@ else
                         {
                             @Html.ActionLink("Cancelar", "Cancel", "IncidenciaPermiso", new { id = item.IdIncidenciaPermiso })<span>|</span>
                         }
-                    <a href="#modalActividadPermisos" data-toggle="modal" onclick="app_incidencias.ActividadPermisos(@item.IdIncidenciaPermiso)">Actividad</a>
+                        <a href="#modalActividadPermisos" data-toggle="modal" onclick="app_incidencias.ActividadPermisos(@item.IdIncidenciaPermiso)">Actividad</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+</div>
+    
 }
 

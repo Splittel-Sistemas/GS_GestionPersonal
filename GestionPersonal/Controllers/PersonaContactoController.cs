@@ -31,7 +31,7 @@ namespace GestionPersonaContactol.Controllers
         {
 
         }
-        [AccessMultipleView(IdAction = new int[] { 19,20 })]
+        //[AccessMultipleView(IdAction = new int[] { 19,20 })]
         public ActionResult List(int id)
         {
             var result = darkManager.PersonaContacto.Get("" + id, "IdPersona");
@@ -41,7 +41,7 @@ namespace GestionPersonaContactol.Controllers
         // POST: PersonaContacto/Create
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        [AccessMultipleView(IdAction = new int[] { 20 })]
+        //[AccessMultipleView(IdAction = new int[] { 20 })]
         public ActionResult Create(PersonaContacto PersonaContacto)
         {
             Parentezcos = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 9, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion");
@@ -77,7 +77,7 @@ namespace GestionPersonaContactol.Controllers
         // POST: PersonaContacto/Edit/5
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        [AccessMultipleView(IdAction = new int[] { 20 })]
+        //[AccessMultipleView(IdAction = new int[] { 20 })]
         public ActionResult Edit(PersonaContacto PersonaContacto)
         {
             Parentezcos = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 9, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion", PersonaContacto.IdParentezco);

@@ -18,7 +18,8 @@
 
 @if (ViewBag.Mode == "list")
 {
-    <table class="table" id="table-eva-mis">
+<div class="table-responsive-sm">
+    <table class="table table-condensed table-sm" id="table-eva-mis">
         <thead>
             <tr>
                 <th>
@@ -94,6 +95,8 @@
             }
         </tbody>
     </table>
+</div>
+    
     @*@section Scripts {
         <script>
             $(document).ready(function () {

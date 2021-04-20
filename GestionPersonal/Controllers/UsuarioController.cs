@@ -17,6 +17,7 @@ using System.IO;
 using GPSInformation.Exceptions;
 using GestionPersonal.Service;
 using System.Net;
+using GPSInformation.Tools;
 
 namespace GestionPersonal.Controllers
 {
@@ -141,6 +142,14 @@ namespace GestionPersonal.Controllers
             catch (GpExceptions ex)
             {
                 darkManager.RolBack();
+                try
+                {
+                    Funciones.EscribeLog(ex.ToString());
+                }
+                catch (Exception)
+                {
+
+                }
                 throw ex;
             }
             finally

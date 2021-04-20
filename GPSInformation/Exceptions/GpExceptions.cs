@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GPSInformation.Tools;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,7 +15,7 @@ namespace GPSInformation.Exceptions
         public GpExceptions(string mensaje)
             : base(mensaje)
         {
-
+            
         }
     }
 }

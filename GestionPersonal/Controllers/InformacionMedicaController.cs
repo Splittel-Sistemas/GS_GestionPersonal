@@ -48,7 +48,7 @@ namespace GestionInformacionMedical.Controllers
        // POST: InformacionMedica/Create
        [HttpPost]
         //[ValidateAntiForgeryToken]
-        [AccessMultipleView(IdAction = new int[] {20 })]
+        //[AccessMultipleView(IdAction = new int[] {20 })]
         public ActionResult Create(InformacionMedica InformacionMedica)
         {
             try
@@ -91,7 +91,7 @@ namespace GestionInformacionMedical.Controllers
         // POST: InformacionMedica/Edit/5
         [HttpPost]
         //[ValidateAntiForgeryToken]
-        [AccessMultipleView(IdAction = new int[] { 20 })]
+        //[AccessMultipleView(IdAction = new int[] { 20 })]
         public ActionResult Edit(InformacionMedica InformacionMedica)
         {
             try

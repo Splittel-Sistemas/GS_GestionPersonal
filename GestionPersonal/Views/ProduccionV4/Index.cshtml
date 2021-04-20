@@ -16,7 +16,7 @@
                     <a href="#" v-on:click="CrearCorte()" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i data-feather="scissors"></i>Crear Corte</a>
                 }
             }
-            <a href="@Url.Action("DescargarReporte2", "produccionv4", new {Inicio = Model.Inicio})" title="Exportar Reporte" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i data-feather="file"></i></a>
+            <a href="@Url.Action("DescargarReporte", "produccionv4", new {Inicio = Model.Inicio})" title="Exportar Reporte" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i data-feather="file"></i></a>
             @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization)
             {
                 <a href="#modal2" data-toggle="modal" title="Admistrar Permisos" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i data-feather="users"></i></a>
@@ -63,7 +63,7 @@
         <thead>
             <tr>
                 <th>
-                    No.Nomina
+                    no.Nomina
                 </th>
                 <th>
                     Nombre
@@ -72,71 +72,80 @@
                     Puesto
                 </th>
                 <th>
-                    Hrs.Grupo
+                    Turno Actual
                 </th>
                 <th>
-                    Hrs.Reales
+                    Hrs.Score
                 </th>
                 <th>
-                    Hrs.Nomina
-                </th>
-                <th>
-                    Hrs.Extras
-                </th>
-                <th>
-                    Hrs.TxT
-                </th>
-                <th>
-                    Hrs.Score general
-                </th>
 
-                <th></th>
+                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.EmpleadoProds)
             {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NumeroNomina)
-                </td>
-                
-                <td>
-                    @Html.DisplayFor(modelItem => item.NombreCompleto)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PuestoNombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.GrupoCorte.HrsGrupo)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.GrupoCorte.HrsReal)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.GrupoCorte.HrsNomina)
-                </td>
-                <td>
-                    @string.Format("{0:#.##} hrs", (item.GrupoCorte.HrsExtra - item.GrupoCorte.Extras - item.GrupoCorte.Score))
-                </td>
-                <td>
-                    <span class="@Html.Raw(item.HrsTxt <= 0 ? "text-success": "text-danger")">@Html.DisplayFor(modelItem => item.HrsTxt)</span>
-                </td>
-                <td>
-                    <span class="@Html.Raw(item.HrsScoreGen <= 0 ? "text-success": "text-danger")">@Html.DisplayFor(modelItem => item.HrsScoreGen)</span>
-                    
-                </td>
-                <td>
-                    @if (item.Accessos.Count(a => a.Activo) % 2 != 0 || item.GrupoCorte.HrsGrupo == 0 || item.GrupoCorteLast is null)
-                    {
-                        <span class="badge badge-warning">Inf</span>
-                    }
-                </td>
-                <td>
-                    @Html.ActionLink("Administrar", "Details2", new { IdPersona = item.IdPersona, Inicio = item.Incio })
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NumeroNomina)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NombreCompleto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PuestoNombre)
+                    </td>
+                    <td>
+                        @if (item.GrupoCambios.Count == 0)
+                        {
+                            <span class="badge badge-default">Sin turno</span>
+                        }
+                        else
+                        {
+                            var JornadaGrupos = item.JornadaGrupos.Find(a => DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd")) == DateTime.Parse(a.Fecha.ToString("yyyy-MM-dd")));
+                            if (JornadaGrupos != null)
+                            {
+                                <span class="badge badge-@Html.Raw(JornadaGrupos.GrupoName == "Gris" ? "secondary" : JornadaGrupos.GrupoName == "Rojo" ? "danger" : "success")">Grupo @JornadaGrupos.GrupoName</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Dia no encontrado</span>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @if (item.GrupoCambios.Count == 0)
+                        {
+                            <span class="badge badge-default">--</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-@Html.Raw(item.HorasScore > 0 ? "danger" : "success")">@Html.DisplayFor(model => item.HorasScore)</span>
+                        }
+
+                    </td>
+                    <td>
+                        @if (item.GrupoCambios.Count == 0)
+                        {
+                            <span class="badge badge-warning">Info</span>
+                        }
+                        else
+                        {
+                            @if ((item.Accessos.Count(a => a.Activo) % 2) != 0 || item.JornadaGrupos.Count <= 0)
+                            {
+                                <span class="badge badge-warning">Info</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-primary">Ok</span>
+                            }
+                        }
+                    </td>
+                    <td>
+                        @Html.ActionLink("Administrar", "Details", new { IdPersona = item.IdPersona, Inicio = item.Incio })
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
