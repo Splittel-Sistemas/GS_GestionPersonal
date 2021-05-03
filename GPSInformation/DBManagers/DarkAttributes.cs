@@ -79,12 +79,34 @@ namespace GPSInformation.DBManagers
                 return ActionsObjectCode(DbManagerTypes.Delete, tableDefinifiton);
             }
         }
-
+        public string GetStringValue(string Sentence)
+        {
+            var retunrDa = dBConnection.GetStringValue(Sentence);
+            return DBNull.Value.Equals(retunrDa) ? "" : (string)retunrDa;
+        }
+        public int GetIntValue(string Sentence)
+        {
+            var retunrDa = dBConnection.GetIntegerValue(Sentence);
+            return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
+        }
         public int GetLastId()
         {
-            return dBConnection.GetIntegerValue(string.Format("select max(Id{0}) from {0}", Nametable));
+            var retunrDa = dBConnection.GetIntegerValue(string.Format("select max(Id{0}) from {0}", Nametable));
+            return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
         }
-
+        public int Count(string where = "")
+        {
+            if (where == "")
+            {
+                var retunrDa = dBConnection.GetIntegerValue(string.Format("select count(*) from {0}", Nametable));
+                return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
+            }
+            else
+            {
+                var retunrDa = dBConnection.GetIntegerValue(string.Format("select count(*) from {0} where {1}", Nametable, where));
+                return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
+            }
+        }
         public int LastInserted(string Statement)
         {
             return dBConnection.GetIntegerValue(Statement);

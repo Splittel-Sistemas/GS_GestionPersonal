@@ -54,7 +54,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\r\n");
             EndContext();
             BeginContext(47, 44, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "88b3276a462341658cb756fa6d7f15bf", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "83cc32754757402aaf84c549d92fa0e3", async() => {
                 BeginContext(53, 31, true);
                 WriteLiteral("\r\n    <title>Contrato</title>\r\n");
                 EndContext();
@@ -74,7 +74,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n");
             EndContext();
             BeginContext(93, 991, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "08c128d313704b0bb23a7e5aaee8d6e8", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "786c271e16214359b38a9c6afa1a66c8", async() => {
                 BeginContext(99, 978, true);
                 WriteLiteral(@"
     <p>

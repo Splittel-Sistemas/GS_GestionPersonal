@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\IncVacacion\" />
     <Folder Include="wwwroot\Perfil\" />
   </ItemGroup>
 

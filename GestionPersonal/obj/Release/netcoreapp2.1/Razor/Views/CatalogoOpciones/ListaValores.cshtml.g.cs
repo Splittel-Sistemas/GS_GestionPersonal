@@ -114,7 +114,7 @@ using GestionPersonal.Models;
             WriteLiteral(" |\r\n                    ");
             EndContext();
             BeginContext(847, 276, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "996c1861cfe44f7392ccc77a6fb62c55", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "236a3b6bf53841b19aea8492870b7a72", async() => {
                 BeginContext(878, 56, true);
                 WriteLiteral("\r\n                        <input type=\"hidden\" name=\"id\"");
                 EndContext();

@@ -38,6 +38,7 @@ namespace GPSInformation.Controllers
             Nomenclatura = Funciones.GetRegistrosInc();
         }
         #endregion
+
         #region Metodos produccion admin
         public List<PrenominaDias> GetPreniminaLists(Prenomina_RepProd Prenomina_RepProd, List<View_empleadoEnsamble> view_Empleados)
         {

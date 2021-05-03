@@ -158,6 +158,12 @@ C:\Luis Martinez backup\Personal\Developments\NET\GrupoSplittel\GrupoSplittel\Ge
 C:\Luis Martinez backup\Personal\Developments\NET\GrupoSplittel\GrupoSplittel\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.genruntimeconfig.cache
 C:\Luis Martinez backup\Personal\Developments\NET\GrupoSplittel\GrupoSplittel\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\ProduccionV4\MiReporte.cshtml.g.cs
 C:\Luis Martinez backup\Personal\Developments\NET\GrupoSplittel\GrupoSplittel\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\DetailsSalaReservacion.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.AssemblyInfoInputs.cache
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.AssemblyInfo.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.csproj.CoreCompileInputs.cache
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.RazorAssemblyInfo.cache
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.RazorAssemblyInfo.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\UserSecretsAssemblyInfo.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\bin\Release\netcoreapp2.1\appsettings.Development.json
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\bin\Release\netcoreapp2.1\appsettings.json
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\bin\Release\netcoreapp2.1\Properties\launchSettings.json
@@ -171,12 +177,6 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\bin\Release\netcoreapp2.1\GPSInformation.dll
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\bin\Release\netcoreapp2.1\GPSInformation.pdb
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.csprojAssemblyReference.cache
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.AssemblyInfoInputs.cache
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.AssemblyInfo.cs
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.csproj.CoreCompileInputs.cache
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.RazorAssemblyInfo.cache
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.RazorAssemblyInfo.cs
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\UserSecretsAssemblyInfo.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.TagHelpers.input.cache
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.TagHelpers.output.cache
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.RazorCoreGenerate.cache
@@ -285,6 +285,7 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\Details.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\DetailsSalaReservacion.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\Edit.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\EditSalaReservacion.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\Index.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\Reservar.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Shared\Components\EmpleadoBasic\EmpleadoBasic.cshtml.g.cs
@@ -319,4 +320,3 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.dll
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.pdb
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\GestionPersonal.genruntimeconfig.cache
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Sala\EditSalaReservacion.cshtml.g.cs
