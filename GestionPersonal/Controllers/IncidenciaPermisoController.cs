@@ -47,12 +47,14 @@ namespace GestionIncidenciaPermisol.Controllers
         }
 
         [AccessMultipleView(IdAction = new int[] { 30 })]
-        public ActionResult DetailsEmail(int id)
+        public ActionResult DetailsEmail(int id, string Mode)
         {
             try
             {
                 IncidenciaPermisoRe incidenciaPermisoRe = new IncidenciaPermisoRe();
                 incidenciaPermisoRe.IncidenciaPermiso = darkManager.IncidenciaPermiso.Get(id);
+                incidenciaPermisoRe.Proccess = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaPermiso = {id}", "");
+                incidenciaPermisoRe.Mode = Mode;
                 incidenciaPermisoRe.view_Empleado = darkManager.View_empleado.Get(incidenciaPermisoRe.IncidenciaPermiso.IdPersona);
                 incidenciaPermisoRe.IncidenciaPermiso.Proceso = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaPermiso));
                 incidenciaPermisoRe.Asunto = darkManager.CatalogoOpcionesValores.Get(incidenciaPermisoRe.IncidenciaPermiso.IdAsunto).Descripcion;

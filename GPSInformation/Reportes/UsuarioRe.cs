@@ -21,6 +21,8 @@ namespace GPSInformation.Reportes
         public string Asunto { get; set; }
         public string PagoPermiso { get; set; }
         public bool ModeAmin { get; set; }
+        public List<IncidenciaProcess> Proccess { get; set; }
+        public string Mode { get; set; }
     }
 
     public class IncidenciaVacaRe
@@ -28,5 +30,7 @@ namespace GPSInformation.Reportes
         public View_empleado view_Empleado { get; set; }
         public IncidenciaVacacion IncidenciaVacacion { get; set; }
         public bool ModeAmin { get; set; }
+        public List<IncidenciaProcess> Proccess { get; set; }
+        public string Mode { get; set; }
     }
 }

@@ -29,3 +29,4 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GPSInformation
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GPSInformation\obj\Release\netstandard2.0\GPSInformation.csproj.CopyComplete
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GPSInformation\obj\Release\netstandard2.0\GPSInformation.dll
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GPSInformation\obj\Release\netstandard2.0\GPSInformation.pdb
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GPSInformation\obj\Release\netstandard2.0\GPSInformation.csprojAssemblyReference.cache

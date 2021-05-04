@@ -22,6 +22,7 @@ namespace GPSInformation.Controllers
             this._Dkma.LoadObject(GpsManagerObjects.IncidenciaPermiso);
             this._Dkma.LoadObject(GpsManagerObjects.IncidenciaVacacion);
             this._Dkma.LoadObject(GpsManagerObjects.DiaFeriado);
+            this._Dkma.LoadObject(GpsManagerObjects.View_EmpleadoJefe);
         }
         #endregion
 
@@ -30,7 +31,7 @@ namespace GPSInformation.Controllers
         /// autorizar una incidencia
         /// </summary>
         /// <param name="inAutorizacion">informacion de autrizacion</param>
-        public void Autorizar(InAutorizacion inAutorizacion)
+        public void Autorizar(IncidenciaProcess inAutorizacion)
         {
             _Dkma.StartTransaction();
             try
@@ -39,8 +40,10 @@ namespace GPSInformation.Controllers
                 {
                     throw new GPException { ErrorCode = 200, Category = TypeException.Info, Description = "Error, informacion incorrecta", IdAux = "" };
                 }
-                var estatus = _Dkma.IncidenciaProcess.GetOpenquerys($" where IdIncidenciaVacacion = {inAutorizacion.IdIncidencia} and Nivel = {inAutorizacion.Mode}");
-                //var estatus = HayRevisiones(inAutorizacion.IdIncidencia, inAutorizacion.Mode);
+
+
+                var estatus = _Dkma.IncidenciaProcess.GetOpenquerys($" where IdIncidenciaVacacion = {inAutorizacion.IdIncidenciaVacacion} and Nivel = {inAutorizacion.Nivel}");
+                
                 if (estatus is null)
                 {
                     throw new GPException { ErrorCode = 300, Category = TypeException.Info, Description = "No fue encontrada la incidencia", IdAux = "" };
@@ -51,18 +54,40 @@ namespace GPSInformation.Controllers
                     throw new GPException { ErrorCode = 300, Category = TypeException.Info, Description = "Ya ha sido revisada esta incidencia por: " + estatus.NombreEmpleado, IdAux = "" };
                 }
 
+                if(inAutorizacion.Nivel == 2)
+                {
+                    var empleadOIncidencia = _Dkma.IncidenciaProcess.GetIntValue($"select IdPersona from IncidenciaVacacion where IdIncidenciaVacacion= {inAutorizacion.IdIncidenciaVacacion}");
+                    var empeladojefe = _Dkma.View_EmpleadoJefe.GetOpenquerys($"where EIdPersona = {empleadOIncidencia} and JIdpersona = {inAutorizacion.IdPersona}");
+                    if(empeladojefe is null)
+                    {
+                        throw new GPException { ErrorCode = 300, Category = TypeException.Info, Description = "Sin autorizacion para autorizar o rechazar", IdAux = "" };
+                    }
+                }
+                else if(inAutorizacion.Nivel == 3)
+                {
+                    if(!new UsuarioCtrl(_Dkma).ValidAction(inAutorizacion.IdPersona, 36))
+                    {
+                        throw new GPException { ErrorCode = 300, Category = TypeException.Info, Description = "Sin autorizacion para autorizar o rechazar GPS", IdAux = "" };
+                    }
+                }
+                else
+                {
+                    throw new GPException { ErrorCode = 300, Category = TypeException.Info, Description = "Nivel no autorizado", IdAux = "" };
+                }
+
+
                 estatus.Comentarios = inAutorizacion.Comentarios;
-                estatus.IdPersona = inAutorizacion.IdAutorizante;
-                estatus.NombreEmpleado = inAutorizacion.NombreApro;
+                estatus.IdPersona = inAutorizacion.IdPersona;
+                estatus.NombreEmpleado = _Dkma.IncidenciaVacacion.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {inAutorizacion.IdPersona}"); ;
                 estatus.Revisada = true;
-                estatus.Autorizada = inAutorizacion.Autoriza;
+                estatus.Autorizada = inAutorizacion.Autorizada;
                 estatus.Fecha = DateTime.Now;
 
                 _Dkma.IncidenciaProcess.Element = estatus;
 
                 if (!_Dkma.IncidenciaProcess.Update())
                 {
-                    throw new GPException { ErrorCode = 200, Category = TypeException.Info, Description = $"Error, No fueron guardados los cambios de {(inAutorizacion.Autoriza ? "Autorización" : "Rechazo")} de la incidencia", IdAux = "" };
+                    throw new GPException { ErrorCode = 200, Category = TypeException.Info, Description = $"Error, No fueron guardados los cambios de {(inAutorizacion.Autorizada ? "Autorización" : "Rechazo")} de la incidencia", IdAux = "" };
                 }
                 _Dkma.Commit();
             }
@@ -290,19 +315,19 @@ namespace GPSInformation.Controllers
 
             if (IdStatus == 0 || IdStatus == 1)
             {
-                Query = $"where estatus = 1 {(IdPersona != 0 ? $" and IdPersona {IdPersona}" : "")}";
+                Query = $"where estatus = 1 {(IdPersona != 0 ? $" and IdPersona = {IdPersona}" : "")}";
             }
             else if (IdStatus == 2)
             {
-                Query = $"where estatus = 2 {(IdPersona != 0 ? $" and IdPersona {IdPersona}" : "")}";
+                Query = $"where estatus = 2 {(IdPersona != 0 ? $" and IdPersona = {IdPersona}" : "")}";
             }
             else if (IdStatus == 3)
             {
-                Query = $"where estatus = 3 {(IdPersona != 0 ? $" and IdPersona {IdPersona}" : "")}";
+                Query = $"where estatus = 3 {(IdPersona != 0 ? $" and IdPersona = {IdPersona}" : "")}";
             }
             else if (IdStatus == 4)
             {
-                Query = $"where estatus = 4 {(IdPersona != 0 ? $" and IdPersona {IdPersona}" : "")}";
+                Query = $"where estatus = 4 {(IdPersona != 0 ? $" and IdPersona = {IdPersona}" : "")}";
             }
             else
             {
@@ -312,6 +337,7 @@ namespace GPSInformation.Controllers
             var inc_data = _Dkma.IncidenciaVacacion.GetOpenquery(Query, "order by Creado desc");
             inc_data.ForEach(inc =>
             {
+                inc.EmpleadoNombre = _Dkma.IncidenciaVacacion.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {inc.IdPersona}");
                 inc.Proceso = _Dkma.IncidenciaProcess.GetOpenquery($"where IdIncidenciaPermiso = {inc.IdIncidenciaVacacion}", "");
             });
             return inc_data;

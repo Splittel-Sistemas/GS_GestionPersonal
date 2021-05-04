@@ -61,7 +61,18 @@ namespace GPSInformation.Controllers
                 view_Empleado = darkManager.View_empleado.GetByColumn("" + IdPersona, nameof(darkManager.Usuario.Element.IdPersona)),
             };
         }
+        /// <summary>
+        /// valdiar acceso a accion
+        /// </summary>
+        /// <param name="IdUsuario"></param>
+        /// <param name="IdPermiso"></param>
+        /// <returns></returns>
+        public bool ValidAction(int IdUsuario, int IdPermiso)
+        {
+            var data = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {IdUsuario} and IdSubModulo = {IdPermiso} and TieneAcceso = 1");
 
+            return data is null ? false : data.TieneAcceso;
+        }
         public bool SendEmail(UsuarioRe usuarioRe, string Body)
         {
             try

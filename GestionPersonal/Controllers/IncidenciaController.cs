@@ -49,14 +49,19 @@ namespace GestionPersonal.Controllers
             id = (int)HttpContext.Session.GetInt32("user_id");
             Incidencias incidencias = new Incidencias();
             incidencias.persona = darkManager.Persona.GetByColumn(""+id,"IdPersona");
-            incidencias.permisos = darkManager.IncidenciaPermiso.Get("" + id, "IdPersona");
+            incidencias.permisos = darkManager.IncidenciaPermiso.GetOpenquery($"where Estatus != 2 and Estatus != 5 and IdPersona = {id} ", "");
             incidencias.permisos.ForEach(permiso => {
                 var empleado = darkManager.Persona.Get(permiso.IdPersona);
                 permiso.EmpleadoNombre = string.Format("{0} {1} {2}", empleado.Nombre, empleado.ApellidoPaterno, empleado.ApellidoMaterno);
                 var YipoAsunto = darkManager.CatalogoOpcionesValores.Get(permiso.IdAsunto);
                 permiso.DEscripcionTipo = YipoAsunto.Descripcion;
+                permiso.Proceso = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaPermiso = {permiso.IdIncidenciaPermiso}", "");
             });
-            incidencias.vacaciones = darkManager.IncidenciaVacacion.Get("" + id, "IdPersona");
+            incidencias.vacaciones = darkManager.IncidenciaVacacion.GetOpenquery($"where Estatus != 2 and Estatus != 5 and IdPersona = {id} ", "");
+            incidencias.vacaciones.ForEach(vac =>
+            {
+                vac.Proceso = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaVacacion = {vac.IdIncidenciaVacacion}", "");
+            });
             ViewData["tab"] = "Permisos";
             ViewData["periodos"] = new VacacionesCtrl((int)HttpContext.Session.GetInt32("user_id"), darkManager).Get();
             return View(incidencias);
@@ -81,13 +86,15 @@ namespace GestionPersonal.Controllers
                 darkManager.Empleado.Get("" + a.IdPuesto, "IdPuesto").ForEach(emp => {
                     var solicitante = darkManager.Persona.GetByColumn("" + emp.IdPersona, "IdPersona");
                     incidencias.persona = darkManager.Persona.GetByColumn("" + solicitante.IdPersona, "IdPersona");
-                    var permisos = darkManager.IncidenciaPermiso.Get("" + solicitante.IdPersona, "IdPersona");
+                    var permisos = darkManager.IncidenciaPermiso.GetOpenquery($"as t01 where t01.Estatus != 2 and t01.Estatus != 5 and IdPersona = {solicitante.IdPersona} and " +
+                        $" (select count(*) from IncidenciaProcess as t02 where t02.IdIncidenciaPermiso = t01.IdIncidenciaPermiso and t02.Nivel = 2 and t02.Revisada = 0) > 0", "");
                     permisos.ForEach(permiso => {
                         permiso.EmpleadoNombre = solicitante.NombreCompelto;
                         var YipoAsunto = darkManager.CatalogoOpcionesValores.Get(permiso.IdAsunto);
                         permiso.DEscripcionTipo = YipoAsunto.Descripcion;
                     });
-                    var vacaciones = darkManager.IncidenciaVacacion.Get("" + solicitante.IdPersona, "IdPersona");
+                    var vacaciones = darkManager.IncidenciaVacacion.GetOpenquery($"as t01 where t01.Estatus != 2 and t01.Estatus != 5 and IdPersona = {solicitante.IdPersona} and " +
+                        $" (select count(*) from IncidenciaProcess as t02 where t02.IdIncidenciaVacacion = t01.IdIncidenciaVacacion and t02.Nivel = 2 and t02.Revisada = 0) > 0", "");
                     vacaciones.ForEach(ass => {
                         ass.EmpleadoNombre = solicitante.NombreCompelto;
                     });
@@ -112,14 +119,17 @@ namespace GestionPersonal.Controllers
 
             Incidencias incidencias = new Incidencias { permisos = new List<GPSInformation.Models.IncidenciaPermiso>(), vacaciones = new List<GPSInformation.Models.IncidenciaVacacion>() };
 
-            var permisos = darkManager.IncidenciaPermiso.GetIn(new int[] {1,2,3 } , "Estatus");
+            var permisos = darkManager.IncidenciaPermiso.GetOpenquery($"as t01 where t01.Estatus != 2 and t01.Estatus != 5 and " +
+                $" (select count(*) from IncidenciaProcess as t02 where t02.IdIncidenciaPermiso = t01.IdIncidenciaPermiso and t02.Nivel = 3 and t02.Revisada = 0) > 0","");
+            //var permisos = darkManager.IncidenciaPermiso.GetIn(new int[] {1,2,3 } , "Estatus");
             permisos.ForEach(permiso => {
                 var empleado = darkManager.Persona.Get(permiso.IdPersona);
                 permiso.EmpleadoNombre = string.Format("{0} {1} {2}", empleado.Nombre, empleado.ApellidoPaterno, empleado.ApellidoMaterno);
                 var YipoAsunto = darkManager.CatalogoOpcionesValores.Get(permiso.IdAsunto);
                 permiso.DEscripcionTipo = YipoAsunto.Descripcion;
             });
-            var vacaciones = darkManager.IncidenciaVacacion.Get("1", "Estatus");
+            var vacaciones = darkManager.IncidenciaVacacion.GetOpenquery($" as t01 where t01.Estatus != 2 and t01.Estatus != 5 and " +
+                $" (select count(*) from IncidenciaProcess as t02 where t02.IdIncidenciaVacacion = t01.IdIncidenciaVacacion and t02.Nivel = 3 and t02.Revisada = 0) > 0", "");
             vacaciones.ForEach(a => {
                 var empleado = darkManager.Persona.Get(a.IdPersona);
 

@@ -86,6 +86,7 @@ namespace GPSInformation
         public virtual DarkAttributes<GrupoIncidencia> GrupoIncidencia { get; set; }
         public virtual DarkAttributes<GrupoIncidenciaDetalle> GrupoIncidenciaDetalle { get; set; }
         public virtual DarkAttributes<GrupoCorte> GrupoCorte { get; set; }
+        public virtual DarkAttributes<View_EmpleadoJefe> View_EmpleadoJefe { get; set; }
 
 
         private string CorreosBCC { get; set; }
@@ -380,6 +381,10 @@ namespace GPSInformation
             {
                 GrupoCorte = new DarkAttributes<GrupoCorte>(dBConnection);
             }
+            else if (gpsManagerObjects == GpsManagerObjects.View_EmpleadoJefe)
+            {
+                View_EmpleadoJefe = new DarkAttributes<View_EmpleadoJefe>(dBConnection);
+            }
         }
         public void OpenConnection()
         {
@@ -492,5 +497,6 @@ namespace GPSInformation
         GrupoIncidencia = 57,
         GrupoIncidenciaDetalle = 58,
         GrupoCorte = 59,
+        View_EmpleadoJefe = 60,
     }
 }

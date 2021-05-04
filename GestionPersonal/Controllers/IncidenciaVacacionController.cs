@@ -103,12 +103,14 @@ namespace GestionPersonal.Controllers
         }
 
         [AccessMultipleView(IdAction = new int[] { 30 })]
-        public ActionResult DetailsEmail(int id)
+        public ActionResult DetailsEmail(int id, string Mode)
         {
             try
             {
                 IncidenciaVacaRe incidenciaVacaRe = new IncidenciaVacaRe();
                 incidenciaVacaRe.IncidenciaVacacion = darkManager.IncidenciaVacacion.Get(id);
+                incidenciaVacaRe.Mode = Mode;
+                incidenciaVacaRe.Proccess = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaVacacion = {id}", "");
                 incidenciaVacaRe.view_Empleado = darkManager.View_empleado.Get(incidenciaVacaRe.IncidenciaVacacion.IdPersona);
                 incidenciaVacaRe.IncidenciaVacacion.Proceso = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaVacacion));
                 return View(incidenciaVacaRe);

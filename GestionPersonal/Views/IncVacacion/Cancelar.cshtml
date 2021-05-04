@@ -1,0 +1,87 @@
+﻿@model GPSInformation.Models.IncidenciaVacacion
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>IncidenciaVacacion</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.IdIncidenciaVacacion)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IdIncidenciaVacacion)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IdPersona)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IdPersona)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Inicio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Inicio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Fin)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Fin)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NoDias)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NoDias)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreadoPor)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreadoPor)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Estatus)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Estatus)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NumAutorizaciones)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NumAutorizaciones)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Tipo)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Tipo)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Creado)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Creado)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Folio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Folio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.EmpleadoNombre)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.EmpleadoNombre)
+        </dd>
+    </dl>
+
+    <form asp-action="Cancelar">
+        <input type="submit" value="Cancelar" class="btn btn-default" /> |
+        <input type="hidden" value="@Model.IdIncidenciaVacacion" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
