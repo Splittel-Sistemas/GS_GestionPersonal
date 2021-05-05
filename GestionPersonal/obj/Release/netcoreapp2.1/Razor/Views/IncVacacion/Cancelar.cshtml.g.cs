@@ -297,7 +297,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n        </dd>\r\n    </dl>\r\n\r\n    ");
             EndContext();
             BeginContext(2284, 260, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b56e03eec9f74518aad64a64fed9c780", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "5de3500ab500447d968a804bab6e1ac6", async() => {
                 BeginContext(2312, 106, true);
                 WriteLiteral("\r\n        <input type=\"submit\" value=\"Cancelar\" class=\"btn btn-default\" /> |\r\n        <input type=\"hidden\"");
                 EndContext();
@@ -312,7 +312,7 @@ WriteAttributeValue("", 2426, Model.IdIncidenciaVacacion, 2426, 27, false);
                 WriteLiteral(" class=\"btn btn-default\" /> |\r\n        ");
                 EndContext();
                 BeginContext(2493, 38, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "6d14cd38869447a68f26bcc0d4274d8d", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f39b26f35f0c4d3a8da274513defa8cb", async() => {
                     BeginContext(2515, 12, true);
                     WriteLiteral("Back to List");
                     EndContext();

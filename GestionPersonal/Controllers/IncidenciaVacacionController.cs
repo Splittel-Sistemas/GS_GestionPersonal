@@ -40,7 +40,20 @@ namespace GestionPersonal.Controllers
         {
 
         }
-
+        [AccessMultipleView(IdAction = new int[] { 32, 36 })]
+        public IActionResult Eliminar(int Id)
+        {
+            try
+            {
+                var data = new IncVacacionesCtrl(darkManager);
+                data.Eliminar(Id, (int)HttpContext.Session.GetInt32("user_id"));
+                return Ok("Incidencia eliminada");
+            }
+            catch (GPException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [AccessMultipleView(IdAction = new int[] { 46 })]
         public ActionResult Periodos(string id)
         {
@@ -162,7 +175,10 @@ namespace GestionPersonal.Controllers
                 //var result = darkManager.IncidenciaVacacion.Get(""+ id,nameof(darkManager.IncidenciaVacacion.Element.IdPersona));
 
                 var result = darkManager.IncidenciaVacacion.Get(id);
-
+                if(result.Estatus == 5)
+                {
+                    return NotFound("No existe la incidencia");
+                }
                 ViewData["Actividades"] = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaVacacion));
                 return View(result);
             }
@@ -206,7 +222,7 @@ namespace GestionPersonal.Controllers
                     return View(IncidenciaVacacion);
                 }
 
-                var vacaciones = darkManager.IncidenciaVacacion.Get(IncidenciaVacacion.IdPersona + "", "IdPersona");
+                var vacaciones = darkManager.IncidenciaVacacion.GetOpenquery($"where Estatus != 2 and Estatus != 5 and IdPersona = {IncidenciaVacacion.IdPersona} ", "");
 
                 if (vacaciones.Where(a=>  IncidenciaVacacion.Inicio >= a.Inicio  && IncidenciaVacacion.Inicio <= a.Fin  && a.Estatus != 2).ToList().Count > 0)
                 {
@@ -266,6 +282,10 @@ namespace GestionPersonal.Controllers
             try
             {
                 var result = darkManager.IncidenciaVacacion.Get(id);
+                if (result.Estatus == 5)
+                {
+                    return NotFound("No existe la incidencia");
+                }
                 ViewData["Actividades"] = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaVacacion));
                 return View(result);
             }
@@ -342,6 +362,7 @@ namespace GestionPersonal.Controllers
 
                     if (darkManager.IncidenciaProcess.Update())
                     {
+                        SenEmailAuth(id);
                         darkManager.Commit();
                         return RedirectToAction("AprobarJefe", "Incidencia", new { tab = "Vacaciones" });
                     }
@@ -367,6 +388,7 @@ namespace GestionPersonal.Controllers
 
                     if (darkManager.IncidenciaProcess.Update())
                     {
+                        SenEmailAuth(id);
                         darkManager.Commit();
                         return RedirectToAction("AprobarGPS", "Incidencia", new { tab = "Vacaciones" });
                     }
@@ -475,7 +497,10 @@ namespace GestionPersonal.Controllers
         public ActionResult Aprobar(int id, string Mode)
         {
             var result = darkManager.IncidenciaVacacion.Get(id);
-
+            if (result.Estatus == 5)
+            {
+                return NotFound("No existe la incidencia");
+            }
             ViewData["Actividades"] = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaVacacion));
             ViewData["ModeAprobar"] = Mode;
             return View(result);
@@ -706,6 +731,53 @@ namespace GestionPersonal.Controllers
                 //throw;
             }
 
+        }
+
+        private async Task SenEmailAuth(int id)
+        {
+            try
+            {
+
+                var process = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaVacacion = {id}", "");
+                var nive1 = process.Find(a => a.Nivel == 2);
+                var nive3 = process.Find(a => a.Nivel == 3);
+                if (nive1.Revisada && nive1.Revisada)
+                {
+                    IncidenciaVacaRe incidenciaVacaRe = new IncidenciaVacaRe();
+
+                    if (nive1.Revisada && nive1.Autorizada && nive3.Revisada && nive3.Autorizada)
+                    {
+                        incidenciaVacaRe.Mode = "Aceptado";
+                    }
+                    else
+                    {
+                        incidenciaVacaRe.Mode = "Rechazado";
+                    }
+
+                    
+                    incidenciaVacaRe.IncidenciaVacacion = darkManager.IncidenciaVacacion.Get(id);
+                    incidenciaVacaRe.view_Empleado = darkManager.View_empleado.Get(incidenciaVacaRe.IncidenciaVacacion.IdPersona);
+                    incidenciaVacaRe.ModeAmin = true;
+
+                    incidenciaVacaRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Details", "IncidenciaVacacion", new { id = incidenciaVacaRe.IncidenciaVacacion.IdIncidenciaVacacion })}";
+                    incidenciaVacaRe.LinkPublic = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{darkManager.IpPublic}{Url.Action("Details", "IncidenciaVacacion", new { id = incidenciaVacaRe.IncidenciaVacacion.IdIncidenciaVacacion })}";
+                    incidenciaVacaRe.Proccess = process;
+
+                    if (!string.IsNullOrEmpty(incidenciaVacaRe.view_Empleado.Correo))
+                    {
+                        darkManager.EmailServ_.AddListTO(incidenciaVacaRe.view_Empleado.Correo);
+                        var result = await _viewRenderService.RenderToStringAsync("IncidenciaVacacion/DetailsEmail", incidenciaVacaRe);
+                        darkManager.EmailServ_.Send(result, $"Solicitud {(incidenciaVacaRe.Mode == "Aceptado" ? "aceptada" : "no aceptada")}");
+                        darkManager.RestartEmail();
+                    }
+                }
+            }
+            catch (SmtpException ex)
+            {
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }

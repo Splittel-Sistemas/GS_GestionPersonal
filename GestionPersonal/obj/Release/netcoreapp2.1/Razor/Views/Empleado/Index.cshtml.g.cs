@@ -83,7 +83,7 @@ using GestionPersonal.Models;
             WriteLiteral("            ");
             EndContext();
             BeginContext(419, 154, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "6feee856458f4de2bd531b564ecf772f", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c9a871f4780b498fa6a11ef5676ebc04", async() => {
                 BeginContext(507, 62, true);
                 WriteLiteral("<i class=\"icon ion-md-time mg-r-5 tx-16 lh--9\"></i>Crear nuevo");
                 EndContext();

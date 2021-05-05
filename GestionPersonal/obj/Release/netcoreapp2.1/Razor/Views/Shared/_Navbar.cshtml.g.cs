@@ -87,7 +87,7 @@ WriteAttributeValue("", 853, Url.Action("Index","Home"), 853, 27, false);
             WriteLiteral("        <div class=\"dropdown dropdown-profile \">\r\n            <a href=\"\" class=\"dropdown-link\" data-toggle=\"dropdown\" data-display=\"static\" aria-expanded=\"true\">\r\n                <div class=\"avatar avatar-sm\">");
             EndContext();
             BeginContext(1437, 122, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("img", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagOnly, "f79d15602e1e489eafd39888d717195a", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("img", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagOnly, "72e400cb28874308a06883cf5e012a21", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_Razor_TagHelpers_UrlResolutionTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.Razor.TagHelpers.UrlResolutionTagHelper>();

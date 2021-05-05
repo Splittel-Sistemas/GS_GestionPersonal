@@ -63,7 +63,7 @@
                                     Estatus
                                 </th>
                                 <th>
-                                    Revisada
+                                    Procesada
                                 </th>
                                 <th></th>
                             </tr>
@@ -72,7 +72,7 @@
                             @foreach (var item in Model.permisos)
                             {
                                 var nive2 = item.Proceso.Find(a => a.Nivel == 3);
-                                <tr>
+                                <tr id="trperm_@item.IdIncidenciaPermiso">
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Folio)
                                     </td>
@@ -132,6 +132,7 @@
                                                 @if (item.Estatus == 1 && nive2 != null && nive2.Revisada == false)
                                                 {
                                                     <a class="dropdown-item" href="@Url.Action("Aprobar", "IncidenciaPermiso", new { id = item.IdIncidenciaPermiso, Mode = 2 })">Aprobar</a>
+                                                    <a class="dropdown-item" href="#" onclick="app_incidencias.EliminarPerm(@item.IdIncidenciaPermiso)">Eliminar</a>
                                                     @*<a class="dropdown-item" href="@Url.Action("Rechazar", "IncidenciaPermiso", new { id = item.IdIncidenciaPermiso, Mode = 2 })">Rechazar</a>*@
                                                 }
                                                 <a class="dropdown-item" href="#modalActividadPermisos" data-toggle="modal" onclick="app_incidencias.ActividadPermisos(@item.IdIncidenciaPermiso)">Actividad</a>
@@ -182,7 +183,7 @@
                                     Estatus
                                 </th>
                                 <th>
-                                    Revisada
+                                    Procesada
                                 </th>
                                 <th></th>
                             </tr>
@@ -191,74 +192,75 @@
                             @foreach (var item in Model.vacaciones)
                             {
                                 var nive2 = item.Proceso.Find(a => a.Nivel == 3);
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.Folio)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.EmpleadoNombre)
-                                </td>
-                                <td>
-                                    @item.Inicio.ToString("dd/MM/yyyy")
-                                </td>
-                                <td>
-                                    @item.Fin.ToString("dd/MM/yyyy")
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.NoDias)
-                                </td>
-                                <td>
-                                    @if (item.Estatus == 1)
-                                    {
-                                        @if (item.Proceso.Count(a => a.Nivel == 2 && a.Revisada == false || a.Nivel == 3 && a.Revisada == false) >= 1)
+                                <tr id="trvac_@item.IdIncidenciaVacacion">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Folio)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.EmpleadoNombre)
+                                    </td>
+                                    <td>
+                                        @item.Inicio.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>
+                                        @item.Fin.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.NoDias)
+                                    </td>
+                                    <td>
+                                        @if (item.Estatus == 1)
                                         {
-                                            <span class="badge badge-primary">En proceso</span>
-                                        }
-                                        else
-                                        {
-                                            @if (item.Proceso.Count(a => a.Nivel == 2 && a.Autorizada && a.Revisada || a.Nivel == 3 && a.Autorizada && a.Revisada) == 2)
+                                            @if (item.Proceso.Count(a => a.Nivel == 2 && a.Revisada == false || a.Nivel == 3 && a.Revisada == false) >= 1)
                                             {
-                                                <span class="badge badge-success">Aceptada</span>
+                                                <span class="badge badge-primary">En proceso</span>
                                             }
                                             else
                                             {
-                                                <span class="badge badge-warning">Rechazada</span>
+                                                @if (item.Proceso.Count(a => a.Nivel == 2 && a.Autorizada && a.Revisada || a.Nivel == 3 && a.Autorizada && a.Revisada) == 2)
+                                                {
+                                                    <span class="badge badge-success">Aceptada</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-warning">Rechazada</span>
+                                                }
                                             }
                                         }
-                                    }
-                                    else if (item.Estatus == 2)
-                                    {
-                                        <span class="badge badge-danger">Cancelada</span>
-                                    }
-                                </td>
-                                <td>
-                                    @if (item.Estatus == 1 && nive2 != null && nive2.Revisada == false)
-                                    {
-                                        <span class="badge badge-warning">Sin revisar</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge badge-success">Ok</span>
-                                    }
-                                </td>
-                                <td>
+                                        else if (item.Estatus == 2)
+                                        {
+                                            <span class="badge badge-danger">Cancelada</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.Estatus == 1 && nive2 != null && nive2.Revisada == false)
+                                        {
+                                            <span class="badge badge-warning">Sin revisar</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success">Ok</span>
+                                        }
+                                    </td>
+                                    <td>
 
-                                    <div class="dropdown">
-                                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropleftMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Opciones
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropleftMenuButton">
-                                            <a class="dropdown-item" href="@Url.Action("Details", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion })">Detalle</a>
-                                            @if (item.Estatus == 1 && nive2 != null && nive2.Revisada == false)
-                                            {
-                                                <a class="dropdown-item" href="@Url.Action("Aprobar", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion, Mode = 2 })">Aprobar</a>
-                                                @*<a class="dropdown-item" href="@Url.Action("Rechazar", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion, Mode = 2 })">Rechazar</a>*@
-                                            }
-                                            <a class="dropdown-item" href="#modalActividadVacaciones" data-toggle="modal" onclick="app_incidencias.ActividadVacacion(@item.IdIncidenciaVacacion)">Actividad</a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropleftMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Opciones
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropleftMenuButton">
+                                                <a class="dropdown-item" href="@Url.Action("Details", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion })">Detalle</a>
+                                                @if (item.Estatus == 1 && nive2 != null && nive2.Revisada == false)
+                                                {
+                                                    <a class="dropdown-item" href="@Url.Action("Aprobar", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion, Mode = 2 })">Aprobar</a>
+                                                    <a class="dropdown-item" href="#" onclick="app_incidencias.EliminarVac(@item.IdIncidenciaVacacion)">Eliminar</a>
+                                                    @*<a class="dropdown-item" href="@Url.Action("Rechazar", "IncidenciaVacacion", new { id = item.IdIncidenciaVacacion, Mode = 2 })">Rechazar</a>*@
+                                                }
+                                                <a class="dropdown-item" href="#modalActividadVacaciones" data-toggle="modal" onclick="app_incidencias.ActividadVacacion(@item.IdIncidenciaVacacion)">Actividad</a>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -309,6 +311,66 @@
             data: {},
             mounted() { },
             methods: {
+                EliminarPerm: async function(id){
+                     Swal.fire({
+                        title: "¿Deseas eliminar esta solicitud de permiso?",
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si, adelante!'
+                    }).then((result) => {
+                        if (result.value) {
+                            let params = new URLSearchParams();
+                            params.append('Id', id);
+                            axios.post('@Url.Action("Eliminar", "IncidenciaPermiso")', params, null).then(response => {
+                                ShowMessageErrorShort("Solicitud eliminada", "success")
+                                console.log("trperm_" + id)
+                                document.getElementById("trperm_" + id).style.display = "none"
+                                //this.chart.remove(a);
+                            }).catch(error => {
+                                console.error(error)
+                                if (error.response) {
+                                    if (error.response.status === 400) {
+                                        console.log(error.response)
+                                        ShowMessageErrorShort(error.response.data,"error")
+                                    }
+                                }
+                            }).finally()
+                        }
+                    })
+                },
+                EliminarVac: async function(id){
+                     Swal.fire({
+                        title: "¿Deseas eliminar esta solicitud de vacaciones?",
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si, adelante!'
+                    }).then((result) => {
+                        if (result.value) {
+                            let params = new URLSearchParams();
+                            params.append('Id', id);
+                            axios.post('@Url.Action("Eliminar", "IncidenciaVacacion")', params, null).then(response => {
+                                ShowMessageErrorShort("Solicitud eliminada", "success")
+                                console.log("trvac_" + id)
+                                document.getElementById("trvac_" + id).style.display = "none"
+                                //this.chart.remove(a);
+                            }).catch(error => {
+                                console.error(error)
+                                if (error.response) {
+                                    if (error.response.status === 400) {
+                                        console.log(error.response)
+                                        ShowMessageErrorShort(error.response.data,"error")
+                                    }
+                                }
+                            }).finally()
+                        }
+                    })
+                },
                 ActividadVacacion: async function (id) {
                     document.getElementById("content_vacacionesAcitivit").innerHTML = "";
                     axios.post('@Url.Action("Actividad","IncidenciaVacacion")/' + id, null, null).then(response => {

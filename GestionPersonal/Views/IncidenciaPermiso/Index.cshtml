@@ -58,15 +58,25 @@ else
                     <td>
                         @if (item.Estatus == 1)
                         {
-                            <span class="badge badge-primary">En proceso</span>
+                            @if (item.Proceso.Count(a => a.Nivel == 2 && a.Revisada == false || a.Nivel == 3 && a.Revisada == false) >= 1)
+                            {
+                                <span class="badge badge-primary">En proceso</span>
+                            }
+                            else
+                            {
+                                @if (item.Proceso.Count(a => a.Nivel == 2 && a.Autorizada && a.Revisada || a.Nivel == 3 && a.Autorizada && a.Revisada) == 2)
+                                {
+                                    <span class="badge badge-success">Aceptada</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">Rechazada</span>
+                                }
+                            }
                         }
                         else if (item.Estatus == 2)
                         {
                             <span class="badge badge-danger">Cancelada</span>
-                        }
-                        else
-                        {
-                            <span class="badge badge-primary">Completada</span>
                         }
                     </td>
                     <td>

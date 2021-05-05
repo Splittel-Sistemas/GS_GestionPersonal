@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GestionPersonal.Models;
 using GestionPersonal.Service;
 using GPSInformation;
+using GPSInformation.Controllers;
 using GPSInformation.Exceptions;
 using GPSInformation.Models;
 using GPSInformation.Reportes;
@@ -44,6 +45,20 @@ namespace GestionIncidenciaPermisol.Controllers
         ~IncidenciaPermisoController()
         {
 
+        }
+        [AccessMultipleView(IdAction = new int[] { 32, 36 })]
+        public IActionResult Eliminar(int Id)
+        {
+            try
+            {
+                var data = new IncPermisoCtrl(darkManager);
+                data.Eliminar(Id, (int)HttpContext.Session.GetInt32("user_id"));
+                return Ok("Incidencia eliminada");
+            }
+            catch (GPException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [AccessMultipleView(IdAction = new int[] { 30 })]
@@ -199,6 +214,10 @@ namespace GestionIncidenciaPermisol.Controllers
                 ViewData["PagoPermisoPersonal"] = PagoPermisoPersonal;
 
                 var response = darkManager.IncidenciaPermiso.Get(id);
+                if (response.Estatus == 5)
+                {
+                    return NotFound("No existe la incidencia");
+                }
                 return View(response);
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
@@ -223,8 +242,11 @@ namespace GestionIncidenciaPermisol.Controllers
                 {
                     return NotFound();
                 }
-
-                if(Mode == "1")
+                if (response.Estatus == 5)
+                {
+                    return NotFound("No existe la incidencia");
+                }
+                if (Mode == "1")
                 {
                     
                     var resulst = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 32");
@@ -388,6 +410,7 @@ namespace GestionIncidenciaPermisol.Controllers
 
                     if (darkManager.IncidenciaProcess.Update())
                     {
+                        SenEmailAuth(id);
                         darkManager.Commit();
                         return RedirectToAction("AprobarJefe","Incidencia", new { tab = "Permisos" });
                     }
@@ -413,6 +436,7 @@ namespace GestionIncidenciaPermisol.Controllers
 
                     if (darkManager.IncidenciaProcess.Update())
                     {
+                        SenEmailAuth(id);
                         darkManager.Commit();
                         return RedirectToAction("AprobarGPS", "Incidencia", new { tab = "Permisos" });
                     }
@@ -646,6 +670,58 @@ namespace GestionIncidenciaPermisol.Controllers
             catch (Exception ex)
             {
                 throw;
+            }
+        }
+
+        private async Task SenEmailAuth(int id)
+        {
+            try
+            {
+
+                var process = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaPermiso = {id}", "");
+                var nive1 = process.Find(a => a.Nivel == 2);
+                var nive3 = process.Find(a => a.Nivel == 3);
+                if (nive1.Revisada && nive1.Revisada)
+                {
+                    IncidenciaPermisoRe incidenciaPermisoRe = new IncidenciaPermisoRe();
+
+                    if (nive1.Revisada && nive1.Autorizada && nive3.Revisada && nive3.Autorizada)
+                    {
+                        incidenciaPermisoRe.Mode = "Aceptado";
+                    }
+                    else
+                    {
+                        incidenciaPermisoRe.Mode = "Rechazado";
+                    }
+                    
+                    incidenciaPermisoRe.IncidenciaPermiso = darkManager.IncidenciaPermiso.Get(id);
+                    incidenciaPermisoRe.view_Empleado = darkManager.View_empleado.Get(incidenciaPermisoRe.IncidenciaPermiso.IdPersona);
+                    incidenciaPermisoRe.Asunto = darkManager.CatalogoOpcionesValores.Get(incidenciaPermisoRe.IncidenciaPermiso.IdAsunto).Descripcion;
+
+                    if (incidenciaPermisoRe.IncidenciaPermiso.IdPagoPermiso != 0)
+                    {
+                        incidenciaPermisoRe.PagoPermiso = darkManager.CatalogoOpcionesValores.Get(incidenciaPermisoRe.IncidenciaPermiso.IdPagoPermiso).Descripcion;
+                    }
+                    incidenciaPermisoRe.ModeAmin = true;
+                    
+                    incidenciaPermisoRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Details", "IncidenciaPermiso", new { id = incidenciaPermisoRe.IncidenciaPermiso.IdIncidenciaPermiso })}";
+                    incidenciaPermisoRe.LinkPublic = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{darkManager.IpPublic}{Url.Action("Details", "IncidenciaPermiso", new { id = incidenciaPermisoRe.IncidenciaPermiso.IdIncidenciaPermiso })}";
+                    incidenciaPermisoRe.Proccess = process;
+
+                    if (!string.IsNullOrEmpty(incidenciaPermisoRe.view_Empleado.Correo))
+                    {
+                        darkManager.EmailServ_.AddListTO(incidenciaPermisoRe.view_Empleado.Correo);
+                        var result = await _viewRenderService.RenderToStringAsync("IncidenciaPermiso/DetailsEmail", incidenciaPermisoRe);
+                        darkManager.EmailServ_.Send(result, $"Solicitud {(incidenciaPermisoRe.Mode == "Aceptado" ? "aceptada" : "no aceptada")}");
+                        darkManager.RestartEmail();
+                    }
+                }
+            }
+            catch (SmtpException ex)
+            {
+            }
+            catch (Exception ex)
+            {
             }
         }
     }

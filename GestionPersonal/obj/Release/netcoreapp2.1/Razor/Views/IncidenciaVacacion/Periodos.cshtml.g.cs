@@ -73,7 +73,7 @@ using GestionPersonal.Models;
             WriteLiteral("    <div id=\"app_periodosBus\" class=\"col-lg-4\">\r\n        <h2>Buscar periodos</h2>\r\n        <hr />\r\n        ");
             EndContext();
             BeginContext(329, 1377, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "806201e028cb4aeb849fee8091a4492d", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "82f561fb2ded4451888c8076719ee408", async() => {
                 BeginContext(357, 648, true);
                 WriteLiteral(@"
             <div class=""input-group input-group-sm "">

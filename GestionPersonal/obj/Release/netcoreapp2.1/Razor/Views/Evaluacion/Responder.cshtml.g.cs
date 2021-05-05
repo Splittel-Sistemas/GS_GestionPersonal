@@ -230,7 +230,7 @@ using GestionPersonal.Models;
             WriteLiteral("        <div class=\"form-group row mg-b-0 mt-5\">\r\n            <div class=\"col-sm-12 text-right\">\r\n                ");
             EndContext();
             BeginContext(2134, 77, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "54cc9c32aa68478fb806415ebef36068", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "6ca15b2f18f143999c4aa23210a9132f", async() => {
                 BeginContext(2199, 8, true);
                 WriteLiteral("Regresar");
                 EndContext();
@@ -307,7 +307,7 @@ using GestionPersonal.Models;
             WriteLiteral("div class=\"col-sm-12 text-right\">\r\n                    ");
             EndContext();
             BeginContext(5400, 77, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "391f856d62744627a193dec5dafe5653", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "7602c9626d404a118f6775df961bcdfb", async() => {
                 BeginContext(5465, 8, true);
                 WriteLiteral("Cancelar");
                 EndContext();
