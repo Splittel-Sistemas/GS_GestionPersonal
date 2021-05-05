@@ -585,6 +585,12 @@ namespace GestionIncidenciaPermisol.Controllers
                 IncidenciaPermisoRe incidenciaPermisoRe = new IncidenciaPermisoRe();
                 incidenciaPermisoRe.IncidenciaPermiso = darkManager.IncidenciaPermiso.Get(id);
                 incidenciaPermisoRe.view_Empleado = darkManager.View_empleado.Get(incidenciaPermisoRe.IncidenciaPermiso.IdPersona);
+                incidenciaPermisoRe.Asunto = darkManager.CatalogoOpcionesValores.Get(incidenciaPermisoRe.IncidenciaPermiso.IdAsunto).Descripcion;
+
+                if (incidenciaPermisoRe.IncidenciaPermiso.IdPagoPermiso != 0)
+                {
+                    incidenciaPermisoRe.PagoPermiso = darkManager.CatalogoOpcionesValores.Get(incidenciaPermisoRe.IncidenciaPermiso.IdPagoPermiso).Descripcion;
+                }
                 if (mode == 1)
                 {
                     darkManager.LoadObject(GpsManagerObjects.OrganigramaVersion);
@@ -604,6 +610,10 @@ namespace GestionIncidenciaPermisol.Controllers
                                 darkManager.EmailServ_.AddListTO(a.Correo);
                             });
                         }
+                        incidenciaPermisoRe.Mode = "CreadoN1";
+                        incidenciaPermisoRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaPermisoRe.IncidenciaPermiso.IdIncidenciaPermiso, Mode = mode })}";
+                        incidenciaPermisoRe.LinkPublic = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{darkManager.IpPublic}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaPermisoRe.IncidenciaPermiso.IdIncidenciaPermiso, Mode = mode })}";
+                        incidenciaPermisoRe.Proccess = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaPermiso = {id}", "");
                         var result = await _viewRenderService.RenderToStringAsync("IncidenciaPermiso/DetailsEmail", incidenciaPermisoRe);
                         darkManager.EmailServ_.Send(result, "Nueva permiso - Aprobación N1");
                         darkManager.RestartEmail();
@@ -620,6 +630,10 @@ namespace GestionIncidenciaPermisol.Controllers
                         });
                     });
                     incidenciaPermisoRe.ModeAmin = true;
+                    incidenciaPermisoRe.Mode = "CreadoN2";
+                    incidenciaPermisoRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaPermisoRe.IncidenciaPermiso.IdIncidenciaPermiso, Mode = mode })}";
+                    incidenciaPermisoRe.LinkPublic = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{darkManager.IpPublic}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaPermisoRe.IncidenciaPermiso.IdIncidenciaPermiso, Mode = mode })}";
+                    incidenciaPermisoRe.Proccess = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaPermiso = {id}", "");
                     var result = await _viewRenderService.RenderToStringAsync("IncidenciaPermiso/DetailsEmail", incidenciaPermisoRe);
                     darkManager.EmailServ_.Send(result, "Nueva permiso - Aprobación N2");
                     darkManager.RestartEmail();

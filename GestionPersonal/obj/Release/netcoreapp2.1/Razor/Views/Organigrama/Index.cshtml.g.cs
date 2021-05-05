@@ -84,7 +84,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n        <div id=\"contactLogs\" class=\"tab-pane pd-20 pd-xl-25 active\">\r\n            <div class=\"d-flex align-items-center justify-content-between mg-b-30\">\r\n                <h4 class=\"tx-15 mg-b-0\">Lista de versiones</h4>\r\n                ");
             EndContext();
             BeginContext(930, 193, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "656560c384b941408240f4ae98591b61", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "57714bd063944e50936d6e773c44a349", async() => {
                 BeginContext(966, 150, true);
                 WriteLiteral("\r\n                    <button type=\"submit\" class=\"btn btn-outline-primary btn-sm  d-flex align-items-center\">Agregar nueva</button>\r\n                ");
                 EndContext();

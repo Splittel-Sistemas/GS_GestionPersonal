@@ -23,6 +23,8 @@ namespace GPSInformation.Reportes
         public bool ModeAmin { get; set; }
         public List<IncidenciaProcess> Proccess { get; set; }
         public string Mode { get; set; }
+        public string LinkPrivate { get; set; }
+        public string LinkPublic { get; set; }
     }
 
     public class IncidenciaVacaRe
@@ -32,5 +34,7 @@ namespace GPSInformation.Reportes
         public bool ModeAmin { get; set; }
         public List<IncidenciaProcess> Proccess { get; set; }
         public string Mode { get; set; }
+        public string LinkPrivate { get; set; }
+        public string LinkPublic { get; set; }
     }
 }

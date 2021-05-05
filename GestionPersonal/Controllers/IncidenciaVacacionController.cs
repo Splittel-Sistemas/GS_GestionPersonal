@@ -12,6 +12,7 @@ using GPSInformation.Models;
 using GPSInformation.Reportes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 
 namespace GestionPersonal.Controllers
@@ -110,6 +111,9 @@ namespace GestionPersonal.Controllers
                 IncidenciaVacaRe incidenciaVacaRe = new IncidenciaVacaRe();
                 incidenciaVacaRe.IncidenciaVacacion = darkManager.IncidenciaVacacion.Get(id);
                 incidenciaVacaRe.Mode = Mode;
+                incidenciaVacaRe.LinkPrivate =  $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = id, Mode = Mode })}";
+                incidenciaVacaRe.LinkPublic =  $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{darkManager.IpPublic}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = id, Mode = Mode })}";
+                //Url.ActionLink("Aprobar", "", new { id= id, Mode = Mode });
                 incidenciaVacaRe.Proccess = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaVacacion = {id}", "");
                 incidenciaVacaRe.view_Empleado = darkManager.View_empleado.Get(incidenciaVacaRe.IncidenciaVacacion.IdPersona);
                 incidenciaVacaRe.IncidenciaVacacion.Proceso = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaVacacion));
@@ -662,6 +666,12 @@ namespace GestionPersonal.Controllers
                                 darkManager.EmailServ_.AddListTO(a.Correo);
                             });
                         }
+                        incidenciaVacaRe.Mode = "CreadoN1";
+                        incidenciaVacaRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaVacaRe.IncidenciaVacacion.IdIncidenciaVacacion, Mode = mode })}";
+                        incidenciaVacaRe.LinkPublic = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{darkManager.IpPublic}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaVacaRe.IncidenciaVacacion.IdIncidenciaVacacion, Mode = mode })}";
+                        incidenciaVacaRe.Proccess = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaVacacion = {id}", "");
+
+
                         var result = await _viewRenderService.RenderToStringAsync("IncidenciaVacacion/DetailsEmail", incidenciaVacaRe);
                         darkManager.EmailServ_.Send(result, "Nuevas vacaciones - Aprobación N1");
                         darkManager.RestartEmail();
@@ -678,6 +688,10 @@ namespace GestionPersonal.Controllers
                         });
                     });
                     incidenciaVacaRe.ModeAmin = true;
+                    incidenciaVacaRe.Mode = "CreadoN2";
+                    incidenciaVacaRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaVacaRe.IncidenciaVacacion.IdIncidenciaVacacion, Mode = mode })}";
+                    incidenciaVacaRe.LinkPublic = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{darkManager.IpPublic}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaVacaRe.IncidenciaVacacion.IdIncidenciaVacacion, Mode = mode })}";
+                    incidenciaVacaRe.Proccess = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaVacacion = {id}", "");
                     var result = await _viewRenderService.RenderToStringAsync("IncidenciaVacacion/DetailsEmail", incidenciaVacaRe);
                     darkManager.EmailServ_.Send(result, "Nuevas vacaciones - Aprobación N2");
                     darkManager.RestartEmail();
