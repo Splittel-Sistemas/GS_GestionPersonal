@@ -38,6 +38,7 @@
     .map-col-text {
         font-size: 9px;
     }
+
     label {
         display: inline-block;
         margin-bottom: 0 !important;
@@ -92,6 +93,27 @@
                 <hr>
                 <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
             </div>
+        }
+        @if (Model.GrupoCorte != null && Model.GrupoCorte.EsFinal)
+        {
+            if (Model.GrupoCorte.EsInicial)
+            {
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">Estimado: @ViewBag.Autor</h4>
+                    <p>Este corte es de carga inicial, datos de carga: <strong>"@Model.GrupoCorte.Comentarios"</strong></p>
+                    <hr>
+                    <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info" role="alert">
+                    <h4 class="alert-heading">Estimado: @ViewBag.Autor</h4>
+                    <p>Este corte ya ha sido concluido</p>
+                    <hr>
+                    <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+                </div>
+            }
         }
     </div>
 
@@ -375,7 +397,7 @@
                                         <nav class="nav nav-with-icon tx-13">
                                             @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
                                             {
-                                                @if (Model.GrupoProdCorteAct is null)
+                                                @if (Model.GrupoCorte == null || Model.GrupoCorte != null  && !Model.GrupoCorte.EsFinal)
                                                 {
                                                     <a class="nav-link" href="#modal3" data-toggle="modal"><i data-feather="plus"></i> Agregar</a>
 
@@ -405,7 +427,7 @@
                                                                         <span class="badge badge-success">Entrada @Html.Raw(item.Forzado ? "Manual" : "")</span>
                                                                         @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
                                                                         {
-                                                                            @if (Model.GrupoProdCorteAct is null)
+                                                                            @if (Model.GrupoCorte == null || Model.GrupoCorte != null  && !Model.GrupoCorte.EsFinal)
                                                                             {
                                                                                 @if (item.Forzado)
                                                                                 {
@@ -435,7 +457,7 @@
                                                                         <span class="badge badge-info">Salida @Html.Raw(item.Forzado ? "Manual" : "")</span>
                                                                         @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
                                                                         {
-                                                                            @if (Model.GrupoProdCorteAct is null)
+                                                                            @if (Model.GrupoCorte == null || Model.GrupoCorte != null  && !Model.GrupoCorte.EsFinal)
                                                                             {
                                                                                 @if (item.Forzado)
                                                                                 {
@@ -469,7 +491,7 @@
                                                                     <span class="badge badge-danger">Se ha omitido este registro</span>
                                                                     @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization || Permisos.Find(a => a.IdSubModulo == 1049).Autorization)
                                                                     {
-                                                                        @if (Model.GrupoProdCorteAct is null)
+                                                                        @if (Model.GrupoCorte == null || Model.GrupoCorte != null  && !Model.GrupoCorte.EsFinal)
                                                                         {
                                                                             <a href="#card_e" v-on:click="DeleteArreglo(@item.IdGrupoArreglo)" title="Activar este registro" class="link-03 lh-0"><i class="icon ion-md-eye"></i></a>
                                                                         }
@@ -515,7 +537,7 @@
                                         <nav class="nav nav-with-icon tx-13">
                                             @if (Permisos.Find(a => a.IdSubModulo == 1048).Autorization)
                                             {
-                                                @if (Model.GrupoProdCorteAct is null)
+                                                @if (Model.GrupoCorte == null || Model.GrupoCorte != null  && !Model.GrupoCorte.EsFinal)
                                                 {
                                                     <a class="nav-link" href="#modal5" data-toggle="modal"><i data-feather="plus"></i>Asignar</a>
                                                 }
@@ -573,7 +595,10 @@
                             <div class="card-header pd-y-15 pd-x-20 d-flex align-items-center justify-content-between">
                                 <h6 class="tx-uppercase tx-semibold mg-b-0">Historial de incidencias durante la semana</h6>
                                 <nav class="nav nav-with-icon tx-13">
-                                    <a href="#modal6" data-toggle="modal" class="nav-link"><i data-feather="plus"></i> Agregar</a>
+                                    @if (Model.GrupoCorte == null || Model.GrupoCorte != null && !Model.GrupoCorte.EsFinal)
+                                    {
+                                        <a href="#modal6" data-toggle="modal" class="nav-link"><i data-feather="plus"></i> Agregar</a>
+                                    }
                                 </nav>
                             </div><!-- card-header -->
                             <div class="card-body pd-25">
@@ -595,32 +620,6 @@
                                             @if (item.Incidencia.TipoIncidencia == "Per")
                                             {
                                                 <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Permiso: @Html.DisplayFor(model => item.Incidencia.DescPermiso)</span></p>
-                                                @if (item.Incidencia.TipoPermiso == 42)
-                                                {
-                                                    @if (item.Incidencia.EsScoreGeneral)
-                                                    {
-                                                        <p class="mg-b-3 tx-color-03"><span class="tx-medium tx-color-01">El total de hrs de esta incidencia se afectará al acumulado <strong>Score general</strong></span></p>
-                                                    }
-                                                    else
-                                                    {
-                                                        <p class="mg-b-3 tx-color-03"><span class="tx-medium tx-color-01">El total de hrs de esta incidencia se afectará al acumulado <strong>Hrs TxT</strong></span></p>
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                @if (item.Incidencia.TipoIncidencia == "Fal")
-                                                {
-                                                    <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Falta</span></p>
-                                                }
-                                                else if (item.Incidencia.TipoIncidencia == "Inc")
-                                                {
-                                                    <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Incapacidad</span></p>
-                                                }
-                                                else if (item.Incidencia.TipoIncidencia == "Vac")
-                                                {
-                                                    <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Vacaciones</span></p>
-                                                }
                                             }
                                             <span class="d-block tx-13 tx-color-03">@item.Incidencia.Creado.ToString("F")</span>
 
@@ -906,66 +905,66 @@
                     }
                     else
                     {
-                <div class="row">
-                    <div class="form-group col-12" id="DatInc_fechaPermiso_span_v2">
+                        <div class="row">
+                            <div class="form-group col-12" id="DatInc_fechaPermiso_span_v2">
 
-                    </div>
-                    <div class="form-group col-12">
-                        <label>Incidencia para:</label>
-                        <input type="text" class="form-control" readonly name="name" value="@Model.NombreCompleto" />
-                    </div>
-                    <div class="form-group col-12">
-                        <label>Autor:</label>
-                        <input type="text" class="form-control" readonly name="name" value="@ViewBag.Autor" />
-                    </div>
-                    <div class="form-group col-6">
-                        <label>Tipo de incidencia</label>
-                        <select class="form-control" v-model="Incidencia.TipoIncidencia">
-                            <option value="Per" selected>Permiso</option>
-                            <option value="Fal">Falta</option>
-                            <option value="Inc">Incapacidad</option>
-                            <option value="Vac">Vacaciones</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-12" v-if="Incidencia.TipoIncidencia == 'Per'">
-                        <label>Tipo de permiso</label>
-                        <select class="form-control" v-model="Incidencia.TipoPermiso" asp-items="ViewBag.PagoPermisoPersonal">
-                            <option value="0">Selecciona una opción</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group col-12" v-if="Incidencia.TipoPermiso == 42 && Incidencia.TipoIncidencia == 'Per'">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" v-model="Incidencia.EsScoreGeneral" id="customCheck1">
-                            <label class="custom-control-label" for="customCheck1">Es para acumulado general</label>
-                        </div>
-                        <span class="text-info" v-if="Incidencia.EsScoreGeneral == true">El total de hrs de esta incidencia se afectará al acumulado <strong>Score general</strong> </span>
-                        <span class="text-info" v-if="Incidencia.EsScoreGeneral == false">El total de hrs de esta incidencia se afectará al acumulado <strong>Hrs TxT</strong> </span>
-                    </div>
-                    <div class="form-group col-12">
-                        <label>Comentarios</label>
-                        <textarea v-model="Incidencia.Comentarios" class="form-control"></textarea>
-                    </div>
-                    <div class="form-group col-12">
-                        <label>Adjuntar archivo</label>
-                        <input type="file" id="FileAdjunto" class="form-control" name="name" value="" />
-                    </div>
-                    <div class="form-group col-12">
-                        <label>Dias a aplicar</label>
-                    </div>
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Incidencia para:</label>
+                                <input type="text" class="form-control" readonly name="name" value="@Model.NombreCompleto" />
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Autor:</label>
+                                <input type="text" class="form-control" readonly name="name" value="@ViewBag.Autor" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label>Tipo de incidencia</label>
+                                <select class="form-control" v-model="Incidencia.TipoIncidencia">
+                                    <option value="Per" selected>Permiso</option>
+                                    <option value="Fal">Falta</option>
+                                    <option value="Inc">Incapacidad</option>
+                                    <option value="Vac">Vacaciones</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-12" v-if="Incidencia.TipoIncidencia == 'Per'">
+                                <label>Tipo de permiso</label>
+                                <select class="form-control" v-model="Incidencia.TipoPermiso" asp-items="ViewBag.PagoPermisoPersonal">
+                                    <option value="0">Selecciona una opción</option>
+                                </select>
+                            </div>
 
-                    <div class="input-group col-12" v-for="(item, index) in Incidencia.Semana">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text  " style="width: 100px !important;">
-                                <div class="custom-control custom-checkbox pd-l-15 ">
-                                    <input type="checkbox" class="custom-control-input" v-bind:id="'customCheck1_' + item.nombre" v-model="item.apply">
-                                    <label class="custom-control-label" v-bind:for="'customCheck1_' + item.nombre">{{ item.nombre }}</label>
+                            <div class="form-group col-12" v-if="Incidencia.TipoPermiso == 42 && Incidencia.TipoIncidencia == 'Per'">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" v-model="Incidencia.EsScoreGeneral" id="customCheck1">
+                                    <label class="custom-control-label" for="customCheck1">Es para acumulado general</label>
                                 </div>
+                                <span class="text-info" v-if="Incidencia.EsScoreGeneral == true">El total de hrs de esta incidencia se afectará al acumulado <strong>Score general</strong> </span>
+                                <span class="text-info" v-if="Incidencia.EsScoreGeneral == false">El total de hrs de esta incidencia se afectará al acumulado <strong>Hrs TxT</strong> </span>
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Comentarios</label>
+                                <textarea v-model="Incidencia.Comentarios" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Adjuntar archivo</label>
+                                <input type="file" id="FileAdjunto" class="form-control" name="name" value="" />
+                            </div>
+                            <div class="form-group col-12">
+                                <label>Dias a aplicar</label>
+                            </div>
+
+                            <div class="input-group col-12" v-for="(item, index) in Incidencia.Semana">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text  " style="width: 100px !important;">
+                                        <div class="custom-control custom-checkbox pd-l-15 ">
+                                            <input type="checkbox" class="custom-control-input" v-bind:id="'customCheck1_' + item.nombre" v-model="item.apply">
+                                            <label class="custom-control-label" v-bind:for="'customCheck1_' + item.nombre">{{ item.nombre }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="number" aria-label="First name" class="form-control" v-model="item.Horas" v-if="item.apply ==  true" placeholder="Horas">
                             </div>
                         </div>
-                        <input type="number" aria-label="First name" class="form-control" v-model="item.Horas" v-if="item.apply ==  true" placeholder="Horas">
-                    </div>
-                </div>
                     }
 
                 </div>
@@ -993,11 +992,11 @@
                     </div>
                     <div class="form-group">
                         <label>Hrs TxT</label>
-                        <input type="number"  name="impt_totalTxt" id="impt_totalTxt" class="form-control" value="@Model.GrupoCorte.Extras" />
+                        <input type="number" name="impt_totalTxt" id="impt_totalTxt" class="form-control" value="@Model.GrupoCorte.Extras" />
                     </div>
                     <div class="form-group">
                         <label>Hrs Score General</label>
-                        <input type="number"  name="impt_totalScGen" id="impt_totalScGen" class="form-control" value="@Model.GrupoCorte.Score" />
+                        <input type="number" name="impt_totalScGen" id="impt_totalScGen" class="form-control" value="@Model.GrupoCorte.Score" />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1074,7 +1073,7 @@
                     }).catch(error => {
                         if (error.response) {
                             if (error.response.status === 400) {
-                                
+
                                 ShowMessageErrorShort(error.response.data, "error")
                             }
                         }

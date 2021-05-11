@@ -121,7 +121,7 @@ WriteAttributeValue("", 2020, Url.Action("Create","IncidenciaPermiso", new { id 
             WriteLiteral(" class=\"btn btn-outline-primary btn-sm d-flex align-items-center\"><i class=\"icon ion-md-time mg-r-5 tx-16 lh--9\"></i>Crear nuevo</a>\r\n                </div>\r\n            </div>\r\n            <div id=\"table-permisos\">\r\n                ");
             EndContext();
             BeginContext(2333, 68, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "4524973868d449f290146caa8f9715fa", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "481d0572be6546b7a27744789893e714", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();
@@ -170,7 +170,7 @@ WriteAttributeValue("", 3130, Url.Action("Create","IncidenciaVacacion", new { id
                 ");
             EndContext();
             BeginContext(3479, 71, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "b0c85c054d4b4e10a5aea00b01f8e87a", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "fe71663118c841c69bfccc1d1b4de98b", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();

@@ -741,7 +741,7 @@ namespace GestionPersonal.Controllers
                 var process = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaVacacion = {id}", "");
                 var nive1 = process.Find(a => a.Nivel == 2);
                 var nive3 = process.Find(a => a.Nivel == 3);
-                if (nive1.Revisada && nive1.Revisada)
+                if (nive1.Revisada && nive3.Revisada)
                 {
                     IncidenciaVacaRe incidenciaVacaRe = new IncidenciaVacaRe();
 

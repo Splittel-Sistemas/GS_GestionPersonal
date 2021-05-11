@@ -681,7 +681,7 @@ namespace GestionIncidenciaPermisol.Controllers
                 var process = darkManager.IncidenciaProcess.GetOpenquery($"where IdIncidenciaPermiso = {id}", "");
                 var nive1 = process.Find(a => a.Nivel == 2);
                 var nive3 = process.Find(a => a.Nivel == 3);
-                if (nive1.Revisada && nive1.Revisada)
+                if (nive1.Revisada && nive3.Revisada)
                 {
                     IncidenciaPermisoRe incidenciaPermisoRe = new IncidenciaPermisoRe();
 
