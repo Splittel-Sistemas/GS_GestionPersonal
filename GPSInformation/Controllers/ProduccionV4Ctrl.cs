@@ -347,11 +347,13 @@ namespace GPSInformation.Controllers
                 Fin = Inicio_.AddDays(7),
                 Accessos = new List<AccessLog>(),
                 JornadaGrupos = new List<JornadaGrupo>(),
-                GrupoCambios = ListCambiosgrupo(Empleado.IdPersona, Inicio_),
+                GrupoCambios = new List<GrupoCambios>(),
+                //GrupoCambios = ListCambiosgrupo(Empleado.IdPersona, Inicio_),
                 NewIncidence = new List<NewIncidence>(),
                 GrupoCorte = new GrupoCorte(),
                 HrsTxt = 0,
                 HrsScoreGen = 0,
+                GrupoName = ""
             };
 
             #region Procesar logs
@@ -402,10 +404,10 @@ namespace GPSInformation.Controllers
             #region Procesar dias por grupo asginado
             DateTime Corte = DateTime.Parse(EmpleadoProd.Incio.ToString("yyyy-MM-dd 00:00:00")).AddDays(0);
             DateTime Fin = DateTime.Parse(EmpleadoProd.Fin.ToString("yyyy-MM-dd 00:00:00")).AddDays(0);
+            //var UltimoCambio = darkManager.GrupoCambios.GetOpenquerys($"where IdPersona = {Empleado.IdPersona} and Fecha = '{EmpleadoProd.Incio.ToString("yyyy-MM-dd")}'");
+            var UltimoCambio = GetUltimoCambio(EmpleadoProd.Incio, Empleado.IdPersona);
             while (Corte < Fin)
             {
-                var UltimoCambio = GetUltimoCambio(Corte, Empleado.IdPersona);
-
                 if (UltimoCambio != null)
                 {
                     // obtener dia de acuerdo al grupo
@@ -425,6 +427,9 @@ namespace GPSInformation.Controllers
 
                 Corte = Corte.AddDays(1);
             }
+            EmpleadoProd.GrupoCambio = UltimoCambio;
+            if(UltimoCambio != null)
+                EmpleadoProd.GrupoName = GetNameGrup(UltimoCambio.IdGrupo);
             #endregion
 
             #region Validando entradas
@@ -728,15 +733,28 @@ namespace GPSInformation.Controllers
 
             if (UltimoCambio != null)
             {
-                throw new Exceptions.GpExceptions($"Ya existe un cambio de grupo, el grupo definido fue '{ GetNameGrup(UltimoCambio.IdGrupo)}', por favor elimina dicho cambo y vuelve a intentar");
+                //throw new Exceptions.GpExceptions($"Ya existe un cambio de grupo, el grupo definido fue '{ GetNameGrup(UltimoCambio.IdGrupo)}', por favor elimina dicho cambo y vuelve a intentar");
+                //UltimoCambio.Creado = DateTime.Now;
+                UltimoCambio.Modificado = DateTime.Now;
+                UltimoCambio.IdGrupo = grupoCambios.IdGrupo;
+                UltimoCambio.Comentarios = grupoCambios.Comentarios;
+                darkManager.GrupoCambios.Element = UltimoCambio;
+                if (!darkManager.GrupoCambios.Update())
+                {
+                    throw new Exceptions.GpExceptions("Error al guardar los cambios");
+                }
             }
-            grupoCambios.Creado = DateTime.Now;
-            grupoCambios.Modificado = DateTime.Now;
-            darkManager.GrupoCambios.Element = grupoCambios;
-            if (!darkManager.GrupoCambios.Add())
+            else
             {
-                throw new Exceptions.GpExceptions("Error al guardar los cambios");
+                grupoCambios.Creado = DateTime.Now;
+                grupoCambios.Modificado = DateTime.Now;
+                darkManager.GrupoCambios.Element = grupoCambios;
+                if (!darkManager.GrupoCambios.Add())
+                {
+                    throw new Exceptions.GpExceptions("Error al guardar los cambios");
+                }
             }
+            
         }
         #endregion
 

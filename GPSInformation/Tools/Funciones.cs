@@ -19,6 +19,19 @@ namespace GPSInformation.Tools
         "setecientos ", "ochocientos ", "novecientos "};
 
         private static Regex r;
+
+        public static DateTime ValObjDate(object dato)
+        {
+            return dato is null ? DateTime.Now : (DateTime)dato;
+        }
+        public static string ValObjString(object dato)
+        {
+            return dato is null ? "" : dato.ToString();
+        }
+        public static int ValObjInteger(object dato)
+        {
+            return dato is null ? 0 : Int32.Parse(dato.ToString());
+        }
         public static DateTime GetFirtsDatWeek(DateTime dateTime)
         {
             while (dateTime.DayOfWeek != DayOfWeek.Monday)

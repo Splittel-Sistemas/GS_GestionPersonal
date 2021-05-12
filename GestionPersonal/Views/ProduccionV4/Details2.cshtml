@@ -831,38 +831,33 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-lg-7">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Grupo</th>
-                                        <th>Comentarios</th>
-                                        <th>Creado</th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in Model.GrupoCambios)
-                                    {
-                                        <tr>
-                                            <td>@item.Fecha.ToString("yyyy-MM-dd")</td>
-                                            <td><span class="badge badge-@Html.Raw(item.GrupoName == "Gris" ? "secondary" : item.GrupoName == "Rojo" ? "danger" : "success")">Grupo @item.GrupoName</span></td>
-                                            <td>@item.Comentarios</td>
-                                            <td>@item.Creado.ToString("yyyy-MM-dd HH:mm")</td>
-                                            <td>
-                                                <a href="#card_e" v-on:click="DleteCambio(@item.IdGrupoCambios)" title="Eliminar este cambio" class="link-03 lh-0"><i class="icon ion-ios-trash"></i></a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                            <h4 class="bg-light p-2">Grupo asignado</h4>
+                            <dl class="row">
+                                <dt class="col-sm-2">
+                                    Grupo
+                                </dt>
+                                <dd class="col-sm-12 ">
+                                    @Model.GrupoName
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => Model.GrupoCambio.Creado)
+                                </dt>
+                                <dd class="col-sm-12 ">
+                                    @Html.DisplayFor(model => Model.GrupoCambio.Creado)
+                                </dd>
+                                <dt class="col-sm-2">
+                                    @Html.DisplayNameFor(model => Model.GrupoCambio.Comentarios)
+                                </dt>
+                                <dd class="col-sm-12 ">
+                                    @Html.DisplayFor(model => Model.GrupoCambio.Comentarios)
+                                </dd>
+                            </dl>
                         </div>
                         <div class="col-lg-5">
                             <span id="sms_form5" class="text-danger"></span>
                             <div class="form-group">
                                 <label>Fecha a aplicar turno:</label>
-                                <input type="date" name="inp_fechaCG" id="inp_fecha_cambio" class="form-control" value="" />
+                                <input type="text" name="inp_fechaCG" id="inp_fecha_cambio" class="form-control" readonly value="@Model.Incio.ToString("F")" />
                             </div>
                             <div class="form-group">
                                 <label>Grupo:</label>
@@ -1173,7 +1168,7 @@
                         IdGrupoCambios: 0,
                         IdPersona: '@Model.IdPersona',
                         IdGrupo: parseInt(document.getElementById("inp_grupoCG").value),
-                        Fecha: new Date(document.getElementById("inp_fecha_cambio").value),
+                        Fecha: new Date("@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")"),
                         Comentarios: document.getElementById("inp_commentsCG").value,
                         Creado: new Date(),
                         Modificado: new Date(),

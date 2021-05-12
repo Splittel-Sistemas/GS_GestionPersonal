@@ -92,6 +92,7 @@
 
                 <th></th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -132,6 +133,10 @@
                         {
                             <span class="badge badge-warning">Inf</span>
                         }
+                    </td>
+                    <td>
+                        <span class="badge badge-@Html.Raw(item.GrupoName == "Gris" ? "secondary" : item.GrupoName == "Rojo" ? "danger" : item.GrupoName == "Verde" ? "success" : "")">Grupo @item.GrupoName</span>
+                        @*@Html.Raw(string.IsNullOrEmpty(item.GrupoName)  ? "---" : item.GrupoName)*@
                     </td>
                     <td>
                         @Html.ActionLink("Administrar", "Details2", new { IdPersona = item.IdPersona, Inicio = item.Incio })

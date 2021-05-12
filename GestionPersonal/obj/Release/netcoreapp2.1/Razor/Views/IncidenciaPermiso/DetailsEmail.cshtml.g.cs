@@ -80,7 +80,7 @@ using GestionPersonal.Models;
             WriteLiteral("<!DOCTYPE html>\r\n<html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\r\n");
             EndContext();
             BeginContext(654, 12208, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "bf52ac777f1e470e9cdfec6c6f395696", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "2468b9c3123243c9b29f5c5e7b51e1da", async() => {
                 BeginContext(660, 301, true);
                 WriteLiteral(@"
     <meta charset=""utf-8"">
@@ -520,7 +520,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n");
             EndContext();
             BeginContext(12864, 7799, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c9ddfd6094ac4206bff6c93235c6af12", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "b14dd7819e8c4e518ec819047cb95942", async() => {
                 BeginContext(12983, 1303, true);
                 WriteLiteral(@"
     <span class=""preheader"">Gestión de personal</span>

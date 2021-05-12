@@ -33,6 +33,7 @@ namespace GPSInformation.Reportes.ProduccionV3
         public List<JornadaGrupo> JornadaGrupos { get; set; }
         public List<GrupoProdIncidencia> GrupoProdIncidencias { get; set; }
         public List<GrupoCambios> GrupoCambios { get; set; }
+        public GrupoCambios GrupoCambio { get; set; }
         public GrupoProdCorte GrupoProdCorteAct { get; set; }
         public GrupoProdCorte GrupoProdCorteLast { get; set; }
         public GrupoCorte GrupoCorte { get; set; }
@@ -44,6 +45,8 @@ namespace GPSInformation.Reportes.ProduccionV3
         [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
         [Display(Name = "Hrs.Score general")]
         public double HrsScoreGen { get; internal set; }
+        [Display(Name = "Grupo")]
+        public string GrupoName { get; internal set; }
     }
 
     public class NewIncidence
