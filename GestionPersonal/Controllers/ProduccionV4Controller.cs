@@ -30,6 +30,7 @@ namespace GestionPersonal.Controllers
 
         #region Incidencias
         [HttpPost]
+        [AccessJson]
         public IActionResult RegisterIncidenciaNew(ProdIncidencia prodIncidencia)
         {
             try
@@ -44,6 +45,7 @@ namespace GestionPersonal.Controllers
             }
         }
         [HttpPost]
+        [AccessJson]
         public IActionResult DeleteInciNew(int Folio)
         {
             try
@@ -58,6 +60,7 @@ namespace GestionPersonal.Controllers
             }
         }
         [HttpPost]
+        [AccessJson]
         public IActionResult SaveDivHoras(int IdCorte, double Txt, double Score)
         {
             try
@@ -71,8 +74,9 @@ namespace GestionPersonal.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[AccessDataSession]
+        //[AccessJson]
         [HttpPost]
+        [AccessJson]
         public IActionResult DetailsInciNew(int Folio)
         {
             try
@@ -101,7 +105,7 @@ namespace GestionPersonal.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[AccessDataSession]
+        //[AccessJson]
         [HttpPost]
         public IActionResult DetailsInci(int IdGrupoProdIncidencia, int IdPersona)
         {
@@ -116,7 +120,7 @@ namespace GestionPersonal.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[AccessDataSession]
+        //[AccessJson]
         [HttpPost]
         public IActionResult RegisterIncidencia(GrupoProdIncidencia GrupoProdIncidencia)
         {
@@ -154,10 +158,10 @@ namespace GestionPersonal.Controllers
         #endregion
 
         #region Arreglos eventos
-        //[AccessDataSession]
+        //[AccessJson]
 
 
-        //[AccessDataSession]
+        [AccessJson]
         [HttpPost]
         public IActionResult AddArregloEvento(int IdEvent, int IdPersona, DateTime Fecha, string Comentarios)
         {
@@ -176,7 +180,7 @@ namespace GestionPersonal.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //[AccessDataSession]
+        [AccessJson]
         [HttpPost]
         public IActionResult DeleteArreglo(int IdEvent, int IdPersona)
         {
@@ -332,6 +336,7 @@ namespace GestionPersonal.Controllers
 
         #region Cambios de turno
         [HttpPost]
+        [AccessJson]
         public IActionResult CreateCorte(int IdPersona, DateTime Corte)
         {
             try
@@ -346,6 +351,7 @@ namespace GestionPersonal.Controllers
             }
         }
         [HttpPost]
+        [AccessJson]
         public IActionResult DeleteCambio(int IdPersona, int IdGrupoCambios)
         {
             try
@@ -360,6 +366,7 @@ namespace GestionPersonal.Controllers
             }
         }
         [HttpPost]
+        [AccessJson]
         public IActionResult CreateCambio([FromBody] GrupoCambios createCambio)
         {
             try
@@ -377,6 +384,7 @@ namespace GestionPersonal.Controllers
 
         #region Permisos
         [HttpPost]
+        [AccessJson]
         public IActionResult ChangePermisos([FromBody] List<PermisosBloq> Permisos)
         {
             try
@@ -391,6 +399,7 @@ namespace GestionPersonal.Controllers
             }
         }
         [HttpPost]
+
         public IActionResult VerPermisos(int IdPersona_)
         {
             try
@@ -606,17 +615,37 @@ namespace GestionPersonal.Controllers
                 excelWorksheet.Cells[1, 2].Value = respuesta.Inicio.ToString("F");
                 excelWorksheet.Cells[2, 2].Value = respuesta.Fin.ToString("F");
 
-                excelWorksheet.Cells[5, 1].Value = "Nomina";
-                excelWorksheet.Cells[5, 2].Value = "Empleado";
-                excelWorksheet.Cells[5, 3].Value = "Puesto";
-                excelWorksheet.Cells[5, 4].Value = "Hrs.Grupo";
-                excelWorksheet.Cells[5, 5].Value = "Hrs.Reales";
-                excelWorksheet.Cells[5, 6].Value = "Hrs.Nomina";
-                excelWorksheet.Cells[5, 7].Value = "Hrs.Extras";
-                excelWorksheet.Cells[5, 8].Value = "Hrs.TxT";
-                excelWorksheet.Cells[5, 9].Value = "Hrs.Score general";
+                AddRange("A3:O3", "Analisis semanal", excelWorksheet);
+                AddRange("P3:Q3", "Analisis general", excelWorksheet);
+                excelWorksheet.Cells["A3:O3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                excelWorksheet.Cells["P3:Q3"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                //AddRange("A4:G4", "", excelWorksheet);
+                
 
-                for (int i = 1; i < 10; i++)
+                AddRange("A4:A5", "Nomina", excelWorksheet);
+                AddRange("B4:B5", "Empleado", excelWorksheet);
+                AddRange("C4:C5", "Puesto", excelWorksheet);
+                AddRange("D4:D5", "Hrs.Objetivo", excelWorksheet);
+                AddRange("E4:E5", "Hrs.Reales", excelWorksheet);
+                AddRange("F4:F5", "Hrs.Nomina", excelWorksheet);
+                AddRange("G4:G5", "Hrs.Extras", excelWorksheet);
+                AddRange("H4:I4", "Faltas", excelWorksheet);
+                AddRange("J4:K4", "Vacaciones", excelWorksheet);
+                AddRange("L4:M4", "Incapacidad", excelWorksheet);
+                AddRange("N4:N5", "Hrs.TxT", excelWorksheet);
+                AddRange("O4:O5", "Hrs.Score Genral", excelWorksheet);
+                AddRange("P4:P5", "Hrs.TxT", excelWorksheet);
+                AddRange("Q4:Q5", "Hrs.Score Genral", excelWorksheet);
+                excelWorksheet.Cells[5, 8].Value = "Hrs.Falta";//H
+                excelWorksheet.Cells[5, 9].Value = "Eq.Dias";//I
+
+                excelWorksheet.Cells[5, 10].Value = "Hrs.Vacaciones";//J
+                excelWorksheet.Cells[5, 11].Value = "Eq.Dias";//K
+
+                excelWorksheet.Cells[5, 12].Value = "Hrs.Vacaciones";//L
+                excelWorksheet.Cells[5, 13].Value = "Eq.Dias";//M
+                excelWorksheet.Cells["D4:M5"].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                for (int i = 1; i < 14; i++)
                 {
                     Color myColor = System.Drawing.ColorTranslator.FromHtml("#ffab40");
                     excelWorksheet.Cells[5, i].Style.Fill.PatternType = ExcelFillStyle.Solid;
@@ -631,33 +660,89 @@ namespace GestionPersonal.Controllers
                     excelWorksheet.Cells[Fila, 1].Value = emp.NumeroNomina;
                     excelWorksheet.Cells[Fila, 2].Value = emp.NombreCompleto;
                     excelWorksheet.Cells[Fila, 3].Value = emp.PuestoNombre;
-                    excelWorksheet.Cells[Fila, 4].Value = string.Format("{0:#.##}", emp.GrupoCorte.HrsGrupo);
-                    excelWorksheet.Cells[Fila, 5].Value = string.Format("{0:#.##}", emp.GrupoCorte.HrsReal);
-                    excelWorksheet.Cells[Fila, 6].Value = string.Format("{0:#.##}", emp.GrupoCorte.HrsNomina);
-                    excelWorksheet.Cells[Fila, 7].Value = string.Format("{0:#.##}", (emp.GrupoCorte.HrsExtra - emp.GrupoCorte.Extras - emp.GrupoCorte.Score));
-                    excelWorksheet.Cells[Fila, 8].Value = string.Format("{0:#.##}", emp.HrsTxt);
-                    excelWorksheet.Cells[Fila, 9].Value = string.Format("{0:#.##}", emp.HrsScoreGen);
 
+                    excelWorksheet.Cells[Fila, 4].Value = emp.GrupoCorte.HrsGrupo;
+                    excelWorksheet.Cells[Fila, 4].Style.Numberformat.Format = "#,#0.0";
 
-                    if (emp.HrsTxt > 0)
+                    excelWorksheet.Cells[Fila, 5].Value = emp.GrupoCorte.HrsReal;
+                    excelWorksheet.Cells[Fila, 5].Style.Numberformat.Format = "#,#0.0";
+
+                    excelWorksheet.Cells[Fila, 6].Value = emp.GrupoCorte.HrsNomina;
+                    excelWorksheet.Cells[Fila, 6].Style.Numberformat.Format = "#,#0.0";
+
+                    excelWorksheet.Cells[Fila, 7].Value = emp.GrupoCorte.HrsExtra;
+                    excelWorksheet.Cells[Fila, 7].Style.Numberformat.Format = "#,#0.0";
+
+                    // faltas
+                    if(emp.GrupoCorte.HrsFalta > 0)
+                    {
+                        excelWorksheet.Cells[Fila, 8].Value = emp.GrupoCorte.HrsFalta;
+                        excelWorksheet.Cells[Fila, 8].Style.Numberformat.Format = "#,#0.0";
+                        excelWorksheet.Cells[Fila, 9].Value = $"{Funciones.DarkStriForDouble((6 / emp.GrupoCorte.HrsGrupo) * emp.GrupoCorte.HrsFalta)} día(s)";
+                    }
+                    
+                    //Vacaciones
+                    if(emp.GrupoCorte.HrsVacaciones > 0)
+                    {
+                        excelWorksheet.Cells[Fila, 10].Value = emp.GrupoCorte.HrsVacaciones;
+                        excelWorksheet.Cells[Fila, 10].Style.Numberformat.Format = "#,#0.0";
+                        excelWorksheet.Cells[Fila, 11].Value = $"{Funciones.DarkStriForDouble((6 / emp.GrupoCorte.HrsGrupo) * emp.GrupoCorte.HrsVacaciones)} día(s)";
+                    }
+                   
+                    //Permisos
+                    if(emp.GrupoCorte.HrsIncapacidad > 0)
+                    {
+                        excelWorksheet.Cells[Fila, 12].Value = emp.GrupoCorte.HrsIncapacidad;
+                        excelWorksheet.Cells[Fila, 12].Style.Numberformat.Format = "#,#0.0";
+                        excelWorksheet.Cells[Fila, 13].Value = $"{Funciones.DarkStriForDouble((6 / emp.GrupoCorte.HrsGrupo) * emp.GrupoCorte.HrsIncapacidad)} día(s)";
+                    }
+                    excelWorksheet.Cells[Fila, 14].Value = emp.GrupoCorte.HrsTxT;
+                    excelWorksheet.Cells[Fila, 14].Style.Numberformat.Format = "#,#0.0";
+
+                    excelWorksheet.Cells[Fila, 15].Value = emp.GrupoCorte.HrsScoreGen;
+                    excelWorksheet.Cells[Fila, 15].Style.Numberformat.Format = "#,#0.0";
+
+                    excelWorksheet.Cells[Fila, 16].Value = emp.HrsTxt;
+                    excelWorksheet.Cells[Fila, 16].Style.Numberformat.Format = "#,#0.0";
+
+                    excelWorksheet.Cells[Fila, 17].Value = emp.HrsScoreGen;
+                    excelWorksheet.Cells[Fila, 17].Style.Numberformat.Format = "#,#0.0";
+
+                    if (emp.HrsTxt >= 0)
                     {
                         Color myColor = System.Drawing.ColorTranslator.FromHtml("#ff616f");
-                        excelWorksheet.Cells[Fila, 8].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        excelWorksheet.Cells[Fila, 8].Style.Fill.BackgroundColor.SetColor(myColor);
-                    }
-                    else if (emp.HrsTxt < 0)
-                    {
-                        Color myColor = System.Drawing.ColorTranslator.FromHtml("#66ffa6");
-                        excelWorksheet.Cells[Fila, 8].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                        excelWorksheet.Cells[Fila, 8].Style.Fill.BackgroundColor.SetColor(myColor);
+                        excelWorksheet.Cells[Fila, 16].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        excelWorksheet.Cells[Fila, 16].Style.Fill.BackgroundColor.SetColor(myColor);
                     }
                     else
                     {
-
+                        Color myColor = System.Drawing.ColorTranslator.FromHtml("#66ffa6");
+                        excelWorksheet.Cells[Fila, 16].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        excelWorksheet.Cells[Fila, 16].Style.Fill.BackgroundColor.SetColor(myColor);
                     }
+
+                    if (emp.HrsScoreGen >= 0)
+                    {
+                        Color myColor = System.Drawing.ColorTranslator.FromHtml("#ff616f");
+                        excelWorksheet.Cells[Fila, 17].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        excelWorksheet.Cells[Fila, 17].Style.Fill.BackgroundColor.SetColor(myColor);
+                    }
+                    else 
+                    {
+                        Color myColor = System.Drawing.ColorTranslator.FromHtml("#66ffa6");
+                        excelWorksheet.Cells[Fila, 17].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                        excelWorksheet.Cells[Fila, 17].Style.Fill.BackgroundColor.SetColor(myColor);
+                    }
+                    //else
+                    //{
+
+                    //}
                     Fila++;
                 });
-
+                excelWorksheet.Cells[$"A3:Q{excelWorksheet.Dimension.Rows}"].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                excelWorksheet.Cells[$"A3:Q{excelWorksheet.Dimension.Rows}"].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                excelWorksheet.Cells[$"A3:Q{excelWorksheet.Dimension.Rows}"].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+                excelWorksheet.Cells[$"A3:Q{excelWorksheet.Dimension.Rows}"].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
                 excelWorksheet.Cells.AutoFitColumns();
                 package.Save();
             }
@@ -666,6 +751,16 @@ namespace GestionPersonal.Controllers
             string excelName = $"Rep_ProduccionHrs_{Inicio.ToString("yyyyMMddHHmmssfff")}.xlsx";
             // above I define the name of the file using the current datetime.
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelName); // this will be the actual export.
+        }
+
+        [NonAction]
+        private void AddRange(string Range, string Nombre, ExcelWorksheet excelWorksheet)
+        {
+            ExcelRange rng = excelWorksheet.Cells[Range];
+            rng.Merge = true;
+            rng.Value = Nombre;
+            rng.Style.Fill.PatternType = ExcelFillStyle.Solid;
+            rng.Style.Fill.BackgroundColor.SetColor(System.Drawing.ColorTranslator.FromHtml("#ffab40"));
         }
         #endregion
     }

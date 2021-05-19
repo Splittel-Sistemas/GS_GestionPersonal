@@ -327,3 +327,7 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\IncVacacion\Eliminar.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\IncVacacion\Editar.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\IncVacacion\Autorizar.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Organigrama\Editor.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Organigrama\OrgNodeDetails.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Organigrama\OrgNodeAdd.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Organigrama\Details.cshtml.g.cs

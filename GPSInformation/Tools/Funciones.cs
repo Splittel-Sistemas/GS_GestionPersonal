@@ -1,4 +1,5 @@
 ﻿using GPSInformation.Controllers;
+using GPSInformation.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -19,7 +20,36 @@ namespace GPSInformation.Tools
         "setecientos ", "ochocientos ", "novecientos "};
 
         private static Regex r;
-
+        public static void DarkValidModel(object dato, string Message)
+        {
+            if(dato is null)
+            {
+                throw new GPException
+                {
+                    Description = Message,
+                    ErrorCode = 0,
+                    Category = TypeException.Info,
+                    IdAux = ""
+                };
+            }
+        }
+        public static string DarkStriForDouble(double data)
+        {
+            return data > 0 ? string.Format("{0:#.##}", data) : "0";
+        }
+        public static void DarkValidString(string dato, string Message, string IdAux = "")
+        {
+            if (string.IsNullOrEmpty(dato) || string.IsNullOrWhiteSpace(dato))
+            {
+                throw new GPException
+                {
+                    Description = Message,
+                    ErrorCode = 0,
+                    Category = TypeException.Info,
+                    IdAux = IdAux
+                };
+            }
+        }
         public static DateTime ValObjDate(object dato)
         {
             return dato is null ? DateTime.Now : (DateTime)dato;

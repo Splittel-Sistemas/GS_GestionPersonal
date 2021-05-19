@@ -52,7 +52,7 @@ namespace GestionPersonal.Models
             }
             else
             {
-                filterContext.Result = new BadRequestObjectResult("Por favor inicia sesión");
+                filterContext.Result = new BadRequestObjectResult("tu sessión ha caducado, por favor recarga la pagina para volver a iniciar sesión, gracias!!");
                 return;
             }
             
@@ -150,6 +150,33 @@ namespace GestionPersonal.Models
             else
             {
                 filterContext.Result = new RedirectResult("~/");
+                return;
+            }
+
+            base.OnActionExecuting(filterContext);
+        }
+    }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class AccessJson : ActionFilterAttribute
+    {
+        private DarkManager darkManager;
+
+        public AccessJson()
+        {
+            //darkManager = new DarkManager("Data Source=192.168.3.160;User ID=infra;Password=SAPca+Ah*76U19$*;Initial Catalog=GestionPersonal; Integrated Security=false; Connect timeout=60;Encrypt=False;TrustServerCertificate=false;ApplicationIntent=ReadWrite;MultiSubnetfailover=False");
+            //darkManager.OpenConnection();
+            //darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            if (filterContext.HttpContext.Session.IsAvailable && filterContext.HttpContext.Session.GetInt32("user_id_permiss") != null)
+            {
+
+            }
+            else
+            {
+                filterContext.Result = new BadRequestObjectResult("tu sesión ha caducado, por favor recarga la pagina para volver a iniciar sesión, gracias!!");
                 return;
             }
 

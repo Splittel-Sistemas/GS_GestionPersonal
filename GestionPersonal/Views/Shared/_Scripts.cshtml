@@ -33,6 +33,105 @@
 
 
 <script>
+    var GlobalSendForm = async function (isview, isOnlyAction, idForm, IdAddResult, callbackSucsess, callbackErr) {
+        var dtForm = document.getElementById(idForm);
+        var dtFormRe = document.getElementById(IdAddResult);
+
+        if (dtForm != null && dtForm != undefined) {
+            let config = {
+                headers: {
+                    'content-type': dtForm.enctype
+                }
+            }
+            let params = new FormData(dtForm);
+            if (dtForm.method == "post") {
+                await axios.post(dtForm.action, params, config).then(response => {
+                    if (isOnlyAction == false) {
+                        if (isview) {
+                            dtFormRe.innerHTML = response.data
+                        } else {
+                            ShowMessageErrorShort("success", response.data)
+                        }
+                    }
+                    
+                    
+                    if (callbackSucsess != null && callbackSucsess != undefined) {
+                        callbackSucsess()
+                    }
+                }).catch(error => {
+                    GlobalValidAxios(error)
+                    if (callbackErr != null && callbackErr != undefined) {
+                        callbackErr()
+                    }
+                }).finally()
+            } else {
+
+            }
+
+
+        } else {
+            dtFormRe.innerHTML = "Error, formularo no encontrado"
+        }
+    }
+    var GlobalValidAxios = function(error){
+        if (error.response) {
+            if (error.response.status === 400) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    onOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: "error",
+                    title: error.response.data
+                })
+            }
+            else if (error.response.status === 404) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    onOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: "warning",
+                    title: error.response.data
+                })
+            }
+            else if (error.response.status === 500) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    onOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+
+                Toast.fire({
+                    icon: "error",
+                    title: "Error de sistema, contacta a TI"
+                })
+            }
+        }
+        console.error(error)
+    }
     function ShowMessageErrorShort(text, icon) {
         const Toast = Swal.mixin({
             toast: true,

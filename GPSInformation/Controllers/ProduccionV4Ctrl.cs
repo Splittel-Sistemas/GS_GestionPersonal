@@ -552,21 +552,44 @@ namespace GPSInformation.Controllers
                 EmpleadoProd.GrupoCorte.HrsReal = Math.Round(EmpleadoProd.HorasReal);
                 EmpleadoProd.GrupoCorte.HrsTxT = 0;
                 EmpleadoProd.GrupoCorte.HrsScoreGen = 0;
-                if (EmpleadoProd.GrupoCorte.HrsReal > EmpleadoProd.GrupoCorte.HrsGrupo)
-                {
-                    EmpleadoProd.GrupoCorte.HrsNomina = EmpleadoProd.GrupoCorte.HrsGrupo;
-                    EmpleadoProd.GrupoCorte.HrsExtra = EmpleadoProd.GrupoCorte.HrsReal - EmpleadoProd.GrupoCorte.HrsGrupo;
-                }
-                else
-                {
-                    EmpleadoProd.GrupoCorte.HrsNomina = EmpleadoProd.GrupoCorte.HrsReal;
-                }
+                EmpleadoProd.GrupoCorte.HrsNomina = 0;
+                EmpleadoProd.GrupoCorte.HrsExtra = 0;
+                EmpleadoProd.GrupoCorte.HrsVacaciones = 0;
+                EmpleadoProd.GrupoCorte.HrsFalta = 0;
+                //EmpleadoProd.GrupoCorte.HrsPermisos = 0;
 
+                //if (EmpleadoProd.GrupoCorte.HrsReal > EmpleadoProd.GrupoCorte.HrsGrupo)
+                //{
+                //    EmpleadoProd.GrupoCorte.HrsNomina = EmpleadoProd.GrupoCorte.HrsGrupo;
+                //    EmpleadoProd.GrupoCorte.HrsExtra = EmpleadoProd.GrupoCorte.HrsReal - EmpleadoProd.GrupoCorte.HrsGrupo;
+                //}
+                //else
+                //{
+
+                //    EmpleadoProd.GrupoCorte.HrsNomina = EmpleadoProd.GrupoCorte.HrsReal;
+                //}
+
+
+                //procesar indicencias
+               
                 EmpleadoProd.NewIncidence.ForEach(inc =>
                 {
-                    if (inc.Incidencia.TipoIncidencia != "Fal")
+                    var total = inc.Detalle.Sum(a => a.Horas);
+                    if (inc.Incidencia.TipoIncidencia == "Vac")
                     {
-                        var total = inc.Detalle.Sum(a => a.Horas);
+                        EmpleadoProd.GrupoCorte.HrsVacaciones = total;
+                    } 
+                    else if (inc.Incidencia.TipoIncidencia == "Fal")
+                    {
+                        EmpleadoProd.GrupoCorte.HrsFalta = total;
+                    }
+                    else if (inc.Incidencia.TipoIncidencia == "Inc")
+                    {
+                        EmpleadoProd.GrupoCorte.HrsIncapacidad = total;
+                    }
+                    else if (inc.Incidencia.TipoIncidencia == "Per")
+                    {
+                       
                         //40  Permiso con goce de sueldo
                         //41  Permiso sin goce de sueldo
                         //42  permiso tiempo por tiempo
@@ -576,6 +599,8 @@ namespace GPSInformation.Controllers
                         {
                             case 40:
                                 EmpleadoProd.GrupoCorte.HrsNomina += total;
+                                // sumar hrs a total de horas de incidencias
+                                EmpleadoProd.HrsIncidecias += total;
                                 break;
                             case 41:
 
@@ -588,18 +613,55 @@ namespace GPSInformation.Controllers
                                     EmpleadoProd.GrupoCorte.HrsTxT += total;
 
                                 EmpleadoProd.GrupoCorte.HrsNomina += total;
+                                // sumar hrs a total de horas de incidencias
+                                EmpleadoProd.HrsIncidecias += total;
                                 break;
                             case 43:
                                 EmpleadoProd.GrupoCorte.HrsNomina += total;
+                                // sumar hrs a total de horas de incidencias
+                                EmpleadoProd.HrsIncidecias += total;
                                 break;
                             case 44:
                                 EmpleadoProd.GrupoCorte.HrsNomina += total;
+                                // sumar hrs a total de horas de incidencias
+                                EmpleadoProd.HrsIncidecias += total;
                                 break;
                             default:
                                 break;
                         }
                     }
                 });
+
+                // validar horas nomina
+                // sumar horas incidencias mas horas reales
+                EmpleadoProd.GrupoCorte.HrsNomina += 
+                        EmpleadoProd.GrupoCorte.HrsReal + 
+                        EmpleadoProd.GrupoCorte.HrsIncapacidad + 
+                        EmpleadoProd.GrupoCorte.HrsVacaciones;
+                //validar si el empleado tiene horas de mas 
+                if (EmpleadoProd.GrupoCorte.HrsNomina > EmpleadoProd.GrupoCorte.HrsGrupo)
+                {
+                    EmpleadoProd.GrupoCorte.HrsExtra = EmpleadoProd.GrupoCorte.HrsNomina - EmpleadoProd.GrupoCorte.HrsGrupo;
+                    EmpleadoProd.GrupoCorte.HrsNomina = EmpleadoProd.GrupoCorte.HrsGrupo;
+                }
+                else
+                {
+
+                    EmpleadoProd.GrupoCorte.HrsExtra = 0;
+                    //if (EmpleadoProd.GrupoCorte.HrsReal > EmpleadoProd.GrupoCorte.HrsGrupo)
+                    //{
+                    //    EmpleadoProd.GrupoCorte.HrsNomina = EmpleadoProd.GrupoCorte.HrsGrupo;
+                    //    EmpleadoProd.GrupoCorte.HrsExtra = EmpleadoProd.GrupoCorte.HrsReal - EmpleadoProd.GrupoCorte.HrsGrupo;
+                    //}
+                    //else
+                    //{
+                    //    EmpleadoProd.GrupoCorte.HrsExtra = 0;
+                    //}
+
+                }
+
+
+
 
                 if (CorteSave is null)
                 {

@@ -119,7 +119,7 @@
                         @Html.DisplayFor(modelItem => item.GrupoCorte.HrsNomina)
                     </td>
                     <td>
-                        @string.Format("{0:#.##} hrs", (item.GrupoCorte.HrsExtra - item.GrupoCorte.Extras - item.GrupoCorte.Score))
+                        @string.Format("{0:#.##} hrs", item.GrupoCorte.HrsExtra)
                     </td>
                     <td>
                         <span class="@Html.Raw(item.HrsTxt <= 0 ? "text-success": "text-danger")">@Html.DisplayFor(modelItem => item.HrsTxt)</span>

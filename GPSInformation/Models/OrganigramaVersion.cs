@@ -10,6 +10,7 @@ namespace GPSInformation.Models
     public class OrganigramaVersion
     {
         [Display(Name = "#")]
+        [DisplayFormat(DataFormatString = "OR-{0:0000}", ApplyFormatInEditMode = true)]
         [ColumnDB(IsMapped = true, IsKey = true)]
         public int IdOrganigramaVersion { get; set; }
 
@@ -24,5 +25,13 @@ namespace GPSInformation.Models
         [Display(Name = "Autorizado")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public int Autirizada { get; set; }
+
+        [Display(Name = "Comentarios")]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Comentarios { get; set; }
+
+        [Display(Name = "Eliminado")]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool Eliminado { get; set; }
     }
 }

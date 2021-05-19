@@ -89,6 +89,10 @@ namespace GPSInformation.DBManagers
             var retunrDa = dBConnection.GetIntegerValue(Sentence);
             return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
         }
+        /// <summary>
+        /// obtener ultimo id campo definido como IsKey = true
+        /// </summary>
+        /// <returns></returns>
         public int GetLastId()
         {
             var retunrDa = dBConnection.GetIntegerValue(string.Format("select max(Id{0}) from {0}", Nametable));

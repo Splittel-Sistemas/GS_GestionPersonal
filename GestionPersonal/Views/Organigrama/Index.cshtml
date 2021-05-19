@@ -1,78 +1,151 @@
 ﻿@model IEnumerable<GPSInformation.Models.OrganigramaVersion>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista de versiones";
 }
-    <div id="app_organigrama">
-        @if (Model.Where(a => a.Autirizada == 2).ToList().Count <= 0)
-        {
-            <div class="alert alert-warning " role="alert">
-                <h4 class="alert-heading">Advertencia!</h4>
-                <p>Gestión de personal necesita un tener un organigrama autorizado para poder funcionar correctamente, de ello depende que los empleados puedan generar sus solicitudes de vaciones y permisos</p>
-                <hr>
-                <p class="mb-0">Por favor crea un organigrama o autoriza alguno!</p>
-            </div>
-        }
+<div id="app_organigrama">
+    @if (Model.Where(a => a.Autirizada == 2).ToList().Count <= 0)
+    {
+        <div class="alert alert-warning " role="alert">
+            <h4 class="alert-heading">Advertencia!</h4>
+            <p>Gestión de personal necesita un tener un organigrama autorizado para poder funcionar correctamente, de ello depende que los empleados puedan generar sus solicitudes de vaciones y permisos</p>
+            <hr>
+            <p class="mb-0">Por favor crea un organigrama o autoriza alguno!</p>
+        </div>
+    }
 
-        <div id="contactLogs" class="tab-pane pd-20 pd-xl-25 active">
-            <div class="d-flex align-items-center justify-content-between mg-b-30">
-                <h4 class="tx-15 mg-b-0">Lista de versiones</h4>
-                <form asp-action="CreateNewVersion">
-                    <button type="submit" class="btn btn-outline-primary btn-sm  d-flex align-items-center">Agregar nueva</button>
-                </form>
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1 ">@ViewData["Title"] </h4>
+        </div>
+        <div class="d-none d-md-block">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                <a class="btn btn-sm btn-outline-light" href="#modal2" data-toggle="modal" title="crear una version desde cero"><i data-feather="plus-square" class="wd-10 mg-r-5"></i>Nuevo</a>
             </div>
         </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.IdOrganigramaVersion)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.FechaCreacion)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.FechaActualizacion)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Autirizada)
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.IdOrganigramaVersion)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.FechaCreacion)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.FechaActualizacion)
-                        </td>
-                        <td>
-                            @if (item.Autirizada == 2)
-                            {
-                                <span class="badge badge-pill badge-primary">Antorizado</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-pill badge-light">No Antorizado</span>
-                            }
-                        </td>
-                        <td>
-                            @Html.ActionLink((bool)ViewBag.AccesoEdit5 == true ? "Editar" : "Ver", "Edit", new { id=item.IdOrganigramaVersion }) 
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
     </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.IdOrganigramaVersion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FechaCreacion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FechaActualizacion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Autirizada)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Comentarios)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.IdOrganigramaVersion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FechaCreacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FechaActualizacion)
+                    </td>
+                    <td>
+                        @if (item.Autirizada == 2)
+                        {
+                            <span class="badge badge-pill badge-primary">Antorizado</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-pill badge-light">No Antorizado</span>
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Comentarios)
+                    </td>
+                    <td>
+                        @if ((bool)ViewBag.AccesoEdit5)
+                        {
+                            @Html.ActionLink("Editar", "Editor", new { id = item.IdOrganigramaVersion })
+                        }
+                        <span>|</span>
+                        @if ((bool)ViewBag.AccesoEdit4)
+                        {
+                            @Html.ActionLink("Ver", "Details", new { id = item.IdOrganigramaVersion })
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel">Crer nueva versión desde cero</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Comentarios</label>
+                        <textarea v-model="comentarios2" placeholder="Introduce comentarios para poder continuar" rows="8" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-if="comentarios2.length > 0" v-on:click="OrgCreate()">Crear nuevo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+    <script type="text/javascript">
+
+        var app_organigrama = new Vue({
+            el: "#app_organigrama",
+            data: {
+                data: [],
+                chart: null,
+                dataChart: [],
+                comentarios: '',
+                comentarios2: '',
+                selected: ''
+            },
+            async mounted() {
+
+            },
+            methods: {
+                OrgCreate: async function () {
+                    await axios.post('@Url.Action("OrgCreate", "Organigrama")?Comentario=' + this.comentarios2, null, null).then(response => {
+                        ShowMessageErrorShort("Organigrama creado","success")
+                        //document.getElementById("btn_refrescar").click();
+                        window.location =  response.data;
+                        //this.chart.remove(a);
+                    }).catch(error => {
+                        GlobalValidAxios(error)
+                    }).finally()
+                }
+            }
+        });
+    </script>
 }
 
 

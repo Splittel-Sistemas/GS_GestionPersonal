@@ -496,14 +496,48 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 32, 36 })]
         public ActionResult Aprobar(int id, string Mode)
         {
-            var result = darkManager.IncidenciaVacacion.Get(id);
-            if (result.Estatus == 5)
+            try
             {
-                return NotFound("No existe la incidencia");
+                var result = darkManager.IncidenciaVacacion.Get(id);
+                if (result is null)
+                {
+                    if (id >= 4155 && id <= 4199)
+                    {
+                        darkManager.LoadObject(GpsManagerObjects.IncidenciaPermiso);
+                        var dataP = darkManager.IncidenciaPermiso.Get(id);
+                        if (dataP != null)
+                        {
+                            return RedirectToAction("Aprobar", "IncidenciaPermiso", new { id = id, Mode = Mode });
+                        }
+                        else
+                        {
+                            return NotFound("No existe la incidencia");
+                        }
+                    }
+                    else
+                    {
+                        return NotFound("No existe la incidencia");
+                    }
+                }
+
+                if (result != null && result.Estatus == 5)
+                {
+                    return NotFound("No existe la incidencia");
+                }
+                ViewData["Actividades"] = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaVacacion));
+                ViewData["ModeAprobar"] = Mode;
+                return View(result);
             }
-            ViewData["Actividades"] = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaVacacion));
-            ViewData["ModeAprobar"] = Mode;
-            return View(result);
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
+
         }
 
         [AccessMultipleView(IdAction = new int[] { 32, 36 })]

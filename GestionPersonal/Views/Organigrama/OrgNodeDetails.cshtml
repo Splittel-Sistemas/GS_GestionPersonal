@@ -1,0 +1,117 @@
+﻿@model GPSInformation.Request.OrgNodeReq
+@{
+    List<GPSInformation.Views.SystSelect> ocupantes = ViewBag.Ocupantes;
+
+}
+
+@if (ViewBag.Puesto != null)
+{
+    GPSInformation.Models.Puesto puesto = ViewBag.Puesto;
+    List<GPSInformation.Models.OrganigramaStructura> structuras = ViewBag.PuestosChild;
+
+    <div>
+        <h4>Puesto</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.IdOrganigramaVersion)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.IdOrganigramaVersion)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.IdPuesto)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => puesto.Nombre)
+            </dd>
+        </dl>
+        <hr />
+    </div>
+    <div class="d-flex mg-t-20 mg-sm-t-0">
+        <div class="btn-group flex-fill">
+            <button id="btn_seccionAdd" class="btn btn-white btn-xs" onclick="app_organigrama.viewAdd(); document.getElementById('seccionAdd').style.display = ''; document.getElementById('seccionDelete').style.display = 'none'; document.getElementById('seccionMoveTo').style.display = 'none'">Agregar nuevo</button>
+            <button id="btn_seccionDelete" class="btn btn-white btn-xs" onclick=" document.getElementById('seccionAdd').style.display = 'none'; document.getElementById('seccionDelete').style.display = '';document.getElementById('seccionMoveTo').style.display = 'none'">Eliminar</button>
+            <button id="btn_seccionMoveTo" class="btn btn-white btn-xs" onclick=" document.getElementById('seccionAdd').style.display = 'none'; document.getElementById('seccionDelete').style.display = 'none';document.getElementById('seccionMoveTo').style.display = ''">Mover</button>
+        </div>
+    </div>
+    <div id="seccionAdd" class="mt-2" style="display: block">
+        seccionAdd
+    </div>
+    <div id="seccionDelete" class="mt-2" style="display: none">
+        @if (structuras != null && structuras.Count > 0)
+        {
+            <div class="alert alert-warning  col-md-12" role="alert">
+                <h4 class="alert-heading">Estimado usuario</h4>
+                <p>El puesto: <strong>@Html.DisplayFor(model => puesto.Nombre)</strong> tiene <strong>@structuras.Count puesto(s)</strong> a su cargo, para poder eliminar este puesto, por favor elimina sus puestos dependientes</p>
+                <hr>
+                <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+            </div>
+        }
+        else
+        {
+            <h4>¿Deseas remover este puesto del organigrama @Html.DisplayFor(model => model.IdOrganigramaVersion)?</h4>
+            <form asp-action="OrgNodeDelete" id="OrgNodeDelete">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IdOrganigramaVersion" class="form-control" />
+                <input type="hidden" asp-for="IdPuestoParent" class="form-control" />
+                <input type="hidden" asp-for="Nivel" class="form-control" />
+                <input type="hidden" asp-for="IdPuesto" class="form-control" />
+                <div class="form-group">
+                    <input type="submit" value="Remover" class="btn btn-primary btn-block" />
+                </div>
+            </form>
+        }
+    </div>
+    <div id="seccionMoveTo" class="mt-2" style="display: none">
+        <div class="alert alert-warning  col-md-12" role="alert">
+            <h4 class="alert-heading">Estimado usuario</h4>
+            <p>El puesto: <strong>@Html.DisplayFor(model => puesto.Nombre)</strong> tiene <strong>@structuras.Count puesto(s)</strong> a su cargo, al moverlo este se moverá junto con sus puestos dependientes</p>
+            <hr>
+            <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+        </div>
+        <form asp-action="OrgNodeMoveTo" id="OrgNodeMoveTo">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdOrganigramaVersion" class="form-control" />
+            <input type="hidden" asp-for="Nivel" class="form-control" />
+            <input type="hidden" asp-for="IdPuesto" class="form-control" />
+            <div class="form-group">
+                <label asp-for="IdPuestoParent" class="control-label"></label>
+                <select asp-for="IdPuestoParent" class="form-control select2 idPuestoMoveTo" asp-items="ViewBag.Puestos">
+                    <option value="0">Selecciona una opción</option>
+                </select>
+                <span asp-validation-for="IdPuestoParent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Mover" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+    <hr />
+    <h4>Ocupantes</h4>
+
+    @if (ocupantes.Count <= 0)
+    {
+        <div class="alert alert-warning  col-md-12" role="alert">
+            <h4 class="alert-heading">Estimado usuario</h4>
+            <p>El puesto: <strong>@Html.DisplayFor(model => puesto.Nombre)</strong> no tiene ningun empleado ocupando este puesto</p>
+            <hr>
+            <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+        </div>
+    }
+    <table>
+
+        <tr>
+            @foreach (var item in ocupantes)
+            {
+                <th> @Html.DisplayFor(model => item.Label)</th>
+            }
+
+        </tr>
+    </table>
+}
+else
+{
+
+}
+

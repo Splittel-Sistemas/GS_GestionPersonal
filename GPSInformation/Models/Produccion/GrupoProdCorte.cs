@@ -56,7 +56,7 @@ namespace GPSInformation.Models.Produccion
 
         [ColumnDB(IsMapped = true, IsKey = false)]
         [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
-        [Display(Name = "Hrs.Grupo")]
+        [Display(Name = "Hrs.Objetivo")]
         public double HrsGrupo { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
@@ -98,5 +98,20 @@ namespace GPSInformation.Models.Produccion
         [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
         [Display(Name = "Hrs.Extras en Score general")]
         public double Score { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
+        [Display(Name = "Vacaciones")]
+        public double HrsVacaciones { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
+        [Display(Name = "Faltas")]
+        public double HrsFalta { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} hrs")]
+        [Display(Name = "Incapacidad")]
+        public double HrsIncapacidad { get; set; }
     }
 }

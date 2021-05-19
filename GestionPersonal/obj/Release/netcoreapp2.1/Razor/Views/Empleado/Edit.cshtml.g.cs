@@ -76,7 +76,7 @@ using GestionPersonal.Models;
 #line default
 #line hidden
             BeginContext(524, 75, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("link", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "4acf7ae1f8cb48d78e54031f88a4c2d8", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("link", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "fda848384b144bd8963b6de85ddd761d", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_Razor_TagHelpers_UrlResolutionTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.Razor.TagHelpers.UrlResolutionTagHelper>();
@@ -123,7 +123,7 @@ Write(ViewData["Title"]);
             WriteLiteral("active\" id=\"home\" role=\"tabpanel\" aria-labelledby=\"home-tab\">\r\n        <div id=\"PersonaEdit\">\r\n            ");
             EndContext();
             BeginContext(1756, 48, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "0f9ac090e4bc46718cfac943b480e06b", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "4a025252487441df91a6fe230fb37a3f", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();
@@ -157,7 +157,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper.Model = Model;
             WriteLiteral("            <div class=\"alert alert-primary mg-b-0\" role=\"alert\">\r\n                Sin información medica\r\n            </div>\r\n            <div id=\"CreateInformacionMedicaContent\">\r\n                ");
             EndContext();
             BeginContext(2177, 72, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "c4a8e37051a243a3bce49a7771ae766a", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "eebd70cf4bd04bfda1835b186d2a7ae8", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();
@@ -192,7 +192,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper.Model = informacionMedica
             WriteLiteral("            <div id=\"CreateInformacionMedicaContent\">\r\n                ");
             EndContext();
             BeginContext(2378, 71, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "e69d77a2ad244721991a65819938c6a3", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "6af1b19b4a284e63864b940d69463324", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();
@@ -234,7 +234,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper.Model = ViewBag.InfoMedic
             WriteLiteral("            <div class=\"alert alert-primary mg-b-0\" role=\"alert\">\r\n                Sin datos\r\n            </div>\r\n            <div id=\"CreateInfoEmpleadoContent\">\r\n                ");
             EndContext();
             BeginContext(2822, 70, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "8b5cbab8d79547a2b4891812c69bdb81", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "141691e70e614c0fb4b49969dadd6044", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();
@@ -269,7 +269,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper.Model = EmpleadoEmpleado;
             WriteLiteral("            <div id=\"CreateInfoEmpleadoContent\">\r\n                ");
             EndContext();
             BeginContext(3016, 73, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "bd3b67d868874c4b85567ebc2e500d12", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "f60eb672fb28483582726c5b9b16c8d2", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();
@@ -312,7 +312,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper.Model = ViewBag.InforEmpl
                     ");
             EndContext();
             BeginContext(3827, 68, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "1e2fcfc5af6e4470895f472b2b5362aa", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "104356364f7a4521adafa775517c2f7c", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();
@@ -337,7 +337,7 @@ __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper.Model = PersonaContacto;
             WriteLiteral("\r\n                </div>\r\n            </div>\r\n        </div>\r\n        ");
             EndContext();
             BeginContext(3965, 116, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "addf1ce0b09045668561a29a0a69eb5c", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("form", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "f043a5d2d8b345328bf03f60318edc07", async() => {
                 BeginContext(3992, 44, true);
                 WriteLiteral("\r\n            <input type=\"hidden\" name=\"id\"");
                 EndContext();
@@ -370,7 +370,7 @@ WriteAttributeValue("", 4044, Model.IdPersona, 4044, 16, false);
             WriteLiteral("\r\n        <h4>Lista de contactos</h4>\r\n        <div id=\"ListPersonasContacto\">\r\n            ");
             EndContext();
             BeginContext(4173, 74, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "904e2279f57642298a43f409e34a04cb", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("partial", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.SelfClosing, "ca7c2da7c80b43538c205f29957320bc", async() => {
             }
             );
             __Microsoft_AspNetCore_Mvc_TagHelpers_PartialTagHelper = CreateTagHelper<global::Microsoft.AspNetCore.Mvc.TagHelpers.PartialTagHelper>();

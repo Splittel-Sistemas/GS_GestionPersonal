@@ -47,6 +47,10 @@ namespace GPSInformation.Reportes.ProduccionV3
         public double HrsScoreGen { get; internal set; }
         [Display(Name = "Grupo")]
         public string GrupoName { get; internal set; }
+
+        [DisplayFormat(DataFormatString = "{0:#,##0.0#} (hrs)")]
+        [Display(Name = "Hrs.Incidencias")]
+        public double HrsIncidecias { get; internal set; }
     }
 
     public class NewIncidence

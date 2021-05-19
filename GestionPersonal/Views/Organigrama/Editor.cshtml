@@ -1,0 +1,550 @@
+﻿@model GPSInformation.Models.OrganigramaVersion
+@{
+    ViewData["Title"] = "Editar organigrama: " + string.Format("OR-{0:0000}", Model.IdOrganigramaVersion);
+}
+
+<style>
+    .maman {
+        color: green;
+        width: 60px;
+        border: 1px solid #fff;
+        text-align: center;
+    }
+
+    .google-visualization-orgchart-lineleft {
+        border-left: 2px solid #333 !important;
+    }
+
+    .google-visualization-orgchart-linebottom {
+        border-bottom: 2px solid #333 !important;
+    }
+
+    .google-visualization-orgchart-lineright {
+        border-right: 2px solid #333 !important;
+    }
+
+    .maman img {
+        clear: both;
+        display: block;
+        margin: auto;
+    }
+
+    .google-visualization-orgchart-node {
+        border: 2px solid #b7ccd75c;
+        background: -webkit-gradient(linear, left top, left bottom, from(#edf7ff), to(#cde7ee));
+    }
+
+    .google-visualization-orgchart-nodesel {
+        border: 2px solid #e3ca4b;
+        background-color: #fff7ae;
+        background: -webkit-gradient(linear, left top, left bottom, from(#fff7ae), to(#eee79e));
+    }
+
+    .contenedororg {
+        overflow-x: scroll;
+        overflow-y: scroll;
+        /*height: 80px;*/
+        /*white-space: pre-wrap;*/
+        height: 100%;
+        width: 100%;
+    }
+
+    .content-components {
+        height: 100%;
+    }
+
+    .container-fluid {
+        height: 100%;
+    }
+
+    .google-visualization-orgchart-table * {
+        margin: 0;
+        padding: 2px 10px 2px 10px !important;
+    }
+
+    .NodePlus {
+        border-left: 2px solid red !important;
+    }
+</style>
+
+
+<div id="app_organigrama" class="contenedororg">
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("Index","Organigrama")">Lista de versiones</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1 ">@ViewData["Title"] </h4>
+            <h5>@Html.DisplayFor(model => model.Comentarios)</h5>
+        </div>
+        <div class="d-none d-md-block">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
+                @if (Model.Autirizada == 1)
+                {
+                    <a class="btn btn-sm btn-outline-light" href="#" onclick="app_organigrama.OrgAutorizar()" title="hacer vigente esta versión"><i data-feather="thumbs-up" class="wd-10 mg-r-5"></i>Autorizar</a>
+                }
+                <a class="btn btn-sm btn-outline-light" href="#modal1" data-toggle="modal" title="copiar y generar uno nuevo"><i data-feather="copy" class="wd-10 mg-r-5"></i>Copiar</a>
+                <a class="btn btn-sm btn-outline-light" href="#modal2" data-toggle="modal" title="crear una version desde cero"><i data-feather="plus-square" class="wd-10 mg-r-5"></i>Nuevo</a>
+            </div>
+        </div>
+    </div>
+    @if ((int)ViewBag.CountNodes == 0)
+    {
+<div class="row">
+    <div class="alert alert-warning  col-md-12" role="alert">
+        <h4 class="alert-heading">Estimado usuario</h4>
+        <p>Este organigrama aun no cuenta con puestos, por favor agrega el puesto raíz en el siguiente formulario</p>
+        <hr>
+        <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+    </div>
+    <div class="col-md-5"></div>
+    <div class="col-md-2 border">
+        <form asp-action="OrgNodeAdd" id="OrgNodeAddRaiz" class="mt-4 mb-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="IdOrganigramaVersion" value="@Model.IdOrganigramaVersion" class="form-control" />
+            <input type="hidden" name="IdPuestoParent" value="0" class="form-control" />
+            <input type="hidden" name="Nivel" value="0" class="form-control" />
+            <div class="form-group">
+                <label name="IdPuesto" class="control-label">Puesto raiz</label>
+                <select name="IdPuesto" class="form-control select2" asp-items="ViewBag.Puestos">
+                    <option value="0">Selecciona una opción</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Agregar" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-5"></div>
+</div>
+    }
+    <div id="chart_div"></div>
+    <div id="offCanvas1" class="off-canvas off-canvas-overlay off-canvas-right wd-350">
+        <a href="#" class="close"><i data-feather="x"></i></a>
+        <div class="pd-25 ht-100p tx-13" id="contec_nodeItem">
+            Selecciona un puesto para ver sus detalles
+        </div>
+    </div><!-- off-canvas -->
+    <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel">Crear version en base al organigrama: @string.Format("OR-{0:0000}", Model.IdOrganigramaVersion)</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Crear en base a la version:</label>
+                        <input type="text" readonly class="form-control" value="@string.Format("OR-{0:0000}", Model.IdOrganigramaVersion)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Comentarios</label>
+                        <textarea v-model="comentarios" rows="8" placeholder="Introduce comentarios para poder continuar" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-if="comentarios.length > 0" v-on:click="OrgCopyTo()">Crear copia</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel">Crer nueva versión desde cero</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Comentarios</label>
+                        <textarea v-model="comentarios2" placeholder="Introduce comentarios para poder continuar" rows="8" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-if="comentarios2.length > 0" v-on:click="OrgCreate()">Crear nuevo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <button href="#" onclick="window.location.reload()" style="display: none" id="btn_refrescar" type="button" class="btn btn-white"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Refrescar</button>
+
+    @section Scripts {
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+            $(function () {
+                'use strict'
+
+                // The code below is for demo purposes only.
+                // For you to not be confused, please refer to
+                // Off-Canvas starter template in Collections
+
+                $('.off-canvas-menu').on('click', function (e) {
+                    e.preventDefault();
+                    var target = $(this).attr('href');
+                    $(target).addClass('show');
+                    window.localStorage.setItem('ShowDetailsPuesto', 'true');
+                });
+
+
+                $('.off-canvas .close').on('click', function (e) {
+                    e.preventDefault();
+                    $(this).closest('.off-canvas').removeClass('show');
+                    //app_ActivoDetailsPublic.refresh()
+                    window.localStorage.setItem('ShowDetailsPuesto', 'false');
+                })
+
+                $('#btnP_cancela').on('click', function (e) {
+                    e.stopPropagation();
+                    //app_ActivoDetailsPublic.refresh()
+                    // closing of sidebar menu when clicking outside of it
+                    if (!$(e.target).closest('.off-canvas-menu').length) {
+                        var offCanvas = $(e.target).closest('.off-canvas').length;
+                        if (!offCanvas) {
+                            $('.off-canvas.show').removeClass('show');
+                        }
+                    }
+                });
+
+
+            });
+        </script>
+        <script type="text/javascript">
+
+        var app_organigrama = new Vue({
+            el: "#app_organigrama",
+            data: {
+                idOrganigramaVersion: '@Model.IdOrganigramaVersion',
+                data: [],
+                chart: null,
+                dataChart: [],
+                dataChildrens: [],
+                comentarios: '',
+                comentarios2: '',
+                selected: ''
+            },
+            async mounted() {
+                this.LoadChart()
+                if (window.localStorage.getItem('ShowDetailsPuesto') == null && window.localStorage.getItem('ShowDetailsPuesto') == undefined) {
+                    window.localStorage.setItem('ShowDetailsPuesto', 'false');
+                }
+
+                if (window.localStorage.getItem('ShowDetailsPuesto') == 'true') {
+                    $('#offCanvas1').addClass('show');
+
+                } else {
+
+                }
+                var form = document.getElementById("OrgNodeAddRaiz");
+                if (form != null && form != undefined) {
+                    form.addEventListener("submit", function (event) {
+                        event.preventDefault();
+                        console.log("event prevent")
+                        GlobalSendForm(true, true, "OrgNodeAddRaiz", "seccionAdd", function () {
+                            document.getElementById("btn_refrescar").click();
+                        })
+
+                    });
+                } 
+               
+                
+            },
+            methods: {
+                OrgCopyTo: async function () {
+                    await axios.post('@Url.Action("OrgCopyTo", "Organigrama")?Comentario=' + this.comentarios + '&IdOrganigramaVersion=' + this.idOrganigramaVersion, null, null).then(response => {
+                        ShowMessageErrorShort("Organigrama creado","success")
+                        //document.getElementById("btn_refrescar").click();
+                        window.location =  response.data;
+                        //this.chart.remove(a);
+                    }).catch(error => {
+                        GlobalValidAxios(error)
+                    }).finally()
+                },
+                OrgCreate: async function () {
+                    await axios.post('@Url.Action("OrgCreate", "Organigrama")?Comentario=' + this.comentarios2, null, null).then(response => {
+                        ShowMessageErrorShort("Organigrama creado","success")
+                        //document.getElementById("btn_refrescar").click();
+                        window.location =  response.data;
+                        //this.chart.remove(a);
+                    }).catch(error => {
+                        GlobalValidAxios(error)
+                    }).finally()
+                },
+                OrgAutorizar: function () {
+                    Swal.fire({
+                        title: "¿Deseas autorizar esta versión?",
+                        text: "",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Si, adelante!'
+                    }).then((result) => {
+                        if (result.value) {
+                            axios.post('@Url.Action("OrgAutorizar", "Organigrama")?IdOrganigramaVersion=' + this.idOrganigramaVersion, null, null).then(response => {
+                                ShowMessageErrorShort("Organigrama autorizado","success")
+                                document.getElementById("btn_refrescar").click();
+                                //this.chart.remove(a);
+                            }).catch(error => {
+                                GlobalValidAxios(error)
+                            }).finally()
+                        }
+                    })
+                },
+                LoadChart: async function () {
+                    await this.GetEstructura();
+                    google.charts.load('current', { packages: ["orgchart"] });
+                    google.charts.setOnLoadCallback(this.StartChartOrg);
+                },
+                LoadEnvetsNode: function () {
+                    $('.select2').select2({
+                        placeholder: 'Choose one',
+                        searchInputPlaceholder: 'Search options',
+
+                    });
+                    //add new puesto
+                    var form = document.getElementById("OrgNodeAdd");
+                    if (form != null && form != undefined) {
+                        form.addEventListener("submit", function (event) {
+                            event.preventDefault();
+                            console.log("event prevent")
+                            GlobalSendForm(true,false, "OrgNodeAdd", "seccionAdd", function () {
+                                $('.select2').select2({
+                                    placeholder: 'Choose one',
+                                    searchInputPlaceholder: 'Search options',
+
+                                });
+                                app_organigrama.getNodeDetails();
+                                app_organigrama.LoadChart()
+
+                            })
+
+                        });
+                    } else {
+                        console.log("form not found, plese contact with TI Departament")
+                    }
+                    // delete puesto
+                    var formDel = document.getElementById("OrgNodeDelete");
+                    if (formDel != null && formDel != undefined) {
+                        formDel.addEventListener("submit", function (event) {
+                            event.preventDefault();
+                            console.log("event prevent")
+                            GlobalSendForm(true, false,"OrgNodeDelete", "seccionDelete", function () {
+                                $('#offCanvas1').removeClass('show');
+                                window.localStorage.setItem('ShowDetailsPuesto', 'false');
+                                //app_organigrama.getNodeDetails();
+                                app_organigrama.LoadChart()
+                            })
+
+                        });
+                    } else {
+                        console.log("form not found, plese contact with TI Departament")
+                    }
+
+                    // delete puesto
+                    var formMove = document.getElementById("OrgNodeMoveTo");
+                    if (formMove != null && formMove != undefined) {
+                        formMove.addEventListener("submit", function (event) {
+                            event.preventDefault();
+                            console.log("event prevent")
+                            GlobalSendForm(true, false, "OrgNodeMoveTo", "seccionMoveTo", function () {
+                                $('#offCanvas1').removeClass('show');
+                                window.localStorage.setItem('ShowDetailsPuesto', 'false');
+                                app_organigrama.getNodeDetails();
+                                app_organigrama.LoadChart()
+                            })
+
+                        });
+                    } else {
+                        console.log("form not found, plese contact with TI Departament")
+                    }
+                },
+                viewAdd: async function () {
+                    document.getElementById("seccionAdd").innerHTML = "Cargando formulario...."
+                    let params = new FormData();
+                    params.append('IdOrganigramaVersion', this.idOrganigramaVersion);
+                    params.append('IdPuestParent', this.selected.replace('uid_',''));
+                    await axios.get('@Url.Action("OrgNodeAdd", "Organigrama")?IdOrganigramaVersion=' + this.idOrganigramaVersion + '&IdPuestParent=' + this.selected.replace('uid_', '') + '', params, null).then(response => {
+                        document.getElementById("seccionAdd").innerHTML = response.data
+                        this.LoadEnvetsNode();
+
+                    }).catch(error => {
+                        GlobalValidAxios(error)
+                    }).finally()
+
+                },
+                getNodeDetails: async function () {
+                    document.getElementById("contec_nodeItem").innerHTML = "Obteniendo info"
+                    let params = new FormData();
+                    params.append('IdOrganigramaVersion', this.idOrganigramaVersion);
+                    params.append('IdPuesto', this.selected.replace('uid_',''));
+                    await axios.post('@Url.Action("OrgNodeDetails", "Organigrama")', params, null).then(response => {
+                        document.getElementById("contec_nodeItem").innerHTML = response.data
+                        this.viewAdd()
+                    }).catch(error => {
+                        GlobalValidAxios(error)
+                    }).finally()
+                },
+                process: async function () {
+                    var vacios = document.getElementsByClassName("nodeHide")
+                    for (var i = 0; i < vacios.length; i++) {
+                        document.getElementsByClassName("nodeHide")[i].parentElement.colSpan = 3
+
+                        var clone = document.getElementsByClassName("nodeHide")[i].parentElement.cloneNode();
+                        var normal = document.getElementsByClassName("nodeHide")[i].parentElement;
+
+                        clone.classList = []
+                        normal.classList = []
+
+                        normal.classList.add("google-visualization-orgchart-linenode")
+                        normal.classList.add("google-visualization-orgchart-lineleft")
+
+                        //class="google-visualization-orgchart-linenode google-visualization-orgchart-lineleft"
+                        document.getElementsByClassName("nodeHide")[i].parentElement.parentElement.insertBefore(clone, normal)
+                    }
+                },
+                ItemSelected: async function () {
+                    var selectedItem = this.chart.getSelection()[0];
+                    this.dataChildrens = []
+                    if (selectedItem) {
+                        var value = this.dataChart.getValue(selectedItem.row, 0);
+                        if (window.localStorage.getItem('ShowDetailsPuesto') == 'false') {
+                            $('#offCanvas1').addClass('show');
+                        }
+                        this.selected = value
+                        await this.getNodeDetails();
+                        this.getChildrens(this.chart.getSelection()[0].row)
+                        console.log(this.dataChildrens)
+                        if (this.dataChildrens.length > 0) {
+                            var movetoIds = document.getElementsByClassName("idPuestoMoveTo")[0]
+                            for (var i = 0; i < movetoIds.options.length; i++) {
+                                var option = movetoIds.options[i];
+                                var valuefind = this.dataChildrens.find(ele => ele == "uid_" + option.value);
+                                console.log("option: " + valuefind)
+                                if (valuefind != undefined && valuefind != "") {
+                                    option.disabled = true
+                                }
+                                else if (option.value == this.selected.replace('uid_', '')) {
+                                    option.disabled = true
+                                }
+                            }
+
+                        }
+                        //alert('The user selected ' + value);
+                    }
+                },
+                getChildrens: function (index) {
+                    var childs = this.chart.getChildrenIndexes(index); // get children indexes of current index
+                    for (var i = 0; i < childs.length; i++) { // for each children
+                        this.dataChildrens.push(this.dataChart.getValue(childs[i], 0)) // add the title
+                        this.getChildrens(childs[i]) // and call the function with this children index, to get their children and so on >> this is recursive
+                    }
+                },
+                GetEstructura: async function () {
+                    ShowMessageErrorShort("Obteniendo cambios del organigrama","success")
+                    let params = new URLSearchParams();
+                    params.append('IdVersion', this.idOrganigramaVersion);
+                    await axios.post('@Url.Action("GetNodes","Organigrama")', params, null).then(response => {
+                        this.data = response.data
+                    }).catch(error => {
+                        GlobalValidAxios(error)
+                    }).finally()
+                },
+                StartChartOrg: async function () {
+                    this.dataChart = new google.visualization.DataTable();
+                    this.dataChart.addColumn('string', 'Name');
+                    this.dataChart.addColumn('string', 'Manager');
+                    this.dataChart.addColumn('string', 'ToolTip');
+                    var rows = [];
+
+                    this.data.forEach((e,i) => {
+
+                                                if (e.idPuestoParent == 0) {
+                            rows.push(
+                                [
+                                    {
+                                        'v': 'uid_' + e.idPuesto,
+                                        'f': e.dpu + '<div href="#offCanvas3" id="uid_' + e.idPuesto + '" style="color:blue; font-style:italic" class="mn-ht-0 off-canvas-menu">' + e.descripcion + '</div>'
+                                    },
+                                    '',
+                                    e.descripcion
+                                ]
+                            );
+                        } else {
+                            if (e.nivel != 0) {
+                                var nivel = (e.nivel - 1);
+                                var parent = e.idPuestoParent;
+                                var idPuesto = e.idPuesto ;
+                                for (var i = nivel; i >= 0; i--){
+                                    if (i == 0)
+                                    {
+                                        rows.push(
+                                            [
+                                                {
+                                                    'v': 'uid_' + e.idPuesto,
+                                                    'f': e.dpu + '<div id="uid_' + e.idPuesto + '" style="color:blue; font-style:italic">' + e.descripcion + '</div>'
+                                                },
+                                                'uid_' + parent,
+                                                e.descripcion
+                                            ]
+                                        );
+                                    }
+                                    else
+                                    {
+                                        rows.push(
+                                            [
+                                                {
+                                                    'v': 'uid_' + e.idPuesto + '_' + i,
+                                                    'f': '<div class="nodeHide"></div>'
+                                                },
+                                                'uid_' + parent,
+                                                ''
+                                            ]
+                                        );
+                                        parent = e.idPuesto + '_' + i;
+                                    }
+                                }
+                            } else {
+                                rows.push(
+                                    [
+                                        {
+                                            'v': 'uid_' + e.idPuesto,
+                                            'f': e.dpu + '<div id="uid_' + e.idPuesto + '" style="color:blue; font-style:italic">' + e.descripcion + '</div>'
+                                        },
+                                        'uid_' + e.idPuestoParent,
+                                        e.descripcion
+                                    ]
+                                );
+                            }
+                        }
+                    })
+
+
+                    this                    .dataChart.addRows(rows)
+                    // Create the chart.
+                    this.chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+
+                    google.visualization.events.addListener(this.chart, 'select', this.ItemSelected);
+                    google.visualization.events.addListener(this.chart, 'collapse', this.process);
+
+                    // Draw the chart, setting the allowHtml option to true for the tooltips.
+                    this.chart.draw(this.dataChart, { 'allowHtml': true, 'allowCollapse': true });
+
+
+
+                    this.process();
+                }
+            }
+        });
+        </script>
+    }

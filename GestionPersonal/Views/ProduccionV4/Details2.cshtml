@@ -144,7 +144,7 @@
                 <span class="@Html.Raw(Model.GrupoCorte.HrsNomina >= Model.GrupoCorte.HrsGrupo ? "text-success": "text-danger")">@Html.DisplayFor(model => model.GrupoCorte.HrsNomina)</span>
             </p>
             <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
-                @Html.DisplayNameFor(model => model.GrupoCorte.HrsExtra)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Exceso de Hrs [Hrs.Reales] - [Hrs.Grupo]" class=""><i class="icon ion-ios-navigate"></i></a>
+                @Html.DisplayNameFor(model => model.GrupoCorte.HrsExtra)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Exceso de Hrs [Hrs.Nomina] - [Hrs.Objetivo]" class=""><i class="icon ion-ios-navigate"></i></a>
             </label>
             <p class="mg-b-0 tx-color-03 mb-2">
                 @Html.DisplayFor(model => model.GrupoCorte.HrsExtra)
@@ -152,6 +152,12 @@
                 {
                     <a href="#modal7" data-toggle="modal" title="Mover horas extras" class="link-03 lh-0"><i class="icon ion-ios-navigate"></i></a>
                 }
+            </p>
+            <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                @Html.DisplayNameFor(model => model.HrsIncidecias)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="suma de horas [Permisos|Vacaciones|Incapacidades] nota: permisos sin goce de sueldo no se sumarán" class=""><i class="icon ion-ios-navigate"></i></a>
+            </label>
+            <p class="mg-b-0 tx-color-03 mb-2">
+                @Html.DisplayFor(model => model.HrsIncidecias)
             </p>
             <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
                 @Html.DisplayNameFor(model => model.GrupoCorte.HrsTxT)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="Cantidad de Hrs para acumulado de tiempo por tiempo" class=""><i class="icon ion-ios-navigate"></i></a>
@@ -165,7 +171,33 @@
             <p class="mg-b-0 tx-color-03 mb-2">
                 @Html.DisplayFor(model => model.GrupoCorte.HrsScoreGen)
             </p>
-
+            @if (Model.GrupoCorte.HrsFalta > 0)
+            {
+                <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                    @Html.DisplayNameFor(model => model.GrupoCorte.HrsFalta)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="acumulado semanal de hrs en faltas" class=""><i class="icon ion-ios-navigate"></i></a>
+                </label>
+                <p class="mg-b-0 tx-color-03 mb-2">
+                    @Html.DisplayFor(model => model.GrupoCorte.HrsFalta)  = @Math.Round(((6 / Model.GrupoCorte.HrsGrupo) * Model.GrupoCorte.HrsFalta), 1) dia(s)
+                </p>
+            }
+            @if (Model.GrupoCorte.HrsVacaciones > 0)
+            {
+                <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                    @Html.DisplayNameFor(model => model.GrupoCorte.HrsVacaciones)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="acumulado semanal de hrs en vacaciones" class=""><i class="icon ion-ios-navigate"></i></a>
+                </label>
+                <p class="mg-b-0 tx-color-03 mb-2">
+                    @Html.DisplayFor(model => model.GrupoCorte.HrsVacaciones)  = @Math.Round(((6 / Model.GrupoCorte.HrsGrupo) * Model.GrupoCorte.HrsVacaciones), 1) dia(s)
+                </p>
+            }
+            @if (Model.GrupoCorte.HrsIncapacidad > 0)
+            {
+                <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans">
+                    @Html.DisplayNameFor(model => model.GrupoCorte.HrsIncapacidad)<a tabindex="0" role="button" data-toggle="popover" data-trigger="focus" title="" data-content="acumulado semanal de hrs en incapacidad" class=""><i class="icon ion-ios-navigate"></i></a>
+                </label>
+                <p class="mg-b-0 tx-color-03 mb-2">
+                    @Html.DisplayFor(model => model.GrupoCorte.HrsIncapacidad)  = @Math.Round(((6 / Model.GrupoCorte.HrsGrupo) * Model.GrupoCorte.HrsIncapacidad), 1) dia(s)
+                </p>
+            }
             <label class="tx-sans tx-10 tx-semibold tx-uppercase tx-color-01 tx-spacing-1 mt-3">Acumulados</label>
             <hr />
             <label class="tx-10 tx-medium tx-spacing-1 tx-color-02 tx-uppercase tx-sans ">@Html.DisplayNameFor(model => model.HrsTxt)</label>
@@ -621,6 +653,18 @@
                                             {
                                                 <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Permiso: @Html.DisplayFor(model => item.Incidencia.DescPermiso)</span></p>
                                             }
+                                            @if (item.Incidencia.TipoIncidencia == "Fal")
+                                            {
+                                                <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Falta</span></p>
+                                            }
+                                            @if (item.Incidencia.TipoIncidencia == "Inc")
+                                            {
+                                                <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Incapacidad</span></p>
+                                            }
+                                            @if (item.Incidencia.TipoIncidencia == "Vac")
+                                            {
+                                                <p class="mg-b-3 tx-color-02"><span class="tx-medium tx-color-01">Vacaciones</span></p>
+                                            }
                                             <span class="d-block tx-13 tx-color-03">@item.Incidencia.Creado.ToString("F")</span>
 
                                             <ul class="pd-l-10 mg-0 mg-t-20 tx-13">
@@ -1035,7 +1079,7 @@
                     Fecha: "@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")",
                     Comentarios: "",
                     AdjuntoFile: null,
-                    EsScoreGeneral: false,
+                    EsScoreGeneral: true,
                     Semana: [
                         { dia: 0, nombre: "@Html.Raw(Model.Incio.AddDays(0).ToString("dddd"))", fecha: "@Model.Incio.AddDays(0).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
                         { dia: 1, nombre: "@Html.Raw(Model.Incio.AddDays(1).ToString("dddd"))", fecha: "@Model.Incio.AddDays(1).ToString("yyyy-MM-dd")", Horas: 0, apply: false, fechaPago: ""},
@@ -1065,6 +1109,7 @@
                         console.log(response.data)
                         //this.access = response.data;
                         ShowMessageErrorShort(response.data, "success")
+                        document.getElementById("btn_refrescar").click();
                     }).catch(error => {
                         if (error.response) {
                             if (error.response.status === 400) {

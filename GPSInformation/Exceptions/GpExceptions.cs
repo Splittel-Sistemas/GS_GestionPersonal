@@ -20,17 +20,28 @@ namespace GPSInformation.Exceptions
     }
     public class GPException : Exception
     {
+        /// <summary>
+        /// Numero de error
+        /// </summary>
         public int ErrorCode { get; set; }
+        /// <summary>
+        /// Descripcion del error
+        /// </summary>
         public string Description { get; set; }
-        public string NameObject { get; set; }
+        /// <summary>
+        /// tipo de excepcion
+        /// </summary>
         public TypeException Category { get; set; }
+        /// <summary>
+        /// Id a agregar estatus ModelState (formulario)
+        /// </summary>
         public string IdAux { get; set; }
 
         public override string Message
         {
             get
             {
-                return $"{this.ErrorCode} : {this.Description}";
+                return Category == TypeException.System ?  $"{this.ErrorCode} : {this.Description}" : Description;
             }
         }
     }

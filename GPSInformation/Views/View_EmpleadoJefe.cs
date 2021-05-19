@@ -21,6 +21,8 @@ namespace GPSInformation.Views
         public string ENombreCompleto { get; set; }
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string ECorreo { get; set; }
+
+
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string Separador { get; set; }
         [ColumnDB(IsMapped = true, IsKey = false)]
