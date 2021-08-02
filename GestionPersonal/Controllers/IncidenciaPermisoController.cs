@@ -83,7 +83,7 @@ namespace GestionIncidenciaPermisol.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
+                //darkManager.RolBack();
                 return NotFound(ex.Message);
             }
             finally
@@ -106,7 +106,6 @@ namespace GestionIncidenciaPermisol.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
                 return NotFound(ex.Message);
             }
             finally
@@ -132,7 +131,7 @@ namespace GestionIncidenciaPermisol.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
+                //darkManager.RolBack();
                 return NotFound(ex.Message);
             }
             finally
@@ -152,7 +151,7 @@ namespace GestionIncidenciaPermisol.Controllers
             PagoPermisoPersonal = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 1010, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion");
             ViewData["TiposPermisos"] = TiposPermisos;
             ViewData["PagoPermisoPersonal"] = PagoPermisoPersonal;
-            darkManager.StartTransaction();
+            //darkManager.StartTransaction();
             try
             {
                 if (!ModelState.IsValid)
@@ -178,7 +177,7 @@ namespace GestionIncidenciaPermisol.Controllers
                 if (result)
                 { 
                     AddSteps(darkManager.IncidenciaPermiso.Get(darkManager.IncidenciaPermiso.GetLastId(nameof(darkManager.IncidenciaPermiso.Element.IdPersona), IncidenciaPermiso.IdPersona + "")));
-                    darkManager.Commit();
+                    //darkManager.Commit();
 
                     await SendEmailAsync(1,darkManager.IncidenciaPermiso.GetLastId("IdPersona", ""+ IncidenciaPermiso.IdPersona));
                     await SendEmailAsync(2, darkManager.IncidenciaPermiso.GetLastId("IdPersona", "" + IncidenciaPermiso.IdPersona));
@@ -193,7 +192,7 @@ namespace GestionIncidenciaPermisol.Controllers
             }
             catch(GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
+                //darkManager.RolBack();
                 ModelState.AddModelError("", ex.Message);
                 return View(IncidenciaPermiso);
             }
@@ -222,7 +221,7 @@ namespace GestionIncidenciaPermisol.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
+                //darkManager.RolBack();
                 return NotFound(ex.Message);
             }
             finally
@@ -291,7 +290,7 @@ namespace GestionIncidenciaPermisol.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
+                //darkManager.RolBack();
                 return NotFound(ex.Message);
             }
             finally
@@ -316,7 +315,7 @@ namespace GestionIncidenciaPermisol.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
+                //darkManager.RolBack();
                 return NotFound(ex.Message);
             }
             finally
@@ -633,6 +632,19 @@ namespace GestionIncidenciaPermisol.Controllers
                             darkManager.View_empleado.Get("" + ResultStructura.IdPuestoParent, "IdPuesto").ForEach(a => {
                                 darkManager.EmailServ_.AddListTO(a.Correo);
                             });
+
+                            if (darkManager.View_empleado.GetIntValue($"select count(*) from [IncidenciaAuthAux] as t01 where t01.Activa = 1 and t01.IdPersona = {incidenciaPermisoRe.IncidenciaPermiso.IdPersona}")> 0)
+                            {
+                                string Correo = darkManager.View_empleado.GetStringValue($"select  " +
+                                $"  (select Email from Empleado as t02 where t02.IdPersona = t01.IdPersonaAuth) " +
+                                $"from [IncidenciaAuthAux] as t01 where t01.Activa = 1 and t01.IdPersona = {incidenciaPermisoRe.IncidenciaPermiso.IdPersona}");
+
+                                if (!string.IsNullOrEmpty(Correo))
+                                {
+                                    darkManager.EmailServ_.AddListTO(Correo);
+                                }
+                            }
+                            
                         }
                         incidenciaPermisoRe.Mode = "CreadoN1";
                         incidenciaPermisoRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Aprobar", "IncidenciaPermiso", new { id = incidenciaPermisoRe.IncidenciaPermiso.IdIncidenciaPermiso, Mode = mode })}";

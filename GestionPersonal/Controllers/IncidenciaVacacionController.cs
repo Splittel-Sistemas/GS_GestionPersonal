@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using GPSInformation.Controllers;
 using GPSInformation.Exceptions;
 using GPSInformation.Models;
 using GPSInformation.Reportes;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -21,7 +23,8 @@ namespace GestionPersonal.Controllers
     {
         private DarkManager darkManager;
         private readonly IViewRenderService _viewRenderService;
-        public IncidenciaVacacionController(IConfiguration configuration, IViewRenderService viewRenderService)
+        private readonly IHostingEnvironment _environment;
+        public IncidenciaVacacionController(IConfiguration configuration, IHostingEnvironment IHostingEnvironment, IViewRenderService viewRenderService)
         {
             darkManager = new DarkManager(configuration);
             darkManager.OpenConnection();
@@ -34,6 +37,7 @@ namespace GestionPersonal.Controllers
             darkManager.LoadObject(GpsManagerObjects.Empleado);
             darkManager.LoadObject(GpsManagerObjects.View_empleado);
             _viewRenderService = viewRenderService;
+            _environment = IHostingEnvironment;
         }
 
         ~IncidenciaVacacionController()
@@ -201,7 +205,19 @@ namespace GestionPersonal.Controllers
         {
             return View(new IncidenciaVacacion { IdPersona = (int)HttpContext.Session.GetInt32("user_id"), Inicio= DateTime.Now, Fin = DateTime.Now });
         }
+        public ActionResult Dowload(int IdPersona, string fileName)
+        {
+            try
+            {
+                byte[] fileBytes = System.IO.File.ReadAllBytes($"C:\\Splittel\\GestionPersonal\\{IdPersona}\\IncVacaciones\\{fileName}");
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
 
+        }
         // POST: IncidenciaVacacion/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -240,7 +256,7 @@ namespace GestionPersonal.Controllers
                     ModelState.AddModelError("", "La fechas de tu solicitud abarcan solicitudes de vacaciones");
                     return View(IncidenciaVacacion);
                 }
-
+                
                 darkManager.IncidenciaVacacion.Element = IncidenciaVacacion;
                 darkManager.IncidenciaVacacion.Element.CreadoPor = "E";
                 darkManager.IncidenciaVacacion.Element.Estatus = 1; // activas 2 canceladas 
@@ -248,8 +264,29 @@ namespace GestionPersonal.Controllers
                 darkManager.IncidenciaVacacion.Element.Tipo = "A";
                 darkManager.IncidenciaVacacion.Element.NumAutorizaciones = 4;
                 darkManager.IncidenciaVacacion.Element.Creado = DateTime.Now;
+                if (IncidenciaVacacion.Archivo != null && IncidenciaVacacion.Archivo.Length != 0)
+                {
+                    int last = darkManager.IncidenciaVacacion.GetLastId(nameof(darkManager.IncidenciaVacacion.Element.IdPersona), IncidenciaVacacion.IdPersona + "");
+                    darkManager.IncidenciaVacacion.Element.ArchivoScan = $"InVac_{(last + 1)}_archivo.{IncidenciaVacacion.Archivo.FileName.Split('.')[1]}";
+                }
                 if (darkManager.IncidenciaVacacion.Add())
                 {
+                    if (IncidenciaVacacion.Archivo != null && IncidenciaVacacion.Archivo.Length != 0)
+                    {
+                        string Directorio = $"C:\\Splittel\\GestionPersonal\\{IncidenciaVacacion.IdPersona}\\IncVacaciones\\";
+                        if (!System.IO.Directory.Exists(Directorio))
+                        {
+                            System.IO.Directory.CreateDirectory(Directorio);
+                        }
+                        Directorio = $"{Directorio}{darkManager.IncidenciaVacacion.Element.ArchivoScan}";
+                        using (FileStream fs = System.IO.File.Create(Directorio))
+                        {
+                            IncidenciaVacacion.Archivo.CopyTo(fs);
+                            fs.Flush();
+                        }
+                    }
+                        
+
                     int last = darkManager.IncidenciaVacacion.GetLastId(nameof(darkManager.IncidenciaVacacion.Element.IdPersona), IncidenciaVacacion.IdPersona + "");
                     AddSteps(darkManager.IncidenciaVacacion.Get(last));
                     await SendEmailAsync(1, last);
@@ -291,7 +328,6 @@ namespace GestionPersonal.Controllers
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
-                darkManager.RolBack();
                 return NotFound(ex.Message);
             }
             finally
@@ -639,19 +675,29 @@ namespace GestionPersonal.Controllers
         {
             DateTime inicio = desde;
             int dias = 0;
-            while (inicio <= hasta)
+
+            if(inicio == hasta)
             {
-                if (inicio.DayOfWeek != DayOfWeek.Saturday && inicio.DayOfWeek != DayOfWeek.Sunday)
-                {
-                    var result = darkManager.DiaFeriado.GetByColumn(inicio.ToString("yyyy-MM-dd"), nameof(darkManager.DiaFeriado.Element.Fecha));
-                    if (result == null)
-                    {
-                        dias++;
-                    }
-                }
-                inicio = inicio.AddDays(1);
+                return 1;
             }
-            return dias;
+            else
+            {
+                while (inicio <= hasta)
+                {
+                    if (inicio.DayOfWeek != DayOfWeek.Saturday && inicio.DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        var result = darkManager.DiaFeriado.GetByColumn(inicio.ToString("yyyy-MM-dd"), nameof(darkManager.DiaFeriado.Element.Fecha));
+                        if (result == null)
+                        {
+                            dias++;
+                        }
+                    }
+                    inicio = inicio.AddDays(1);
+                }
+                return dias;
+            }
+
+           
         }
 
         [HttpGet]
@@ -724,6 +770,18 @@ namespace GestionPersonal.Controllers
                             darkManager.View_empleado.Get("" + ResultStructura.IdPuestoParent, "IdPuesto").ForEach(a => {
                                 darkManager.EmailServ_.AddListTO(a.Correo);
                             });
+                            if (darkManager.View_empleado.GetIntValue($"select count(*) from [IncidenciaAuthAux] as t01 where t01.Activa = 1 and t01.IdPersona = {incidenciaVacaRe.IncidenciaVacacion.IdPersona}") > 0)
+                            {
+                                string Correo = darkManager.View_empleado.GetStringValue($"select  " +
+                                $"  (select Email from Empleado as t02 where t02.IdPersona = t01.IdPersonaAuth) " +
+                                $"from [IncidenciaAuthAux] as t01 where t01.Activa = 1 and t01.IdPersona = {incidenciaVacaRe.IncidenciaVacacion.IdPersona}");
+
+                                if (!string.IsNullOrEmpty(Correo))
+                                {
+                                    darkManager.EmailServ_.AddListTO(Correo);
+                                }
+                            }
+                                
                         }
                         incidenciaVacaRe.Mode = "CreadoN1";
                         incidenciaVacaRe.LinkPrivate = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("Aprobar", "IncidenciaVacacion", new { id = incidenciaVacaRe.IncidenciaVacacion.IdIncidenciaVacacion, Mode = mode })}";

@@ -51,7 +51,76 @@ namespace GestionPersonal.Controllers
 
         }
 
-        
+        [AccessDataSession(IdAction = new int[] { 20 })]
+        public ActionResult IncAutRemove(int id)
+        {
+            V2EmpleCtrl _V2EmpleCtrl = new V2EmpleCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            _V2EmpleCtrl.LoadTranssByMethod = true;
+            try
+            {
+                _V2EmpleCtrl.IncAutRemove(id);
+                return Ok("Jefe auxiliar eliminado");
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return BadRequest(ex.Message); ;
+            }
+            finally
+            {
+                _V2EmpleCtrl.Terminar();
+            }
+        }
+
+        [AccessMultiplePartial(IdAction = new int[] { 20 })]
+        [HttpPost]
+        public ActionResult IncAutAdd(IncidenciaAuthAux incidenciaAuthAux)
+        {
+            V2EmpleCtrl _V2EmpleCtrl = new V2EmpleCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            _V2EmpleCtrl.LoadTranssByMethod = true;
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(incidenciaAuthAux);
+                }
+                _V2EmpleCtrl.IncAutAdd(incidenciaAuthAux);
+                return PartialView(_V2EmpleCtrl.IncAutValidExists(incidenciaAuthAux.IdPersona));
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
+                return PartialView(incidenciaAuthAux); ;
+            }
+            finally
+            {
+                _V2EmpleCtrl.Terminar();
+            }
+        }
+
+        [AccessMultiplePartial(IdAction = new int[] { 20 })]
+        public ActionResult IncAutAdd(int Id)
+        {
+            V2EmpleCtrl _V2EmpleCtrl = new V2EmpleCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            try
+            {
+                //var result = _V2EmpleCtrl.DireGet();
+                var result = _V2EmpleCtrl.IncAutValidExists(Id);
+                ViewData["Actual"] = result;
+                ViewData["Empleados"] = new SelectList(_V2EmpleCtrl.EmplSelectlIst(), "Value", "Label");
+                return PartialView(new IncidenciaAuthAux
+                {
+                    IdPersona = Id
+                });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                _V2EmpleCtrl.Terminar();
+            }
+        }
 
         // GET: Empleado
         [AccessMultipleView(IdAction = new int[] { 19,20 })]

@@ -89,6 +89,11 @@ namespace GPSInformation.DBManagers
             var retunrDa = dBConnection.GetIntegerValue(Sentence);
             return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
         }
+        public double GetDoubleValue(string Sentence)
+        {
+            var retunrDa = dBConnection.GetDoublelValue(Sentence);
+            return DBNull.Value.Equals(retunrDa) ? 0 : (double)retunrDa;
+        }
         /// <summary>
         /// obtener ultimo id campo definido como IsKey = true
         /// </summary>
@@ -235,7 +240,52 @@ namespace GPSInformation.DBManagers
 
             return columna;
         }
+        /// <summary>
+        /// Obteenrr paginacion
+        /// </summary>
+        /// <param name="Page">Id de la pagina</param>
+        /// <param name="RowsPerPage">Numero de registros por pagina</param>
+        /// <returns></returns>
+        public ModelPagination<T> DataPage(int Page, int RowsPerPage,string where = "", string OrderPage = "")
+        {
+            int TotalRows = dBConnection.GetIntegerValue(string.Format("select count(*) from {0}", Nametable));
 
+            if (RowsPerPage <= 0)
+                RowsPerPage = 10;
+
+            decimal paginas1 = TotalRows / RowsPerPage;
+            decimal MaxPages = Math.Ceiling(paginas1);
+            if(Page == 0)
+            {
+                Page = 1;
+            }
+
+            if (Page > MaxPages + 1)
+                Page = 1;
+
+            if (OrderPage == "")
+                OrderPage = $"order by Id{Nametable}";
+
+            List<T> Lista = DataReader($"declare @PageNo INT ={Page} " +
+                $"declare @RecordsPerPage INT = {RowsPerPage} " +
+                $"IF @PageNo < 1 " +
+                $"  SET @PageNo = 1 " +
+                $"SELECT * FROM {Nametable} {where}  {OrderPage} " +
+                $"OFFSET(@PageNo - 1) * @RecordsPerPage ROWS " +
+                $"FETCH NEXT @RecordsPerPage ROWS ONLY ");
+
+            var result = new ModelPagination<T>
+            {
+                Maxpage = Int32.Parse(MaxPages+"") +1,
+                PageSelected = Page,
+                Data = Lista,
+                TotalRows = TotalRows,
+                MaxPages = MaxPages,
+                RowsPerPage = RowsPerPage
+            };
+
+            return result;
+        }
         private string KeyCol()
         {
             string columna = "";
@@ -274,6 +324,13 @@ namespace GPSInformation.DBManagers
         public List<T> GetSpecialStat(string SqlStatements)
         {
             return DataReader(SqlStatements);
+        }
+
+        public System.Data.SqlClient.SqlDataReader GetDataReader(string SqlStatements)
+        {
+            System.Data.SqlClient.SqlDataReader Data = dBConnection.GetDataReader(SqlStatements);
+
+            return Data;
         }
         public T GetUnicSatatment(string SqlStatements)
         {
@@ -432,9 +489,11 @@ namespace GPSInformation.DBManagers
 
                 if (dbManagerTypes == DbManagerTypes.Add)
                 {
-                    if (!hiddenAttribute.IsKey && hiddenAttribute.IsMapped)
+                    if (!hiddenAttribute.IsKey && hiddenAttribute.IsMapped || hiddenAttribute.IsKeyNotIdenti == true)
                     {
+                        //parametros de insert {table}({param1},{param2},...,{paramN})
                         sentencia += hiddenAttribute.Name + ",";
+                        //valores values({val1},{val2},...,{valN})
                         sentenciaVariables += "@" + hiddenAttribute.Name + ",";
                     }
                 }
@@ -442,10 +501,15 @@ namespace GPSInformation.DBManagers
                 {
                     if (!hiddenAttribute.IsKey && hiddenAttribute.IsMapped)
                     {
-                        sentencia += hiddenAttribute.Name + " = @" + hiddenAttribute.Name + ",";
+                        //parametros de update set {param1} = {val1}, set {param2} = {val2}
+                        if(!string.IsNullOrEmpty(tableDefinifiton.Created_at) && hiddenAttribute.Name != tableDefinifiton.Created_at || string.IsNullOrEmpty(tableDefinifiton.Created_at))
+                        {
+                            sentencia += hiddenAttribute.Name + " = @" + hiddenAttribute.Name + ",";
+                        }
                     }
                     else if(hiddenAttribute.IsKey && hiddenAttribute.IsMapped)
                     {
+                        // valores where {param1} = {val1}
                         sentenciaVariables = hiddenAttribute.Name + " = @" + hiddenAttribute.Name + "";
                     }
                     else
@@ -465,7 +529,7 @@ namespace GPSInformation.DBManagers
                     throw new Exceptions.GpExceptions(string.Format("Delete action is not active"));
                 }
             }
-
+            //mapeo de valores
             if (dbManagerTypes == DbManagerTypes.Add)
             {
                 string Statement = string.Format("INSERT INTO {0}({1}) VALUES({2})", Nametable, sentencia.Substring(0, sentencia.Length - 1), sentenciaVariables.Substring(0, sentenciaVariables.Length - 1));
@@ -474,10 +538,25 @@ namespace GPSInformation.DBManagers
                 {
                     PropertyInfo propertyInfo = Element.GetType().GetProperty(prop.Name);
                     ColumnDB hiddenAttribute = (ColumnDB)propertyInfo.GetCustomAttribute(typeof(ColumnDB));
-
-                    if (!hiddenAttribute.IsKey && hiddenAttribute.IsMapped)
+                    string variable = tableDefinifiton.IsMappedByLabels ? hiddenAttribute.Name : prop.Name;
+                    if (!hiddenAttribute.IsKey && hiddenAttribute.IsMapped || hiddenAttribute.IsKeyNotIdenti)
                     {
-                        procedureModels.Add(new ProcedureModel { Namefield = tableDefinifiton.IsMappedByLabels ? hiddenAttribute.Name : prop.Name, value = propertyInfo.GetValue(Element) });
+                        if (!string.IsNullOrEmpty(tableDefinifiton.Created_at) && variable == tableDefinifiton.Created_at)
+                        {
+                            procedureModels.Add(new ProcedureModel { Namefield = variable, value = DateTime.Now });
+                        }
+                        else if (!string.IsNullOrEmpty(tableDefinifiton.Updated_at) && variable == tableDefinifiton.Updated_at)
+                        {
+                            procedureModels.Add(new ProcedureModel { Namefield = variable, value = DateTime.Now });
+                        }
+                        else
+                        {
+                            procedureModels.Add(new ProcedureModel { Namefield = variable, value = propertyInfo.GetValue(Element) });
+                        }
+                    }
+                    else
+                    {
+                        
                     }
                 }
 
@@ -492,10 +571,20 @@ namespace GPSInformation.DBManagers
                 {
                     PropertyInfo propertyInfo = Element.GetType().GetProperty(prop.Name);
                     ColumnDB hiddenAttribute = (ColumnDB)propertyInfo.GetCustomAttribute(typeof(ColumnDB));
-
+                    string variable = tableDefinifiton.IsMappedByLabels ? hiddenAttribute.Name : prop.Name;
                     if (hiddenAttribute.IsMapped)
                     {
-                        procedureModels.Add(new ProcedureModel { Namefield = tableDefinifiton.IsMappedByLabels ? hiddenAttribute.Name : prop.Name, value = propertyInfo.GetValue(Element) });
+                        if(!string.IsNullOrEmpty(tableDefinifiton.Updated_at) && variable == tableDefinifiton.Updated_at)
+                        {
+                            procedureModels.Add(new ProcedureModel { Namefield = variable, value = DateTime.Now });
+                        }
+                        else
+                        {
+                            if(!string.IsNullOrEmpty(tableDefinifiton.Created_at) && variable != tableDefinifiton.Created_at || string.IsNullOrEmpty(tableDefinifiton.Created_at))
+                            {
+                                procedureModels.Add(new ProcedureModel { Namefield = variable, value = propertyInfo.GetValue(Element) });
+                            }
+                        }
                     }
                 }
 
@@ -540,11 +629,88 @@ namespace GPSInformation.DBManagers
         }
 
     }
+    public class ModelPagination<T>
+    {
+        public IList<T> Data { get; set; }
+        public int TotalRows { get; set; }
+        public int Maxpage { get; set; }
+        public int PageSelected { get; set; }
+        public decimal MaxPages { get; internal set; }
+        public int RowsPerPage { get; internal set; }
+
+        public List<Pages> Pages { 
+            get {
+                var lista = new List<Pages>();
+
+                if ((PageSelected - 4) > 0 && (PageSelected + 4) <= Maxpage)
+                {
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = PageSelected - 1, Tipe = PagesButons.Before });
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = 1, Tipe = PagesButons.Page });
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Tipe = PagesButons.Space });
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = PageSelected - 1, Tipe = PagesButons.Page });
+                    lista.Add(new DBManagers.Pages { Active = true, Show = true, Numero = PageSelected, Tipe = PagesButons.Page });
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = PageSelected + 1, Tipe = PagesButons.Page });
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Tipe = PagesButons.Space });
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = Maxpage, Tipe = PagesButons.Page });
+                    lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = PageSelected + 1, Tipe = PagesButons.Next });
+                }
+                else
+                {
+                    if ((PageSelected - 4) <= 0 && Maxpage >5)
+                    {
+                        for (int pagina = 1; pagina <= 5; pagina++)
+                        {
+                            lista.Add(new DBManagers.Pages { Active = PageSelected == pagina ?  true : false, Show = true, Numero = pagina, Tipe = PagesButons.Page });
+                        }
+                        lista.Add(new DBManagers.Pages { Active = false, Show = true, Tipe = PagesButons.Space });
+                        lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = Maxpage, Tipe = PagesButons.Page });
+                        lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = PageSelected + 1, Tipe = PagesButons.Next });
+                    }
+                    else if ((PageSelected + 4) >= Maxpage && Maxpage > 5)
+                    {
+                        lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = PageSelected - 1, Tipe = PagesButons.Before });
+                        lista.Add(new DBManagers.Pages { Active = false, Show = true, Numero = 1, Tipe = PagesButons.Page });
+                        lista.Add(new DBManagers.Pages { Active = false, Show = true, Tipe = PagesButons.Space });
+                        for (int pagina = Maxpage - 5; pagina <= Maxpage; pagina++)
+                        {
+                            lista.Add(new DBManagers.Pages { Active = PageSelected == pagina ? true : false, Show = true, Numero = pagina, Tipe = PagesButons.Page });
+                        }
+                    }
+                    else
+                    {
+                        for (int pagina = 1; pagina <= Maxpage; pagina++)
+                        {
+                            lista.Add(new DBManagers.Pages { Active = PageSelected == pagina ? true : false, Show = true, Numero = pagina, Tipe = PagesButons.Page });
+                        }
+                    }
+                }
+                return lista;
+            } 
+        }
+
+    }
+
+    public class Pages
+    {
+        public int Numero { get; set; }
+        public bool Show { get; set; }
+        public bool Active { get; set; }
+        public PagesButons Tipe { get; set; }
+
+    }
 
     public enum DbManagerTypes
     {
         Add = 1,
         Update = 2,
         Delete = 3
+    }
+
+    public enum PagesButons
+    {
+        Page = 1,
+        Before = 2,
+        Next = 3,
+        Space = 4
     }
 }

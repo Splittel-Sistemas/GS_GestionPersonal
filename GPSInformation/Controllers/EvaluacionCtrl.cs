@@ -1,4 +1,5 @@
-﻿using GPSInformation.Models;
+﻿using GPSInformation.DBManagers;
+using GPSInformation.Models;
 using GPSInformation.Views;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,14 @@ namespace GPSInformation.Controllers
         public IEnumerable<View_empleado> GetEmpleados()
         {
             return darkManager.View_empleado.Get().Where(a => a.IdEstatus == 19 || a.IdEstatus == 18).OrderBy(a => a.NombreCompleto);
+        }
+        /// <summary>
+        /// obtener lista de empleados que no estan en la evaluacion seleccionada
+        /// </summary>
+        /// <returns></returns>
+        public List<View_empleado> GetEmpleadosNotEx(int IdEvaluacion)
+        {
+            return darkManager.View_empleado.GetOpenquery($"where IdEstatus in (18, 19) and IdPersona not in (select t01.IdPersona from EvaluacionEmpleado as t01 where t01.IdEvaluacion = {IdEvaluacion})", "Order by NombreCompleto");
         }
 
         public IEnumerable<Departamento> GetDepartamentos()
@@ -157,10 +166,12 @@ namespace GPSInformation.Controllers
             return Evaluacion_re;
         }
 
-        public IEnumerable<Evaluacion> Get()
+        public ModelPagination<Evaluacion> Get(int Page, int RowsPerPage)
         {
-            var List_re = darkManager.Evaluacion.Get();
-            List_re.ForEach(Evaluacion_re => {
+            var List_re = darkManager.Evaluacion.DataPage(Page, RowsPerPage, "", "order by Creada Desc");
+
+            foreach (var Evaluacion_re in List_re.Data)
+            {
                 Evaluacion_re.PersonaName = "";
                 Evaluacion_re.ModeloName = darkManager.EvaluacionTemplate.Get(Evaluacion_re.IdEvaluacionTemplate).Nombre;
                 Evaluacion_re.ModalidadName = darkManager.CatalogoOpcionesValores.Get(Evaluacion_re.IdModalidad).Descripcion;
@@ -172,9 +183,10 @@ namespace GPSInformation.Controllers
                     Evaluacion_re.PersonaName += darkManager.View_empleado.Get(emp.IdPersona).NombreCompleto + ", ";
                 });
 
-
-            });
-            return List_re.OrderBy(a => a.Creada);
+                Evaluacion_re.PonenteNameExt = Evaluacion_re.PonenteNameExt.Length > 100 ? Evaluacion_re.PonenteNameExt.Substring(0, 100) : Evaluacion_re.PonenteNameExt;
+                Evaluacion_re.PersonaName = Evaluacion_re.PersonaName.Length > 100 ? Evaluacion_re.PersonaName.Substring(0, 100) : Evaluacion_re.PersonaName;
+            }
+            return List_re;
         }
 
         public EvaluacionEmpleado GetEvaluacionEmpleado(int IdPersona, int IdEvaluacion)

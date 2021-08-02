@@ -31,7 +31,7 @@
                         <div class="schedule-group">
                             <label id="contactA" class="contact-list-divider">Lista de salas</label>
                             <div class="media active" v-for="(item, index) in Salas">
-                                <div class="alert alert-solid alert-warning col-12" role="alert">
+                                <div class="alert  col-12" role="alert" v-bind:style="'background-color:'+item.colorFondo+';border-color:' + item.colorBorder ">
                                     <span class="">{{ item.nombre }}</span>
                                     <h6>Capacidad para: {{ item.capacidad }}</h6>
                                 </div>
@@ -275,7 +275,7 @@
                     }
                     await axios.post('@Url.Action("CreateReservacion","Sala")', elemento, null).then(response => {
                         ShowMessageErrorShort("Reservación registrada", "success")
-                        
+
                         //this.GetReservaciones();
                     }).catch(error => {
                         if (error.response) {
@@ -384,34 +384,41 @@
 
                 },
                 GetReservaciones: async function () {
-                    await axios.post('@Url.Action("GetListReservacion","Sala")', null, null).then(response => {
-                        ShowMessageErrorShort("Eventos obtenidos, procesando...", "success")
-                        this.Reservaciones = {
-                            id: 1,
-                            backgroundColor: 'rgba(1,104,250, .15)',
-                            borderColor: '#0168fa',
-                            events: []
-                        }
-                        response.data.forEach((e, i) => {
-                            var reservacion = {
-                                id: e.idSalaReservacion,
-                                start: e.fechaInicio.substring(0,10)+"T"+e.horaIncio,
-                                end: e.fechaInicio.substring(0,10)+"T"+e.horaFin,
-                                title: e.motivo,
-                                description: e.comentarios,
-                                idSala: e.idSala,
-                                idPersona: e.idPersona
+                    //this.Reservaciones = []
+                    //this.Salas.forEach(async (item, index) => {
+                    //    ShowMessageErrorShort("Eventos obtenidos, procesando...", "success")
+                    //    var NewReservaciones = {
+                    //        id: item.idSala,
+                    //        //backgroundColor: item.colorFondo,
+                    //        //borderColor: item.colorBorder,
+                    //        backgroundColor: 'rgba(1,104,250, .15)',
+                    //        borderColor: '#0168fa',
+                    //        events: []
+                    //    }
+                        await axios.post('@Url.Action("GetListReservacion","Sala")', null, null).then(response => {
+                            //response.data.forEach(async (e, i) => {
+                            //    var reservacion = {
+                            //        id: e.idSalaReservacion,
+                            //        start: e.fechaInicio.substring(0, 10) + "T" + e.horaIncio,
+                            //        end: e.fechaInicio.substring(0, 10) + "T" + e.horaFin,
+                            //        title: e.motivo,
+                            //        description: e.comentarios,
+                            //        idSala: e.idSala,
+                            //        idPersona: e.idPersona
+                            //    }
+                            //    NewReservaciones.events.push(reservacion);
+                            //})
+                            //console.log(response.data)
+                            this.Reservaciones = response.data;
+                        }).catch(error => {
+                            if (error.response) {
+                                if (error.response.status === 400) {
+                                    ShowMessageErrorShort(error.response.data, "error")
+                                }
                             }
-                            this.Reservaciones.events.push(reservacion);
-                        })
-                        console.log(response.data)
-                    }).catch(error => {
-                        if (error.response) {
-                            if (error.response.status === 400) {
-                                ShowMessageErrorShort(error.response.data,"error")
-                            }
-                        }
-                    }).finally()
+                        }).finally();
+                        //this.Reservaciones.push(NewReservaciones);
+                    //})
                 },
                 StartCalendar: function () {
                     $('#calendar').fullCalendar('destroy');
@@ -451,7 +458,7 @@
                             }
                         },
 
-                        eventSources: [this.Reservaciones],
+                        eventSources: this.Reservaciones,
                         eventAfterAllRender: function (view) {
                             if (view.name === 'listMonth' || view.name === 'listWeek') {
                                 var dates = view.el.find('.fc-list-heading-main');

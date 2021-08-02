@@ -1,30 +1,37 @@
-﻿@model IEnumerable<GPSInformation.Models.Departamento>
+﻿@model IEnumerable<GPSInformation.Responses.DepartamentoResp>
 
 @{
-    ViewData["Title"] = "Departamentos";
+    ViewData["Title"] = "Lista de departamentos";
 }
-<div class="d-flex align-items-center justify-content-between mg-b-30">
-    <h4 class="tx-15 mg-b-0">@ViewData["Title"]</h4>
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <h2 class="tx-15 mg-b-0"></h2>
-        <a asp-action="Create" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Crear nuevo</a>
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+        </div>
     </div>
-</div>
-<hr />
-<table class="table display compact">
+}
+<table class="table display compact" id="lista_departamentos">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.IdDepartamento)
+                @Html.DisplayNameFor(model => model.Departamento.IdDepartamento)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Nombre)
+                @Html.DisplayNameFor(model => model.Departamento.Nombre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdDireccion)
+                @Html.DisplayNameFor(model => model.Direccion)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ClaveDPU)
+                @Html.DisplayNameFor(model => model.Departamento.ClaveDPU)
             </th>
             <th></th>
         </tr>
@@ -34,21 +41,46 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.IdDepartamento)
+                    @Html.DisplayFor(modelItem => item.Departamento.IdDepartamento)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Nombre)
+                    @Html.DisplayFor(modelItem => item.Departamento.Nombre)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Direccion.Nombre)
+                    @Html.DisplayFor(modelItem => item.Direccion)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ClaveDPU)
+                    @Html.DisplayFor(modelItem => item.Departamento.ClaveDPU)
                 </td>
                 <td>
-                    @Html.ActionLink("Editar", "Edit", new { id = item.IdDepartamento })
+                    @if ((bool)ViewBag.Access15)
+                    {
+                        @Html.ActionLink("Editar", "Edit", new { id = item.Departamento.IdDepartamento }) <span>|</span>
+                    }
+                    @Html.ActionLink("Detalle", "Details", new { id = item.Departamento.IdDepartamento })
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(function () {
+            'use strict'
+
+            $('#lista_departamentos').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                ordering: false
+            });
+
+        });
+    </script>
+}
+

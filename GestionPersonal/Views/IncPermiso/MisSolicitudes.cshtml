@@ -1,0 +1,95 @@
+﻿@model GPSInformation.Responses.ResV2Inicidencias
+
+@{
+    ViewData["Title"] = "Mis solicitudes";
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+        </div>
+    </div>
+}
+<table class="table table-condensed table-hover display compact" id="lista_misSolicitudes">
+    <thead>
+        <tr>
+            <th>
+                Folio
+            </th>
+            <th>
+                Empleado
+            </th>
+            <th>
+                Fe.Permiso
+            </th>
+            <th>
+                Hora.Salida
+            </th>
+            <th>
+                Hora.Regreso
+            </th>
+            <th>
+                Estatus
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Permisos)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Folio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmpleadoNombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Inicio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstatusDescricion)
+            </td>
+            <td>
+                @Html.ActionLink("Detalle", "Details", new { id = item.IdIncidenciaPermiso }) 
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(function () {
+            'use strict'
+
+            $('#lista_misSolicitudes').DataTable({
+                //responsive:true,
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                ordering: false
+            });
+
+        });
+    </script>
+}
+

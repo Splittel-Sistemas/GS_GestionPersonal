@@ -1,6 +1,7 @@
 ﻿using GPSInformation.Exceptions;
 using GPSInformation.Models;
 using GPSInformation.Request;
+using GPSInformation.Responses;
 using GPSInformation.Tools;
 using GPSInformation.Views;
 using System;
@@ -20,15 +21,21 @@ namespace GPSInformation.Controllers
         /// </summary>
         public DarkManager _darkM;
         /// <summary>
+        /// controlador para acciones de usuario
+        /// </summary>
+        public UsuarioCtrl _UsrCrt;
+        /// <summary>
         /// Cargar transacciones por metodo
         /// </summary>
         public bool LoadTranssByMethod { get; set; }
+        public int _IdUsuario { get; internal set; }
         #endregion
 
         #region Constructores
-        public V2OrganCtrl(DarkManager darkManager)
+        public V2OrganCtrl(DarkManager darkManager, int IdUsuario = 0)
         {
             this._darkM = darkManager;
+            this._IdUsuario = IdUsuario;
             this._darkM.OpenConnection();
             this._darkM.LoadObject(GpsManagerObjects.OrganigramaStructura);
             this._darkM.LoadObject(GpsManagerObjects.OrganigramaVersion);
@@ -38,6 +45,8 @@ namespace GPSInformation.Controllers
             this._darkM.LoadObject(GpsManagerObjects.Direccion);
             this._darkM.LoadObject(GpsManagerObjects.SystSelect);
             this._darkM.LoadObject(GpsManagerObjects.AccesosSistema);
+
+            _UsrCrt = new UsuarioCtrl(_darkM, true);
         }
         #endregion
         /// <summary>
@@ -52,6 +61,7 @@ namespace GPSInformation.Controllers
             _darkM.Departamento = null;
             _darkM.Sociedad = null;
             _darkM.Direccion = null;
+            _UsrCrt = null;
             GC.WaitForPendingFinalizers();
             GC.Collect();
         }
@@ -132,6 +142,53 @@ namespace GPSInformation.Controllers
         #endregion
 
         #region Direcciones
+        public List<DireccionResp> DireGet()
+        {
+            try
+            {
+                var dataL = new List<DireccionResp>();
+                _darkM.Direccion.Get().ForEach(a =>
+                {
+                    var data = new DireccionResp
+                    {
+                        Direccion = a
+                    };
+                    if (data.Direccion.IdSociedad != 0)
+                        data.Sociedad = _darkM.Direccion.GetStringValue($"select Descripcion from Sociedad where IdSociedad = {data.Direccion.IdSociedad}");
+
+                    dataL.Add(data);
+                });
+                
+                return dataL;
+            }
+            catch (GPException)
+            {
+                throw;
+            }
+        }
+        /// <summary>
+        /// detalle de direccion
+        /// </summary>
+        /// <param name="IdDireccion"></param>
+        /// <returns></returns>
+        public DireccionResp DireDetails(int IdDireccion)
+        {
+            try
+            {
+                var data = new DireccionResp
+                {
+                    Direccion = DireValidExists(IdDireccion)
+                };
+                if(data.Direccion.IdSociedad != 0)
+                    data.Sociedad = _darkM.Direccion.GetStringValue($"select Descripcion from Sociedad where IdSociedad = {data.Direccion.IdSociedad}");
+                
+                return data;
+            }
+            catch (GPException)
+            {
+                throw;
+            }
+        }
         /// <summary>
         /// Editar direccion
         /// </summary>
@@ -208,6 +265,53 @@ namespace GPSInformation.Controllers
         #endregion
 
         #region departamentos
+        public List<DepartamentoResp> DepGet()
+        {
+            try
+            {
+                var datal = new List<DepartamentoResp>();
+                _darkM.Departamento.Get().ForEach(a =>
+                {
+
+                    var data = new DepartamentoResp
+                    {
+                        Departamento = a
+                    };
+                    if (data.Departamento.IdDireccion != 0)
+                        data.Direccion = _darkM.Direccion.GetStringValue($"select Nombre from Direccion where IdDireccion = {data.Departamento.IdDireccion}");
+                    datal.Add(data);
+                });
+               
+                return datal;
+            }
+            catch (GPException)
+            {
+                throw;
+            }
+        }
+        /// <summary>
+        /// detalle de departamento
+        /// </summary>
+        /// <param name="IdDepartamento"></param>
+        /// <returns></returns>
+        public DepartamentoResp DepDetails(int IdDepartamento)
+        {
+            try
+            {
+                var data = new DepartamentoResp
+                {
+                    Departamento = DepValidExists(IdDepartamento)
+                };
+                if (data.Departamento.IdDireccion != 0)
+                    data.Direccion = _darkM.Direccion.GetStringValue($"select Nombre from Direccion where IdDireccion = {data.Departamento.IdDireccion}");
+
+                return data;
+            }
+            catch (GPException)
+            {
+                throw;
+            }
+        }
         /// <summary>
         /// editar departamento
         /// </summary>
@@ -291,6 +395,59 @@ namespace GPSInformation.Controllers
         #endregion
 
         #region Puestos
+        public List<PuestosResp> PueGet()
+        {
+            try
+            {
+                var datal = new List<PuestosResp>();
+                _darkM.Puesto.Get().ForEach(a =>
+                {
+                    var data = new PuestosResp
+                    {
+                        Puesto = a
+                    };
+                    data.Puesto.DPU = _darkM.OrganigramaStructura.GetStringValue($" select DPU from View_puestos where IdPuesto = {a.IdPuesto}");
+                    if (data.Puesto.IdDepartamento != 0)
+                        data.Departamento = _darkM.Direccion.GetStringValue($"select Nombre from Departamento where IdDepartamento = {data.Puesto.IdDepartamento}");
+
+                    if (data.Puesto.IdUbicacion != 0)
+                        data.Ubicacion = _darkM.Direccion.GetStringValue($"select Descripcion from CatalogoOpcionesValores where IdCatalogoOpcionesValores = {data.Puesto.IdUbicacion}");
+                    datal.Add(data);
+                });
+                return datal;
+            }
+            catch (GPException)
+            {
+                throw;
+            }
+        }
+        /// <summary>
+        /// Descripcion de puesto
+        /// </summary>
+        /// <param name="IdPuesto"></param>
+        /// <returns></returns>
+        public PuestosResp PueDetails(int IdPuesto)
+        {
+            try
+            {
+                var data = new PuestosResp
+                {
+                    Puesto = PueValidExists(IdPuesto)
+                };
+                data.Puesto.DPU = _darkM.OrganigramaStructura.GetStringValue($" select DPU from View_puestos where IdPuesto = {IdPuesto}");
+                if (data.Puesto.IdDepartamento != 0)
+                    data.Departamento = _darkM.Direccion.GetStringValue($"select Nombre from Departamento where IdDepartamento = {data.Puesto.IdDepartamento}");
+
+                if (data.Puesto.IdUbicacion != 0)
+                    data.Ubicacion = _darkM.Direccion.GetStringValue($"select Descripcion from CatalogoOpcionesValores where IdCatalogoOpcionesValores = {data.Puesto.IdUbicacion}");
+
+                return data;
+            }
+            catch (GPException)
+            {
+                throw;
+            }
+        }
         /// <summary>
         /// crear puesto
         /// </summary>
@@ -311,7 +468,7 @@ namespace GPSInformation.Controllers
                 if (puesto.HoraEntrada >= puesto.HoraSalida)
                     throw new GPException { Description = $"Horario de entrada es mayor o igual que el horario de salida", ErrorCode = 0, Category = TypeException.Error, IdAux = "HoraEntrada" };
 
-                if (puesto.SalarioMin >= puesto.SalarioMin)
+                if (puesto.SalarioMin >= puesto.SalarioMax)
                     throw new GPException { Description = $"Salario minimo es mayor o igual que el salario maximo", ErrorCode = 0, Category = TypeException.Error, IdAux = "SalarioMin" };
                 #endregion
 
@@ -325,7 +482,7 @@ namespace GPSInformation.Controllers
                 }
                 else
                 {
-                    if (_darkM.Puesto.Count($"select count(*) from Puesto where IdPuesto = {puesto.IdPuesto} and IdDepartamento = {puesto.IdDepartamento} and NumeroDPU = {puesto.NumeroDPU} RequisicionPersonal != 2") > 0)
+                    if (_darkM.Puesto.GetIntValue($"select count(*) from Puesto where IdPuesto != {puesto.IdPuesto} and IdDepartamento = {puesto.IdDepartamento} and NumeroDPU = {puesto.NumeroDPU} and RequisicionPersonal != 2") > 0)
                     {
                         throw new GPException { Description = $"Ya se encuentra en uso la clave '{puesto.NumeroDPU}' por otro puesto", ErrorCode = 0, Category = TypeException.Error, IdAux = "NumeroDPU" };
                     }
@@ -341,7 +498,7 @@ namespace GPSInformation.Controllers
                     puesto.RequisicionPersonal = 1;
                 }
 
-                puesto.DPU = $"{dep.ClaveDPU}-DPU-{string.Format("0:000", puesto.NumeroDPU)}";
+                puesto.DPU = $"{dep.ClaveDPU}-DPU-{string.Format("{0:000}", puesto.NumeroDPU)}";
                 _darkM.Puesto.Element = puesto;
                 if (!_darkM.Puesto.Update())
                 {
@@ -374,7 +531,7 @@ namespace GPSInformation.Controllers
                 if (puesto.HoraEntrada >= puesto.HoraSalida)
                     throw new GPException { Description = $"Horario de entrada es mayor o igual que el horario de salida", ErrorCode = 0, Category = TypeException.Error, IdAux = "HoraEntrada" };
 
-                if (puesto.SalarioMin >= puesto.SalarioMin)
+                if (puesto.SalarioMin >= puesto.SalarioMax)
                     throw new GPException { Description = $"Salario minimo es mayor o igual que el salario maximo", ErrorCode = 0, Category = TypeException.Error, IdAux = "SalarioMin" };
                 #endregion
 
@@ -388,7 +545,7 @@ namespace GPSInformation.Controllers
                 }
                 else
                 {
-                    if (_darkM.Puesto.Count($"select count(*) from Puesto where IdDepartamento = {puesto.IdDepartamento} and NumeroDPU = {puesto.NumeroDPU} RequisicionPersonal != 2") > 0)
+                    if (_darkM.Puesto.GetIntValue($"select count(*) from Puesto where IdDepartamento = {puesto.IdDepartamento} and NumeroDPU = {puesto.NumeroDPU} and RequisicionPersonal != 2") > 0)
                     {
                         throw new GPException { Description = $"Ya se encuentra en uso la clave '{puesto.NumeroDPU}'", ErrorCode = 0, Category = TypeException.Error, IdAux = "NumeroDPU" };
                     }
@@ -404,7 +561,7 @@ namespace GPSInformation.Controllers
                     puesto.RequisicionPersonal = 1;
                 }
                 
-                puesto.DPU = $"{dep.ClaveDPU}-DPU-{string.Format("0:000", puesto.NumeroDPU)}";
+                puesto.DPU = $"{dep.ClaveDPU}-DPU-{string.Format("{0:000}", puesto.NumeroDPU)}";
                 _darkM.Puesto.Element = puesto;
                 if (!_darkM.Puesto.Add())
                 {

@@ -1,0 +1,35 @@
+﻿@model GPSInformation.Responses.ResReporteRun
+
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NombreReporte)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NombreReporte)
+        </dd>
+    </dl>
+</div>
+<div class="table-responsive table-responsive-md table-responsive-lg">
+    <table class="table table-dashboard-one table-condensed table-striped table-hover" id="reportdata_app">
+        <thead>
+            <tr>
+                @foreach (var item in Model.Columnas)
+                {
+                    <th class="reporteCol">@item</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Filas)
+            {
+                <tr>
+                    @foreach (var value in item)
+                    {
+                        <td>@value</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

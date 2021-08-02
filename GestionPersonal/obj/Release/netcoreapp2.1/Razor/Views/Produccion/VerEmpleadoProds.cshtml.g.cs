@@ -644,7 +644,7 @@ WriteAttributeValue("", 13303, item.IdPersona, 13303, 15, false);
             WriteLiteral(">\r\n                                            ");
             EndContext();
             BeginContext(13368, 41, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8ec2ad9c080b41cb9296597ebd45b4bd", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "00e03cf208d1409db03af3e8fa5e41f4", async() => {
                 BeginContext(13396, 4, true);
                 WriteLiteral("Gris");
                 EndContext();
@@ -669,7 +669,7 @@ WriteAttributeValue("", 13303, item.IdPersona, 13303, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(13455, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "bd513bae15904a65b3dcf5a2a254c8ca", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e5f016a9cdc54d5a86efc43377b84a83", async() => {
                 BeginContext(13474, 4, true);
                 WriteLiteral("Rojo");
                 EndContext();
@@ -691,7 +691,7 @@ WriteAttributeValue("", 13303, item.IdPersona, 13303, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(13533, 33, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "bfa37d3bfb8e420e82148b3327d1fd5d", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "1af47fca2128409f81e74f288c8388dc", async() => {
                 BeginContext(13552, 5, true);
                 WriteLiteral("Verde");
                 EndContext();
@@ -890,7 +890,7 @@ WriteAttributeValue("", 17694, item.IdPersona, 17694, 15, false);
             WriteLiteral(">\r\n                                            ");
             EndContext();
             BeginContext(17759, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "17b3ebc88397423a9478b4817acab6c2", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "926c37f2412940c888aef1d7c55c9c45", async() => {
                 BeginContext(17778, 4, true);
                 WriteLiteral("Gris");
                 EndContext();
@@ -912,7 +912,7 @@ WriteAttributeValue("", 17694, item.IdPersona, 17694, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(17837, 41, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "d531f785cc6044e0964761a310aeef76", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "23e9443cc6bc4e27a5a843e923c289cd", async() => {
                 BeginContext(17865, 4, true);
                 WriteLiteral("Rojo");
                 EndContext();
@@ -937,7 +937,7 @@ WriteAttributeValue("", 17694, item.IdPersona, 17694, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(17924, 33, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "8645e82b66c945af899d6efc46ee2285", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "3ee77b47f77547a0b7d91cdc73dac5ce", async() => {
                 BeginContext(17943, 5, true);
                 WriteLiteral("Verde");
                 EndContext();
@@ -1136,7 +1136,7 @@ WriteAttributeValue("", 22089, item.IdPersona, 22089, 15, false);
             WriteLiteral(">\r\n                                            ");
             EndContext();
             BeginContext(22154, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "51a6f5c3b4074c048b53fa6826efe60a", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "198f47c351d94e329208a358774755ab", async() => {
                 BeginContext(22173, 4, true);
                 WriteLiteral("Gris");
                 EndContext();
@@ -1158,7 +1158,7 @@ WriteAttributeValue("", 22089, item.IdPersona, 22089, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(22232, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "2998f69b4c3048f2a53bc1e7425a419c", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "4491499c814b456481f706f3955cca88", async() => {
                 BeginContext(22251, 4, true);
                 WriteLiteral("Rojo");
                 EndContext();
@@ -1180,7 +1180,7 @@ WriteAttributeValue("", 22089, item.IdPersona, 22089, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(22310, 42, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "fc43c4c4e2dd482e8ebdf940a69384d3", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "349028bd09d641f99fa8f4777de7031f", async() => {
                 BeginContext(22338, 5, true);
                 WriteLiteral("Verde");
                 EndContext();
@@ -1382,7 +1382,7 @@ WriteAttributeValue("", 26489, item.IdPersona, 26489, 15, false);
             WriteLiteral(">\r\n                                            ");
             EndContext();
             BeginContext(26554, 45, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "92a0e9dd66b5434c93a6c17c17241743", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "650b31e12ba84d939ff95438166f14c6", async() => {
                 BeginContext(26581, 9, true);
                 WriteLiteral("Sin grupo");
                 EndContext();
@@ -1407,7 +1407,7 @@ WriteAttributeValue("", 26489, item.IdPersona, 26489, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(26645, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "2a0ee42361294bcf9df584f49f4e17e1", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c2b8f69cf6b54bc49a587ca3fe8ad4d8", async() => {
                 BeginContext(26664, 4, true);
                 WriteLiteral("Gris");
                 EndContext();
@@ -1429,7 +1429,7 @@ WriteAttributeValue("", 26489, item.IdPersona, 26489, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(26723, 32, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "be34b1b9f1554c92b842a7d02179d987", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "83e999a90b0046dfa32a7d65b8928d4f", async() => {
                 BeginContext(26742, 4, true);
                 WriteLiteral("Rojo");
                 EndContext();
@@ -1451,7 +1451,7 @@ WriteAttributeValue("", 26489, item.IdPersona, 26489, 15, false);
             WriteLiteral("\r\n                                            ");
             EndContext();
             BeginContext(26801, 33, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "dc5a46e9a8f444e0827d0bb79a4c333c", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "85d7bd0dbddc432fa146afa15d0aa72d", async() => {
                 BeginContext(26820, 5, true);
                 WriteLiteral("Verde");
                 EndContext();

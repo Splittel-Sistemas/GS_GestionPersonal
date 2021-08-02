@@ -1,0 +1,89 @@
+﻿@model GPSInformation.Responses.PuestosResp
+@{
+    ViewData["Title"] = "Detalle del puesto : " + Model.Puesto.DPU;
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("Index","Puesto")">Lista de puestos</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @if ((bool)ViewBag.Access17)
+            {
+                <a href="@Url.Action("Edit", new { id = Model.Puesto.IdPuesto })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
+                <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+            }
+
+        </div>
+    </div>
+}
+<div data-label="Informacion" class="df-example demo-forms">
+    <dl class="row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Puesto.DPU)
+        </dt>
+        <dd class="col-md-3 border">
+            @Html.DisplayFor(model => model.Puesto.DPU)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Puesto.Nombre)
+        </dt>
+        <dd class="col-md-10 border">
+            @Html.DisplayFor(model => model.Puesto.Nombre)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Puesto.DescripcionPuesto)
+        </dt>
+        <dd class="col-md-10 border">
+            @Html.DisplayFor(model => model.Puesto.DescripcionPuesto)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Departamento)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Departamento)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Ubicacion)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Ubicacion)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Puesto.SalarioMin)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Puesto.SalarioMin)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Puesto.SalarioMax)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Puesto.SalarioMax)
+        </dd>
+
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Puesto.HoraEntrada)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Puesto.HoraEntrada)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Puesto.HoraSalida)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Puesto.HoraSalida)
+        </dd>
+    </dl>
+    <div class="col-sm-12 text-right">
+        <a asp-action="Index" class="btn btn-sm btn-secondary">Volver a lista</a>
+    </div>
+</div>

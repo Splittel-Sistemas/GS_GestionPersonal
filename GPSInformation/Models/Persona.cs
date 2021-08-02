@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GPSInformation.Models
 {
-    [TableDB(Name = "Persona", IsMappedByLabels = false, IsStoreProcedure = false)]
+    [TableDB(Name = "Persona", IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creado", Updated_at = "Actualizado")]
     public class Persona
     {
         [Display(Name = "#")]

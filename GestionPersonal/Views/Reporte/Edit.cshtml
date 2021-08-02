@@ -1,0 +1,382 @@
+﻿@model GPSInformation.Models.Reporte
+@{
+    ViewData["Title"] = "Editar reporte: " + Model.Descripcion;
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a href="#moddal_ejecutar" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-toggle="modal" onclick=" app_create_reporte.StarRun = true"><i data-feather="play" class="wd-10 mg-r-5"></i>Ejecutar</a>
+        </div>
+    </div>
+}
+<link rel="stylesheet" href="https://codemirror.net/lib/codemirror.css" />
+<link rel="stylesheet" href="https://codemirror.net/theme/xq-light.css" />
+<link rel="stylesheet" href="~/template/assets/css/dashforge.profile.css" />
+
+<div class="row" id="app_create_reporte">
+    <div data-label="Informacion" class="df-example demo-forms col-12">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="IdReporte" class="form-control" />
+            <input type="hidden" asp-for="Editado" class="form-control" />
+            <input type="hidden" asp-for="Parametros" class="form-control" />
+            <input type="hidden" asp-for="Columnas" class="form-control" />
+            <input type="hidden" asp-for="TipoDescr" class="form-control" />
+
+            <div class="form-group row">
+                <label asp-for="Descripcion" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <input asp-for="Descripcion" class="form-control" />
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="Tipo" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-8">
+                    <select asp-for="Tipo" class="form-control">
+                        <option value="1">Query</option>
+                        <option value="2">Procedimiento</option>
+                        <option value="3">Vista</option>
+                    </select>
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                </div>
+                <div class="col-sm-2 custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="Activo">
+                    <label class="custom-control-label" asp-for="Activo"></label>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="Sentencia" class="col-sm-12 col-form-label bg-light"></label>
+                <div class="col-sm-12">
+                    <textarea asp-for="Sentencia" rows="40" class="form-control"></textarea>
+                    <span asp-validation-for="Sentencia" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-12 col-form-label bg-light">Variables <a href="#modal_parametroNuew" data-toggle="modal" v-on:click="activeNuewvoPar()" class="link-03 lh-0">Agregar nuevo</a></label>
+                <ul class="list-inline list-inline-skills col-12 mt-4" v-if="reporte!= null && reporte.parametrosD.length > 0">
+                    <li class="list-inline-item" v-for="(item, index) in reporte.parametrosD">
+                        <a href="#modal_parametro" data-toggle="modal" v-on:click="variableSelected = item; dataParametro = null" v-bind:title="item.descripcion">{{item.variable}}</a>
+                        <a href="#" class="text-danger" v-on:click="reporte.parametrosD.splice(index,1); updateParametsoForm()">x</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-group row mg-b-0">
+                <div class="col-sm-12 text-right">
+                    <a asp-action="Admin" class="btn btn-sm btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal fade" id="modal_parametro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel4" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel4">Parametros</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"  v-on:click=" GetOptionsSelec();updateParametsoForm()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" v-if="variableSelected!= null">
+                    <div class="form-group">
+                        <label class="col-form-label">Variable</label>
+                        <input class="form-control" id="pr_variable" v-model="variableSelected.variable" placeholder="Introduce una variable" />
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Descripción</label>
+                        <input class="form-control" id="pr_descripcion" v-model="variableSelected.descripcion" placeholder="Introduce una descripción" />
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="col-form-label">Tipo de dato</label>
+                            <select id="pr_tipo" v-model="variableSelected.tipo" class="form-control">
+                                <option value="number">number</option>
+                                <option value="DateTime">DateTime</option>
+                                <option value="Date">Date</option>
+                                <option value="string">string</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="col-form-label">Multiple</label>
+                            <select id="pr_tipo" v-model="variableSelected.multiple" class="form-control">
+                                <option value="1">Si</option>
+                                <option value="2">no</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Sentencia SQL(<code>select columna1 as Value, columna2 Label from Tabla1</code>)<a href="#" v-on:click="EjecutarSQLPara(variableSelected)">Ejecutar query</a> </label>
+                        <textarea id="pr_sentenciaSQL" v-model="variableSelected.optionsSQL" rows="3" class="form-control"></textarea>
+                    </div>
+                    <table class="table col-12" v-if="dataParametro != null">
+                        <thead>
+                            <tr>
+                                <th>Clave</th>
+                                <th>Label</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-if="dataParametro.length > 0" v-for="(item, index) in dataParametro">
+                                <td>{{item.value}}</td>
+                                <td>{{item.label}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer" v-if="variableSelected!= null">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal"  v-on:click=" GetOptionsSelec();updateParametsoForm()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div data-label="Reporte" class="df-example demo-forms mt-4 table-responsive table-responsive-md table-responsive-lg" id="result_reporte">
+
+    </div>
+    <div class="modal fade" id="modal_parametroNuew" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel4" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel4">Agregar nuevo Parametro</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"  v-on:click=" GetOptionsSelec();updateParametsoForm()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" v-if="variableNew!= null">
+                    <div class="form-group">
+                        <label class="col-form-label">Variable</label>
+                        <input class="form-control" id="pr_variable" v-model="variableNew.variable" placeholder="Introduce una variable" />
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Descripción</label>
+                        <input class="form-control" id="pr_descripcion" v-model="variableNew.descripcion" placeholder="Introduce una descripción" />
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6">
+                            <label class="col-form-label">Tipo de dato</label>
+                            <select id="pr_tipo" v-model="variableNew.tipo" class="form-control">
+                                <option value="number">number</option>
+                                <option value="DateTime">DateTime</option>
+                                <option value="Date">Date</option>
+                                <option value="string">string</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label class="col-form-label">Multiple</label>
+                            <select id="pr_tipo" v-model="variableNew.multiple" class="form-control">
+                                <option value="1">Si</option>
+                                <option value="2">no</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-form-label">Sentencia SQL(<code>select columna1 as Value, columna2 Label from Tabla1</code>)<a href="#" v-on:click="EjecutarSQLPara(variableNew);updateParametsoForm()">Ejecutar query</a> </label>
+                        <textarea id="pr_sentenciaSQL" v-model="variableNew.optionsSQL" rows="3" class="form-control"></textarea>
+                    </div>
+                    <table class="table col-12" v-if="dataParametro != null">
+                        <thead>
+                            <tr>
+                                <th>Clave</th>
+                                <th>Label</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-if="dataParametro.length > 0" v-for="(item, index) in dataParametro">
+                                <td>{{item.value}}</td>
+                                <td>{{item.label}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer" v-if="variableNew!= null">
+                    <button type="button" class="btn btn-secondary tx-13" v-on:click=" GetOptionsSelec();" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary tx-13" v-on:click="reporte.parametrosD.push(variableNew); GetOptionsSelec();variableNew = null; updateParametsoForm() ">guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="moddal_ejecutar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="StarRun == true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content tx-14">
+                <div class="modal-header">
+                    <h6 class="modal-title" id="exampleModalLabel">Ejecutar reporte</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" v-if="reporte!= null">
+                    <div class="form-group" v-if="reporte.parametrosD.length > 0" v-for="(item, index) in reporte.parametrosD">
+                        <label>{{ item.descripcion }}</label>
+
+                        <input type="datetime" v-if="item.tipo == 'DateTime'" class="form-control parametroR" v-bind:placeholder="item.descripcion" v-bind:name="'inp_'+item.variable" v-bind:data-variable="item.variable" v-bind:data-tipo="item.tipo" v-bind:data-descripcion="'aa'" />
+                        <input type="date" v-if="item.tipo == 'Date'" class="form-control parametroR" v-bind:placeholder="item.descripcion" v-bind:name="'inp_'+item.variable" v-bind:data-variable="item.variable" v-bind:data-tipo="item.tipo" v-bind:data-descripcion="'aa'" />
+                        <select v-if="item.tipo != 'Date' && item.tipo != 'DateTime' && item.multiple == 1" class="form-control parametroR" v-bind:name="'inp_'+item.variable" v-bind:data-variable="item.variable" v-bind:data-tipo="item.tipo" v-bind:data-descripcion="'aa'">
+                            <option value="">Selecciona un {{ item.descripcion }}</option>
+                            <option v-for="option in selectAux[item.variable]" v-bind:value="option.value">
+                                {{ option.label }}
+                            </option>
+                        </select>
+                        <input type="text" v-if="item.tipo != 'Date' && item.tipo != 'DateTime' && item.multiple == 2" class="form-control parametroR" v-bind:placeholder="item.descripcion" v-bind:name="'inp_'+item.variable" v-bind:data-variable="item.variable" v-bind:data-tipo="item.tipo" v-bind:data-descripcion="'aa'" />
+                    </div>
+                    <div class="alert alert-primary mg-b-0" v-if="reporte.parametrosD.length <= 0" role="alert">
+                        estimado usuario este reporte no requiere parameros, por favor da clic en <strong>Ejecutar</strong> para poder visualizar el reporte
+                    </div>
+                </div>
+                <div class="modal-footer" v-if="reporte!= null">
+                    <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal"onclick="StarRun = false">Cerrar</button>
+                    <button type="button" class="btn btn-primary tx-13" onclick="app_create_reporte.RunReport(); app_create_reporte.updateParametsoForm()">Ejecutar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://codemirror.net/lib/codemirror.js"></script>
+
+
+    <script>
+        var app_create_reporte = new Vue({
+            el: "#app_create_reporte",
+            data: {
+                StarRun: false,
+                editorSQL: null,
+                Pr_editorSQL: null,
+                reporte: null,
+                selectAux: [],
+                localParametros: [],
+                variableSelected: null,
+                variableNew: null,
+                dataParametro: null,
+                ReqReporteRun: {
+                        IdReporte: '@Model.IdReporte',
+                        OmitCols: [],
+                        Parametros: []
+                    }
+            },
+            mounted() {
+                this.editorSQL = CodeMirror.fromTextArea(document.getElementById("Sentencia"), {
+                    mode: 'text/x-mssql',
+                    indentWithTabs: true,
+                    smartIndent: true,
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    autofocus: true,
+                    extraKeys: { "Ctrl-Space": "autocomplete" },
+                    theme: "xq-light",
+                    height: "950px"
+                });
+                this.getReporteDetails();
+                this.validParametros();
+            },
+            methods: {
+                updateParametsoForm: function () {
+                    document.getElementById("Parametros").value = JSON.stringify(app_create_reporte.reporte.parametrosD)
+                },
+                activeNuewvoPar: function () {
+                    this.variableNew = { "descripcion": "", "variable": "", "tipo": "number", "valor": "", "multiple": 1, "optionsSQL": "" }
+                },
+                validParametros: function (cm) {
+                    let re = /\b_var_\w+\b/g;
+                    var str = this.editorSQL.getValue()
+                    var res = str.match(re);
+                    this.localParametros = res == null || res == undefined ? [] : res;
+                },
+                getReporteDetails: async function () {
+                    await axios.post('@Url.Action("GetDetailsJson", "Reporte")/@Model.IdReporte', this.ReqReporteRun, null).then(response => {
+                        this.reporte = response.data
+                        this.GetOptionsSelec();
+                    }).catch(error => {
+                        GlobalValidAxios(error);
+                    }).finally(() => {
+                        document.getElementById("Parametros").value = JSON.stringify(app_create_reporte.reporte.parametrosD)
+                    })
+                },
+                EjecutarSQLPara: async function (variableSelected) {
+                    await axios.post('@Url.Action("EjecutarSentence", "Reporte")?sentence=' + variableSelected.optionsSQL, this.ReqReporteRun, null).then(response => {
+                        this.dataParametro = response.data
+                    }).catch(error => {
+                        GlobalValidAxios(error);
+                    }).finally(() => {
+                        document.getElementById("Parametros").value = JSON.stringify(app_create_reporte.reporte.parametrosD)
+                    })
+                },
+                GetOptionsSelec: async function () {
+                    this.StarRun =false
+                    this.selectAux = []
+                    if (this.reporte != null && this.reporte.parametrosD.length > 0) {
+                        //console.log("GetOptionsSelec")
+                        this.reporte.parametrosD.forEach(async (item, i) => {
+                            //console.log(item)
+                            if (item.tipo != 'Date' && item.tipo != 'DateTime' && item.multiple == 1) {
+                                await axios.post('@Url.Action("EjecutarSentence", "Reporte")?sentence=' + item.optionsSQL, this.ReqReporteRun, null).then(response => {
+                                    this.selectAux[item.variable] = response.data
+                                }).catch(error => {
+                                    GlobalValidAxios(error);
+                                }).finally(() => {
+                                })
+                            }
+                        })
+                    }
+                    document.getElementById("Parametros").value = JSON.stringify(app_create_reporte.reporte.parametrosD)
+                },
+                RunReport: async function () {
+                        document.getElementById("result_reporte").innerHTML = '<div class="alert alert-success border-0 text-center" role="alert"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>'
+                        var parametros = document.getElementsByClassName("parametroR");
+                        var columnas = document.getElementsByClassName("ColumR");
+                        this.ReqReporteRun.Parametros = []
+                        if (parametros != null && parametros.length > 0) {
+                            for (var i = 0; i < parametros.length; i++) {
+                                this.ReqReporteRun.Parametros.push({
+                                    "Descripcion": parametros[i].dataset["descripcion"],
+                                    "Variable": parametros[i].dataset["variable"],
+                                    "Tipo": parametros[i].dataset["tipo"],
+                                    "Valor": parametros[i].value,
+                                });
+                            }
+                        }
+                        var columnas = document.getElementsByClassName("ColumR");
+                        this.ReqReporteRun.OmitCols = []
+                        if (columnas != null && columnas.length > 0) {
+                            for (var i = 0; i < columnas.length; i++) {
+                                if (columnas[i].checked == false) {
+                                    this.ReqReporteRun.OmitCols.push(columnas[i].dataset["columna"])
+                                }
+
+                            }
+                        }
+                        await axios.post('@Url.Action("EjecutarExistente", "Reporte")', this.ReqReporteRun, null).then(response => {
+                            document.getElementById("result_reporte").innerHTML = response.data
+                            $('#reportdata_app').DataTable({
+                                responsive: true,
+                                language: {
+                                    searchPlaceholder: 'Search...',
+                                    sSearch: '',
+                                    lengthMenu: '_MENU_ items/page',
+                                },
+                                ordering: true,
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    'excel', 'pdf'
+                                ]
+                            });
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                        }).finally(() => {
+                            document.getElementById("Parametros").value = JSON.stringify(app_create_reporte.reporte.parametrosD)
+                        })
+                    }
+            }
+        });
+    </script>
+}
+

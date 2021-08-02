@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GPSInformation.Models
 {
-    [TableDB(Name = "InformacionMedica", IsMappedByLabels = false, IsStoreProcedure = false)]
+    [TableDB(Name = "InformacionMedica", IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creado", Updated_at = "Editado")]
     public class InformacionMedica
     {
         [ColumnDB(Name = "IdPersona", IsMapped = true, IsKey = true)]
@@ -54,5 +54,13 @@ namespace GPSInformation.Models
         [Required]
         [ColumnDB(Name = "Nombre", IsMapped = true, IsKey = false)]
         public string Comentarios { get; set; }
+
+        [Display(Name = "Creado")]
+        [ColumnDB(Name = "Creado", IsMapped = true, IsKey = false)]
+        public DateTime Creado { get; set; }
+
+        [Display(Name = "Ult.Atualización")]
+        [ColumnDB(Name = "Editado", IsMapped = true, IsKey = false)]
+        public DateTime Editado { get; set; }
     }
 }

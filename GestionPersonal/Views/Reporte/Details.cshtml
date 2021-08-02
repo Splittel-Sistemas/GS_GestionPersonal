@@ -1,0 +1,210 @@
+﻿@model GPSInformation.Models.Reporte
+@{
+    ViewData["Title"] = "Detalle de reporte: " + Model.Descripcion;
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @if ((bool)ViewBag.Acceso1056 || (bool)ViewBag.Acceso1057 && Model.Activo)
+            {
+                <a href="#moddal_ejecutar" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-toggle="modal"><i data-feather="play" class="wd-10 mg-r-5"></i>Ejecutar</a>
+            }
+            @if ((bool)ViewBag.Acceso1056)
+            {
+                <a href="@Url.Action("Edit","Reporte", new { id = Model.IdReporte })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
+            }
+        </div>
+    </div>
+}
+<div id="app_reporteAplication">
+    <div data-label="Informacion del reporte" class="df-example demo-forms">
+        <dl class="row">
+            <dt class="col-lg-2">
+                @Html.DisplayNameFor(model => model.IdReporte)
+            </dt>
+            <dd class="col-md-10 border">
+                @Html.DisplayFor(model => model.IdReporte)
+            </dd>
+            <dt class="col-lg-2">
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </dt>
+            <dd class="col-lg-10 border">
+                @Html.DisplayFor(model => model.Descripcion)
+            </dd>
+            <dt class="col-lg-2">
+                @Html.DisplayNameFor(model => model.Activo)
+            </dt>
+            <dd class="col-lg-4 border">
+                @Html.DisplayFor(model => model.Activo)
+            </dd>
+            <dt class="col-lg-2">
+                @Html.DisplayNameFor(model => model.Editado)
+            </dt>
+            <dd class="col-lg-4 border">
+                @Html.DisplayFor(model => model.Editado)
+            </dd>
+        </dl>
+    </div>
+    @if ((bool)ViewBag.Acceso1056 || (bool)ViewBag.Acceso1057 && Model.Activo)
+    {
+        <div data-label="Reporte" class="df-example demo-forms mt-4 table-responsive table-responsive-md table-responsive-lg" id="result_reporte">
+
+        </div>
+        <div class="modal fade" id="moddal_ejecutar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content tx-14">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="exampleModalLabel">Ejecutar reporte</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @if (Model.ParametrosD.Count > 0)
+                        {
+                            @foreach (var item in Model.ParametrosD)
+                            {
+                                <div class="form-group">
+                                    <label>@item.Descripcion</label>
+                                    @if (item.Tipo == "DateTime")
+                                    {
+                                        <input type="datetime" class="form-control parametroR" placeholder="@item.Descripcion" name="inp_@item.Variable" data-variable="@item.Variable" data-tipo="@item.Tipo" data-descripcion="aa" />
+                                    }
+                                    else if (item.Tipo == "Date")
+                                    {
+                                        <input type="date" class="form-control parametroR" placeholder="@item.Descripcion" name="inp_@item.Variable" data-variable="@item.Variable" data-tipo="@item.Tipo" data-descripcion="aa" />
+                                    }
+
+                                    else
+                                    {
+                                        @if (item.Multiple == 1)
+                                        {
+                                            System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem> datos = (System.Collections.Generic.IEnumerable<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)ViewData[item.Variable];
+                                            <select asp-items="datos" class="form-control parametroR" name="inp_@item.Variable" data-variable="@item.Variable" data-tipo="@item.Tipo" data-descripcion="aa">
+                                                <option value="">Selecciona un @item.Descripcion</option>
+                                            </select>
+                                        }
+
+                                        else
+                                        {
+                                            <input type="text" class="form-control parametroR" placeholder="@item.Descripcion" name="inp_@item.Variable" data-variable="@item.Variable" data-tipo="@item.Tipo" data-descripcion="aa" />
+                                        }
+
+                                    }
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-primary mg-b-0" role="alert">
+                                estimado usuario este reporte no requiere parameros, por favor da clic en <strong>Ejecutar</strong> para poder visualizar el reporte
+                            </div>
+                        }
+                        <h4>Columnas para mostrar</h4>
+                        @{
+                            int conteo = 0;         
+                        }
+                        @foreach (var item in Model.ColumnasD)
+                        {
+                            <div class="custom-control custom-checkbox col-12">
+                                <input type="checkbox" class="custom-control-input ColumR" id="_ColumR_@conteo" data-columna="@item" checked="checked">
+                                <label class="custom-control-label" for="_ColumR_@conteo">@item</label>
+                            </div>
+                            conteo++;
+                        }
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal" id="CerrarEjecutar">Cerrar</button>
+                        <button type="button" class="btn btn-primary tx-13" onclick="app_reporteAplication.RunReport()">Ejecutar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @section Scripts {
+            <script>
+        var app_reporteAplication = new Vue({
+            el: "#app_reporteAplication",
+                data: {
+                    ReqReporteRun: {
+                        IdReporte: '@Model.IdReporte',
+                        OmitCols: ["IdPersona","IdGenero"],
+                        Parametros: []
+                    }
+                },
+                mounted() {
+
+                },
+                methods: {
+                    RunReport: async function () {
+                        document.getElementById("result_reporte").innerHTML = '<div class="alert alert-success border-0 text-center" role="alert"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>'
+                        var parametros = document.getElementsByClassName("parametroR");
+                        var columnas = document.getElementsByClassName("ColumR");
+                        this.ReqReporteRun.Parametros = []
+                        if (parametros != null && parametros.length > 0) {
+                            for (var i = 0; i < parametros.length; i++) {
+                                this.ReqReporteRun.Parametros.push({
+                                    "Descripcion": parametros[i].dataset["descripcion"],
+                                    "Variable": parametros[i].dataset["variable"],
+                                    "Tipo": parametros[i].dataset["tipo"],
+                                    "Valor": parametros[i].value,
+                                });
+                            }
+                        }
+                        var columnas = document.getElementsByClassName("ColumR");
+                        this.ReqReporteRun.OmitCols = []
+                        if (columnas != null && columnas.length > 0) {
+                            for (var i = 0; i < columnas.length; i++) {
+                                if (columnas[i].checked == false) {
+                                    this.ReqReporteRun.OmitCols.push(columnas[i].dataset["columna"])
+                                }
+
+                            }
+                        }
+                        await axios.post('@Url.Action("EjecutarExistente", "Reporte")', this.ReqReporteRun, null).then(response => {
+                            document.getElementById("result_reporte").innerHTML = response.data
+                            $('#reportdata_app').DataTable({
+                                responsive: true,
+                                language: {
+                                    searchPlaceholder: 'Search...',
+                                    sSearch: '',
+                                    lengthMenu: '_MENU_ items/page',
+                                },
+                                ordering: true,
+                                dom: 'Bfrtip',
+                                buttons: [
+                                    'excel', 'pdf'
+                                ]
+                            });
+                            document.getElementById("CerrarEjecutar").click()
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                        }).finally(() => {
+                        })
+                    }
+                }
+            });
+            </script>
+        }
+    }
+    else
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Estimado usuario!</strong> este reporte no puede ser ejecutado porque ha sido desactivado por los administradores del sitio
+            <hr>
+            <p class="mb-0">Sistema Gestión de Personal</p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    }
+</div>

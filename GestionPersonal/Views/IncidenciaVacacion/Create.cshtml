@@ -11,7 +11,7 @@
         @*@await Component.InvokeAsync("EmpleadoBasic", new { id = Model.IdPersona })*@
         <h4>II. Detalle de solicitud</h4>
         <hr />
-        <form asp-action="Create">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group row">
                 <label asp-for="Inicio" class="col-sm-2 col-form-label"></label>
@@ -25,6 +25,14 @@
                 <div class="col-sm-4">
                     <input type="date" asp-for="Fin" class="form-control" />
                     <span asp-validation-for="Fin" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                
+                <label asp-for="Archivo" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-4">
+                    <input type="file" asp-for="Archivo" class="form-control" accept="application/pdf,application/vnd.ms-excel" />
+                    <span asp-validation-for="Archivo" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group row mg-b-0">

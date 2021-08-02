@@ -21,5 +21,15 @@ namespace GPSInformation.Models
         [Required]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public bool Activa { get; set; }
+
+        [Display(Name = "Color de fondo")]
+        [Required]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string ColorFondo { get; set; }
+
+        [Display(Name ="Color del borde")]
+        [Required]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string ColorBorder { get; set; }
     }
 }

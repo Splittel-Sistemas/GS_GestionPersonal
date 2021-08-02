@@ -225,19 +225,22 @@ namespace GPSInformation.Tools
             if(ListTo == null)
                 ListTo = new List<string>();
 
-            GetEmails(correos).ForEach(a =>
+            if (!string.IsNullOrEmpty(correos))
             {
-                if (!IsValidEmail(a))
+                GetEmails(correos).ForEach(a =>
                 {
-                    Funciones.EscribeLog(string.Format("El correo '{0}' no es valido para destinatario To", a));
-                    //throw new Exceptions.GpExceptions();
-                }
-                else
-                {
-                    ListTo.Add(a);
-                }
-               
-            });
+                    if (!IsValidEmail(a))
+                    {
+                        Funciones.EscribeLog(string.Format("El correo '{0}' no es valido para destinatario To", a));
+                        //throw new Exceptions.GpExceptions();
+                    }
+                    else
+                    {
+                        ListTo.Add(a);
+                    }
+
+                });
+            }
         }
 
         private bool IsValidEmail(string email)

@@ -28,39 +28,57 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>@item.NumeroNomina</td>
-            <td>@item.NombreCompleto</td>
-            <td>@item.NombreDepartamento</td>
-            <td>@item.PuestoNombre</td>
-            <td>
-                @item.TipoNomina
-                @if (item.IdEstatus != 19)
-                {
-                    <span class="badge badge-danger">@item.EstatusDescripcion</span>
-                }
-            </td>
-            <td>
+            <tr>
+                <td>@item.NumeroNomina</td>
+                <td>@item.NombreCompleto</td>
+                <td>@item.NombreDepartamento</td>
+                <td>@item.PuestoNombre</td>
+                <td>
+                    @item.TipoNomina
+                    @if (item.IdEstatus != 19)
+                    {
+                        <span class="badge badge-danger">@item.EstatusDescripcion</span>
+                    }
+                </td>
+                <td>
 
 
-                <div class="dropdown">
-                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropleftMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Opciones
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropleftMenuButton">
-                        @Html.ActionLink((bool)ViewBag.AccesoEdit == true ? "Editar": "Ver", "Edit", new { id = item.IdPersona }, new { @class = "dropdown-item" })
-                        @if ((bool)ViewBag.AccesoEdit == true)
-                        {
-                            @Html.ActionLink("Acceso", "Create", "Usuario", new { id = item.IdPersona }, new { @class = "dropdown-item" })
-                            @Html.ActionLink("Contrato", "Index", "Contrato", new { id = item.IdPersona }, new { @class = "dropdown-item" })
-                            @Html.ActionLink("Expediente", "Expediente", "Expediente", new { id = item.IdPersona }, new { @class = "dropdown-item" })
-                            @Html.ActionLink("Ver peridos", "Periodos", "IncidenciaVacacion", new { id = item.NumeroNomina }, new { @class = "dropdown-item" })
-                        }
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropleftMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Opciones
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropleftMenuButton">
+                            @Html.ActionLink((bool)ViewBag.AccesoEdit == true ? "Editar" : "Ver", "Edit", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                            @if ((bool)ViewBag.AccesoEdit == true)
+                            {
+                                @Html.ActionLink("Acceso", "Create", "Usuario", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                                @Html.ActionLink("Contrato", "Index", "Contrato", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                                @Html.ActionLink("Expediente", "Expediente", "Expediente", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                                @Html.ActionLink("Ver peridos", "Periodos", "IncidenciaVacacion", new { id = item.NumeroNomina }, new { @class = "dropdown-item" })
+                            }
 
+                        </div>
                     </div>
-                </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(function () {
+            'use strict'
+
+            $('.table').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                ordering: false
+            });
+
+        });
+    </script>
+}

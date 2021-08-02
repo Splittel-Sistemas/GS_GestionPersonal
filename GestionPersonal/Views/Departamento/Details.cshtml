@@ -1,0 +1,58 @@
+﻿@model GPSInformation.Responses.DepartamentoResp
+@{
+    ViewData["Title"] = "Detalle de departamento: " + Model.Departamento.Nombre;
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("Index","Sociedad")">Lista de departamentos</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @if ((bool)ViewBag.Access15)
+            {
+                <a href="@Url.Action("Edit", new { id = Model.Departamento.IdDepartamento })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
+                <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+            }
+
+        </div>
+    </div>
+}
+<div data-label="Informacion" class="df-example demo-forms">
+    <dl class="row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Departamento.IdDepartamento)
+        </dt>
+        <dd class="col-md-3 border">
+            @Html.DisplayFor(model => model.Departamento.IdDepartamento)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Departamento.Nombre)
+        </dt>
+        <dd class="col-md-10 border">
+            @Html.DisplayFor(model => model.Departamento.Nombre)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Direccion)
+        </dt>
+        <dd class="col-md-10 border">
+            @Html.DisplayFor(model => model.Direccion)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Departamento.ClaveDPU)
+        </dt>
+        <dd class="col-md-10 border">
+            @Html.DisplayFor(model => model.Departamento.ClaveDPU)
+        </dd>
+    </dl>
+    <div class="col-sm-12 text-right">
+        <a asp-action="Index" class="btn btn-sm btn-secondary">Volver a lista</a>
+    </div>
+</div>

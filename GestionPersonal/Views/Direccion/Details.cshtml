@@ -1,0 +1,54 @@
+﻿@model GPSInformation.Responses.DireccionResp
+@{
+    ViewData["Title"] = "Detalle de la dirección : " + Model.Direccion.Nombre;
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("Index","Sociedad")">Lista de sociedades</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @if ((bool)ViewBag.Access13)
+            {
+                <a href="@Url.Action("Edit", new { id = Model.Direccion.IdDireccion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
+                <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+            }
+
+        </div>
+    </div>
+}
+<div data-label="Informacion" class="df-example demo-forms">
+    <dl class="row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Direccion.IdDireccion)
+        </dt>
+        <dd class="col-md-3 border">
+            @Html.DisplayFor(model => model.Direccion.IdDireccion)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Direccion.Nombre)
+        </dt>
+        <dd class="col-md-10 border">
+            @Html.DisplayFor(model => model.Direccion.Nombre)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Sociedad)
+        </dt>
+        <dd class="col-md-10 border">
+            @Html.DisplayFor(model => model.Sociedad)
+        </dd>
+    </dl>
+    <div class="col-sm-12 text-right">
+        <a asp-action="Index" class="btn btn-sm btn-secondary">Volver a lista</a>
+    </div>
+</div>
+
+

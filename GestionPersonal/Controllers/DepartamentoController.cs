@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GestionPersonal.Models;
 using GPSInformation;
+using GPSInformation.Controllers;
 using GPSInformation.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,20 +13,20 @@ using Microsoft.Extensions.Configuration;
 
 namespace GestionPersonal.Controllers
 {
+    /*
+        estructura de permisos
+        14 - Lectura
+        15 - scritura
+     */
     public class DepartamentoController : Controller
     {
         private DarkManager darkManager;
-        private SelectList Direcciones;
+        private V2OrganCtrl _V2OrganCtrl;
 
 
         public DepartamentoController(IConfiguration configuration)
         {
             darkManager = new DarkManager(configuration);
-            darkManager.OpenConnection();
-            darkManager.LoadObject(GpsManagerObjects.Departamento);
-            darkManager.LoadObject(GpsManagerObjects.Direccion);
-
-            Direcciones = new SelectList(darkManager.Direccion.Get().OrderBy(a => a.Nombre).ToList(), "IdDireccion", "Nombre");
         }
 
         ~DepartamentoController()
@@ -37,32 +38,66 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView( IdAction = new int[] { 14,15})]
         public ActionResult Index()
         {
-            var result = darkManager.Departamento.Get().OrderBy(a => a.Nombre).ToList();
-            result.ForEach(a => {
-                a.Direccion = darkManager.Direccion.Get(a.IdDireccion);
-            });
-            return View(result);
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            try
+            {
+                var result = _V2OrganCtrl.DepGet();
+                ViewData["Access15"] = _V2OrganCtrl._UsrCrt.ValidAction(_V2OrganCtrl._IdUsuario, 15);
+                return View(result);
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // GET: Departamento/Details/5
         [AccessMultipleView(IdAction = new int[] { 14, 15 })]
         public ActionResult Details(int id)
         {
-            var result = darkManager.Departamento.Get(id);
-
-            if(result == null)
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            try
             {
-                return NotFound();
+                var result = _V2OrganCtrl.DepDetails(id);
+                if (result is null)
+                {
+                    return NotFound("Departamento no encontrada");
+                }
+                ViewData["Access15"] = _V2OrganCtrl._UsrCrt.ValidAction(_V2OrganCtrl._IdUsuario, 15);
+                return View(result);
             }
-            return View(result);
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // GET: Departamento/Create
         [AccessMultipleView(IdAction = new int[] { 15 })]
         public ActionResult Create()
         {
-            ViewData["Direcciones"] = Direcciones;
-            return View();
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            GenerateSelects();
+            try
+            {
+                return View();
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // POST: Departamento/Create
@@ -71,34 +106,26 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 15 })]
         public ActionResult Create(Departamento Departamento)
         {
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            _V2OrganCtrl.LoadTranssByMethod = true;
+            GenerateSelects(Departamento.IdDireccion);
             try
             {
-
                 if (!ModelState.IsValid)
                 {
-                    ViewData["Direcciones"] = Direcciones;
                     return View(Departamento);
                 }
-
-                darkManager.Departamento.Element = Departamento;
-                bool result = darkManager.Departamento.Add();
-                if (result)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ViewData["Direcciones"] = Direcciones;
-                    ModelState.AddModelError("", darkManager.GetLastMessage());
-                    return View(Departamento);
-                }
-                
+                int Created = _V2OrganCtrl.DepAdd(Departamento);
+                return RedirectToAction("Details", new { Id = Created });
             }
-            catch(GPSInformation.Exceptions.GpExceptions ex)
+            catch (GPSInformation.Exceptions.GPException ex)
             {
-                ViewData["Direcciones"] = Direcciones;
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
                 return View(Departamento);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
             }
         }
 
@@ -106,13 +133,26 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 15 })]
         public ActionResult Edit(int id)
         {
-            ViewData["Direcciones"] = Direcciones;
-            var result = darkManager.Departamento.Get(id);
-            if (result == null)
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+
+            try
             {
-                return NotFound();
+                var result = _V2OrganCtrl._darkM.Departamento.Get(id);
+                if (result is null)
+                {
+                    return NotFound("Departamento no encontrada");
+                }
+                GenerateSelects(result.IdDireccion);
+                return View(result);
             }
-            return View(result);
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // POST: Departamento/Edit/5
@@ -121,35 +161,36 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 15 })]
         public ActionResult Edit(Departamento Departamento)
         {
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            _V2OrganCtrl._darkM.StartTransaction();
+            GenerateSelects(Departamento.IdDireccion);
             try
             {
-
                 if (!ModelState.IsValid)
                 {
-                    ViewData["Direcciones"] = Direcciones;
                     return View(Departamento);
                 }
-
-                darkManager.Departamento.Element = Departamento;
-                bool result = darkManager.Departamento.Update();
-                if (result)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ViewData["Direcciones"] = Direcciones;
-                    ModelState.AddModelError("", darkManager.GetLastMessage());
-                    return View(Departamento);
-                }
-
-            }
-            catch (GPSInformation.Exceptions.GpExceptions ex)
-            {
-                ViewData["Direcciones"] = Direcciones;
-                ModelState.AddModelError("", ex.Message);
+                _V2OrganCtrl.DepEdit(Departamento);
+                ViewData["MessageSuccess"] = "Se han guardado los cambios exitosamente, gracias por usar nuestra plataforma GPS";
+                _V2OrganCtrl._darkM.Commit();
                 return View(Departamento);
             }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
+                _V2OrganCtrl._darkM.RolBack();
+                return View(Departamento);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
+        }
+
+        [NonAction]
+        private void GenerateSelects(int IdDireccion = 0)
+        {
+            ViewData["Direcciones"] = new SelectList(darkManager.Direccion.Get().OrderBy(a => a.Nombre).ToList(), "IdDireccion", "Nombre", IdDireccion);
         }
     }
 }

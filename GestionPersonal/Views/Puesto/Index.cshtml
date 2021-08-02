@@ -1,34 +1,41 @@
-﻿@model IEnumerable<GPSInformation.Models.Puesto>
+﻿@model IEnumerable<GPSInformation.Responses.PuestosResp>
 
 @{
-    ViewData["Title"] = "Puestos";
+    ViewData["Title"] = "Lista de puestos";
 }
 
-<div class="d-flex align-items-center justify-content-between mg-b-30">
-    <h4 class="tx-15 mg-b-0">@ViewData["Title"]</h4>
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <h2 class="tx-15 mg-b-0"></h2>
-        <a asp-action="Create" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Crear nuevo</a>
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+        </div>
     </div>
-</div>
-<hr />
-<table class="table">
+}
+<table class="table" id="lista_puestos">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.DPU)
+                @Html.DisplayNameFor(model => model.Puesto.DPU)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Nombre)
+                @Html.DisplayNameFor(model => model.Puesto.Nombre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdDepartamento)
+                @Html.DisplayNameFor(model => model.Departamento)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SalarioMin)
+                @Html.DisplayNameFor(model => model.Puesto.SalarioMin)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SalarioMax)
+                @Html.DisplayNameFor(model => model.Puesto.SalarioMax)
             </th>
             <th></th>
         </tr>
@@ -38,24 +45,47 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.DPU)
+                    @Html.DisplayFor(modelItem => item.Puesto.DPU)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Nombre)
+                    @Html.DisplayFor(modelItem => item.Puesto.Nombre)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Departamento.Nombre)
+                    @Html.DisplayFor(modelItem => item.Departamento)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SalarioMin)
+                    @Html.DisplayFor(modelItem => item.Puesto.SalarioMin)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SalarioMax)
+                    @Html.DisplayFor(modelItem => item.Puesto.SalarioMax)
                 </td>
                 <td>
-                    @Html.ActionLink("Editar", "Edit", new { id = item.IdPuesto })
+                    @if ((bool)ViewBag.Access17)
+                    {
+                        @Html.ActionLink("Editar", "Edit", new { id = item.Puesto.IdPuesto }) <span>|</span>
+                    }
+                    @Html.ActionLink("Detalle", "Details", new { id = item.Puesto.IdPuesto })
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(function () {
+            'use strict'
+
+            $('#lista_puestos').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                ordering: false
+            });
+
+        });
+    </script>
+}

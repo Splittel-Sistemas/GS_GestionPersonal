@@ -1,0 +1,127 @@
+﻿@model GPSInformation.Models.IncidenciaVacacion
+@{
+    ViewData["Title"] = "Detalle de solicitud: " + Model.Folio;
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @if ((bool)ViewBag.ShowEdit && Model.Estatus == 2)
+            {
+                <a href="@Url.Action("Edit","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
+            }
+            @if ((bool)ViewBag.ShowCancel && Model.Estatus <= 4 )
+            {
+                <a href="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="x" class="wd-10 mg-r-5"></i>Cancel</a>
+            }
+            @if ((bool)ViewBag.ShowDelete)
+            {
+                <a href="@Url.Action("Delete","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="trash" class="wd-10 mg-r-5"></i>Eliminar</a>
+            }
+
+
+        </div>
+    </div>
+}
+@if (ViewBag.MessageSuccess != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Estimado usuario!</strong> @ViewBag.MessageSuccess
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+}
+<div data-label="Crear Nuevo Permiso" class="df-example demo-forms" id="app_createPermiso">
+    <h4 class="bg-light">I. Solicitante</h4>
+    <hr />
+    @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
+    <h4 class="bg-light">II. Detalle de solicitud</h4>
+    <hr />
+    <dl class="dl-horizontal row">
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.IdIncidenciaVacacion)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.IdIncidenciaVacacion)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Inicio)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Inicio)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.Fin)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.Fin)
+        </dd>
+        <dt class="col-md-2">
+            @Html.DisplayNameFor(model => model.NoDias)
+        </dt>
+        <dd class="col-md-4 border">
+            @Html.DisplayFor(model => model.NoDias)
+        </dd>
+    </dl>
+    <h4 class="bg-light">III. Seguimiento</h4>
+    <hr />
+    <ul class="steps steps-sm steps-lg steps-justified ">
+        @foreach (var item in Model.Proceso)
+        {
+
+
+            @if (item.Revisada)
+            {
+                <li class="step-item complete">
+                    <a href="" class="step-link">
+                        <span class="step-icon"><i data-feather="user"></i></span>
+                        <div>
+                            <span class="step-title">@item.Titulo</span>
+                            <span class="step-desc">@item.NombreEmpleado</span>
+                            <span class="step-desc @Html.Raw(item.Autorizada ? "text-success" : "text-danger")">@Html.Raw(item.Autorizada ? "Aceptada" : "Rechazada")</span>
+                            <span class="step-desc">@string.Format("{0:F}", item.Fecha)</span>
+                        </div>
+                    </a>
+                </li>
+            }
+            else if (!item.Revisada && item.Nivel == Model.Estatus)
+            {
+                <li class="step-item active">
+                    <a href="" class="step-link">
+                        <span class="step-icon"><i data-feather="user"></i></span>
+                        <div>
+                            <span class="step-title">@item.Titulo</span>
+                        </div>
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="step-item disabled">
+                    <a href="" class="step-link">
+                        <span class="step-icon"><i data-feather="user"></i></span>
+                        <div>
+                            <span class="step-title">@item.Titulo</span>
+                        </div>
+                    </a>
+                </li>
+            }
+        }
+
+    </ul>
+    @if (Model.Estatus >= 4)
+    {
+        <div class="alert alert-@Model.EstatusColor mt-4 mg-b-0" role="alert">
+            Estimado usuario, la solcitud se encuentra con estatus <strong>@Model.EstatusDescricion</strong>
+        </div>
+    }
+</div>
+

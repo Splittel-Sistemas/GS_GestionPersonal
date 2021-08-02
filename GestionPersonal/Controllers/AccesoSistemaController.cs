@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GestionPersonal.Models;
 using GPSInformation;
+using GPSInformation.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,8 @@ namespace GestionPersonal.Controllers
             darkManager.LoadObject(GpsManagerObjects.SubModulo);
             darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
             darkManager.LoadObject(GpsManagerObjects.Usuario);
+            darkManager.LoadObject(GpsManagerObjects.Reporte);
+            darkManager.LoadObject(GpsManagerObjects.ReporteAccss);
         }
 
         // GET: AccesoSistema
@@ -52,7 +55,24 @@ namespace GestionPersonal.Controllers
                     a.SubModulos.Add(b);
                 });
             });
-            return Ok(new UsuarioPermisos { IdPersona = persona.IdPersona, IdPersonaUser = persona.IdUsuario, Modulos = menu.Where(a => a.SubModulos.Count > 0).ToList() });
+
+            var reportes = new  List<ReporteAccessos>();
+            darkManager.Reporte.GetOpenquery($"Where Activo = 1", "order by Descripcion").ForEach(re =>
+            {
+                var rex = new ReporteAccessos { 
+                    Descripcion = re.Descripcion,
+                    IdReporte = re.IdReporte
+                };
+                var acceso = darkManager.ReporteAccss.GetOpenquerys($"where IdReporte = {re.IdReporte} and IdUsuario = {persona.IdUsuario}");
+
+                rex.Acceso = acceso is null ? false : acceso.Access;
+
+                reportes.Add(rex);
+
+            });
+
+
+            return Ok(new UsuarioPermisos { IdPersona = persona.IdPersona, IdPersonaUser = persona.IdUsuario, Modulos = menu.Where(a => a.SubModulos.Count > 0).ToList(), Reportes = reportes });
         }
 
         // GET: AccesoSistema/Create
@@ -119,6 +139,33 @@ namespace GestionPersonal.Controllers
                         }
                     });
                 });
+
+                modulos.Reportes.ForEach(re =>
+                {
+                    var acceso = darkManager.ReporteAccss.GetOpenquerys($"where IdReporte = {re.IdReporte} and IdUsuario = {modulos.IdPersonaUser}");
+                    if(acceso is null)
+                    {
+                        acceso = new ReporteAccss
+                        {
+                            Access = re.Acceso,
+                            IdReporte = re.IdReporte,
+                            IdUsuario = modulos.IdPersonaUser,
+                            Editado = DateTime.Now,
+                            IdReporteAccss = darkManager.ReporteAccss.GetLastId() + 1
+                        };
+                        darkManager.ReporteAccss.Element = acceso;
+                        darkManager.ReporteAccss.Add();
+                    }
+                    else
+                    {
+                        acceso.Access = re.Acceso;
+                        acceso.Editado = DateTime.Now;
+                        darkManager.ReporteAccss.Element = acceso;
+                        darkManager.ReporteAccss.Update();
+                    }
+                });
+
+
                 return Ok("Permisos guardados");
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)

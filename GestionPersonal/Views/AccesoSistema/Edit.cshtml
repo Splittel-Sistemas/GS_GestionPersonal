@@ -3,14 +3,36 @@
 @{
     ViewData["Title"] = "Editar permisos";
 }
-
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            
+        </div>
+    </div>
+}
 @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
 <div class="row col-lg-12" id="app_accessystem">
     <form class="col-sm-12 row" v-if="Access != null">
+        <label class="col-sm-12 col-form-label bg-light">Permisos a modulos y secciones</label>
         <div v-bind:data-label="item.nombre" class="df-example col-lg-3" v-for="(item, index) in Access.modulos">
             <div class="custom-control custom-checkbox" v-for="(item2, index2) in item.subModulos">
                 <input type="checkbox" class="custom-control-input" v-model="item2.accesosSistema.tieneAcceso" v-bind:id="'id_' + item2.idSubModulo">
                 <label class="custom-control-label" v-bind:for="'id_' + item2.idSubModulo">{{item2.idSubModulo}}.-{{ item2.descripcion }}</label>
+            </div>
+        </div>
+        <label class="col-sm-12 col-form-label bg-light">Permisos a reportes</label>
+        <div data-label="Reportes" class="df-example col-lg-3" >
+            <div class="custom-control custom-checkbox" v-for="(item, index) in Access.reportes">
+                <input type="checkbox" class="custom-control-input" v-model="item.acceso" v-bind:id="'idr_' + item.idReporte">
+                <label class="custom-control-label" v-bind:for="'idr_' + item.idReporte">{{item.idReporte}}.-{{ item.descripcion }}</label>
             </div>
         </div>
         <div class="col-sm-12 text-right">
@@ -46,7 +68,7 @@
                     }).catch(error => {
                         if (error.response) {
                             if (error.response.status === 400) {
-                                
+
                             }
                         }
                         console.error(error)
@@ -65,7 +87,7 @@
                             }
                         }
                         console.error(error)
-                        
+
                     }).finally()
                 },
             }

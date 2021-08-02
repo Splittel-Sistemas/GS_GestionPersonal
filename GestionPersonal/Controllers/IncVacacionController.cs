@@ -1,430 +1,361 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using GestionPersonal.Models;
-using GPSInformation;
+﻿using GPSInformation;
 using GPSInformation.Controllers;
-using GPSInformation.Exceptions;
 using GPSInformation.Models;
-using GPSInformation.Models.Produccion;
-using GPSInformation.Reportes.ProduccionV3;
-using GPSInformation.Responses;
-using GPSInformation.Tools;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
+using GestionPersonal.Models;
+using GPSInformation.Responses;
+using GestionPersonal.Service;
+using System.Threading.Tasks;
+
 
 namespace GestionPersonal.Controllers
 {
     public class IncVacacionController : Controller
     {
-        private IncVacacionesCtrl IncVacacionesCtrl;
-        private UsuarioCtrl UsuarioCtrl;
+        private DarkManager darkManager;
+        private V2IncVacacionesCtrl _V2IncVacacionesCtrl;
+        private readonly IViewRenderService _viewRenderService;
 
-        public IncVacacionController(IConfiguration configuration)
+
+        public IncVacacionController(IConfiguration configuration, IViewRenderService viewRenderService)
         {
-            IncVacacionesCtrl = new IncVacacionesCtrl(new DarkManager(configuration));
-            UsuarioCtrl = new UsuarioCtrl(IncVacacionesCtrl._Dkma);
+            this._viewRenderService = viewRenderService;
+            darkManager = new DarkManager(configuration);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="Mode"></param>
-        /// <returns></returns>
         [AccessView]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Eliminar(int id, string Mode)
+        public IActionResult Notification(int id)
         {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                IncVacacionesCtrl.Eliminar(id, (int)HttpContext.Session.GetInt32("user_id"));
-                return View(IncVacacionesCtrl.Details(id));
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                ViewData["ErrorMessage"] = ex.Message;
-                return View(IncVacacionesCtrl.Details(id));
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [AccessView]
-        public IActionResult Eliminar(int id)
-        {
-            try
-            {
-                var data = IncVacacionesCtrl.Details(id);
-                return View(data);
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="Mode"></param>
-        /// <returns></returns>
-        [AccessView]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Cancelar(int id, string Mode)
-        {
-            try
-            {
-                IncVacacionesCtrl.Cancel(id, (int)HttpContext.Session.GetInt32("user_id"));
-                return View(IncVacacionesCtrl.Details(id));
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                ViewData["ErrorMessage"] = ex.Message;
-                return View(IncVacacionesCtrl.Details(id));
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [AccessView]
-        public IActionResult Cancelar(int id)
-        {
-            try
-            {
-                var data = IncVacacionesCtrl.Details(id);
-                return View(data);
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="IncidenciaProcess"></param>
-        /// <returns></returns>
-        [AccessView]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Autorizar(IncidenciaProcess IncidenciaProcess)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return View(IncidenciaProcess);
-                }
-                IncVacacionesCtrl.Autorizar(IncidenciaProcess);
-                ViewData["Mode"] = "Procesado";
-                return View(IncidenciaProcess);
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                if (ex.IdAux != "" || ex.IdAux != null)
-                {
-                    ModelState.AddModelError(ex.IdAux, ex.Message);
-                }
+                var incidencia = _V2IncVacacionesCtrl.Details(id, true);
+                if (incidencia.Estatus == 2 || incidencia.Estatus == 3)
+                    incidencia.Link = Url.Action("Autorizar", "IncVacacion", new { id = id, Mode = incidencia.Estatus });
                 else
-                {
-                    ModelState.AddModelError("", ex.Message);
-                }
-               
-                return View(IncidenciaProcess);
+                    incidencia.Link = Url.Action("Details", "IncVacacion", new { id = id });
+                return View(incidencia);
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return ValidateException(ex);
             }
             finally
             {
-                IncVacacionesCtrl.Terminar();
+                _V2IncVacacionesCtrl.Terminar();
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="Mode"></param>
-        /// <returns></returns>
         [AccessView]
         public IActionResult Autorizar(int id, int Mode)
         {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            
             try
             {
-                var estatus = IncVacacionesCtrl._Dkma.IncidenciaProcess.GetOpenquerys($" where IdIncidenciaVacacion = {id} and Nivel = {Mode}");
-                if (estatus is null)
-                {
-                    return NotFound("Incidencia no encontrada");
-                }
-                if(Mode == 2)
-                {
-                    //jefe
-                    var empleadOIncidencia = IncVacacionesCtrl._Dkma.IncidenciaProcess.GetIntValue($"select IdPersona from IncidenciaVacacion where IdIncidenciaVacacion= {id}");
-                    var empeladojefe = IncVacacionesCtrl._Dkma.View_EmpleadoJefe.GetOpenquerys($"where EIdPersona = {empleadOIncidencia} and JIdpersona = {(int)HttpContext.Session.GetInt32("user_id")}");
-                    if (empeladojefe is null)
-                    {
-                        throw new GPException { ErrorCode = 300, Category = TypeException.Info, Description = "Sin autorizacion para autorizar o rechazar", IdAux = "" };
-                    }
-                }
-                else if(Mode == 3)
-                {
-                    if (!new UsuarioCtrl(IncVacacionesCtrl._Dkma).ValidAction((int)HttpContext.Session.GetInt32("user_id"), 36))
-                    {
-                        throw new GPException { ErrorCode = 300, Category = TypeException.Info, Description = "Sin autorizacion para autorizar o rechazar GPS", IdAux = "" };
-                    }
-                }
-                else
-                {
-                    return NotFound("Nivel de aprobacion no valido");
-                }
-                ViewData["Incidencia"] = IncVacacionesCtrl.Details(id);
-                ViewData["Mode"] = "Autorizar";
-                return View(estatus);
+                _V2IncVacacionesCtrl.ValidarAcciones(V2IncValidation.Aprove, id, Mode);
+                var incidencia = _V2IncVacacionesCtrl.Details(id, true);
+                ViewData["Details"] = incidencia;
+                return View(new InAutorizacion { IdAutorizante = (int)HttpContext.Session.GetInt32("user_id"), IdIncidencia = id, Mode = Mode });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return NotFound(ex.Message);
+                return ValidateException(ex);
             }
             finally
             {
-                IncVacacionesCtrl.Terminar();
+                _V2IncVacacionesCtrl.Terminar();
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="IncidenciaVacacion"></param>
-        /// <returns></returns>
         [AccessView]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Editar(IncidenciaVacacion IncidenciaVacacion)
+        public IActionResult Autorizar(InAutorizacion inAutorizacion)
         {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncVacacionesCtrl._darkM.StartTransaction();
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(IncidenciaVacacion);
-                }
-                if (IncidenciaVacacion.IdPersona == (int)HttpContext.Session.GetInt32("user_id"))
-                {
-                     IncVacacionesCtrl.Edit(IncidenciaVacacion, (int)HttpContext.Session.GetInt32("user_id"));
-                    //here sent email
-                    ViewData["Mode"] = "Updated";
-                    return View("Detalle", IncidenciaVacacion);
-                }
-                else
-                {
-                    if (!UsuarioCtrl.ValidAction((int)HttpContext.Session.GetInt32("user_id_permiss"), 1054)) return View("../ErrorPages/NoAccess");
-                    else
-                    {
-                        IncVacacionesCtrl.Edit(IncidenciaVacacion, (int)HttpContext.Session.GetInt32("user_id"));
-                        //here sent email
-                        ViewData["Mode"] = "Updated";
-                        return View("Detalle", IncidenciaVacacion);
-                    }
-                }
+                _V2IncVacacionesCtrl.ValidarAcciones(V2IncValidation.Aprove, inAutorizacion.IdIncidencia, inAutorizacion.Mode);
+                _V2IncVacacionesCtrl.Autorizar(inAutorizacion);
+                SendNotificationAsync(inAutorizacion.IdIncidencia);
+                _V2IncVacacionesCtrl._darkM.Commit();
+                return RedirectToAction("Autorizar", new { id = inAutorizacion.IdIncidencia, Mode = inAutorizacion.Mode });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                if (ex.IdAux != "" || ex.IdAux != null)
-                {
-                    ModelState.AddModelError(ex.IdAux, ex.Message);
-                }
-                else
-                {
-                    ModelState.AddModelError("", ex.Message);
-                }
-                return View(IncidenciaVacacion);
+                _V2IncVacacionesCtrl._darkM.RolBack();
+                return ValidateException(ex);
             }
             finally
             {
-                IncVacacionesCtrl.Terminar();
+                _V2IncVacacionesCtrl.Terminar();
             }
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [AccessView]
-        public IActionResult Editar(int id)
+        public IActionResult Delete(int id)
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncVacacionesCtrl._darkM.StartTransaction();
+            try
+            {
+                _V2IncVacacionesCtrl.ValidarAcciones(V2IncValidation.Delete, id);
+                _V2IncVacacionesCtrl.Eliminar(id);
+                _V2IncVacacionesCtrl._darkM.Commit();
+                return RedirectToAction("Details", new { id = id });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                _V2IncVacacionesCtrl._darkM.RolBack();
+                return ValidateException(ex, null, true);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult Cancelar(int id)
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncVacacionesCtrl._darkM.StartTransaction();
+            try
+            {
+                _V2IncVacacionesCtrl.ValidarAcciones(V2IncValidation.Cancel, id);
+                _V2IncVacacionesCtrl.Cancelar(id);
+                SendNotificationAsync(id);
+                _V2IncVacacionesCtrl._darkM.Commit();
+                return RedirectToAction("Details", new { id = id });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                _V2IncVacacionesCtrl._darkM.RolBack();
+                return ValidateException(ex, null, true);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult Details(int id, string AnteriorView)
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                var incidencia = _V2IncVacacionesCtrl.Details(id, true);
+                var accessoAd = _V2IncVacacionesCtrl._Accesos.Find(a => a.IdSubModulo == _V2IncVacacionesCtrl._ALecturaEscrituraAdmin);
+                ViewData["ShowEdit"] = incidencia.IdPersona == (int)HttpContext.Session.GetInt32("user_id") && incidencia.CreadoPor == "Empleado" ? true : incidencia.CreadoPor != "Empleado" && accessoAd.TieneAcceso ? true : false;
+                ViewData["ShowCancel"] = incidencia.IdPersona == (int)HttpContext.Session.GetInt32("user_id") && incidencia.CreadoPor == "Empleado" ? true : incidencia.CreadoPor != "Empleado" && accessoAd.TieneAcceso ? true : false;
+                ViewData["ShowDelete"] = accessoAd.TieneAcceso ? true : false;
+                ViewData["AnteriorView"] = AnteriorView;
+                return View(incidencia);
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return ValidateException(ex);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(IncidenciaVacacion incidencia)
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncVacacionesCtrl._darkM.StartTransaction();
+            try
+            {
+                _V2IncVacacionesCtrl.Edit(incidencia);
+                ViewData["MessageSuccess"] = "Incidencia guardada";
+                _V2IncVacacionesCtrl._darkM.Commit();
+                return RedirectToAction("Details", new { id = incidencia.IdIncidenciaVacacion });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                _V2IncVacacionesCtrl._darkM.RolBack();
+                return ValidateException(ex, incidencia);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult Edit(int id)
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+
+                var incidencia = _V2IncVacacionesCtrl.Details(id, true);
+                _V2IncVacacionesCtrl.ValidarAcciones(V2IncValidation.Edit, 0, 0, incidencia);
+
+                return View(incidencia);
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return ValidateException(ex);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult Create(int id)
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            ViewData["TiposPermisos"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1009", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion");
+            ViewData["PagoPermisoPersonal"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1010", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion");
+            try
+            {
+                var nuevo = new IncidenciaVacacion { IdPersona = id == 0 ? (int)HttpContext.Session.GetInt32("user_id") : 0, Inicio = System.DateTime.Now, Fin = System.DateTime.Now.AddDays(1) };
+                _V2IncVacacionesCtrl.ValidarAcciones(V2IncValidation.Edit, 0, 0, nuevo);
+
+                return View(nuevo);
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return ValidateException(ex);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(IncidenciaVacacion incidencia)
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncVacacionesCtrl._darkM.StartTransaction();
+            try
+            {
+                var _id = _V2IncVacacionesCtrl.Create(incidencia);
+                SendNotificationAsync(_id);
+                _V2IncVacacionesCtrl._darkM.Commit();
+                return RedirectToAction("Details", new { id = _id });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                _V2IncVacacionesCtrl._darkM.RolBack();
+                return ValidateException(ex, incidencia);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult MisSolicitudes()
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                return View(new ResV2Inicidencias { Vacaciones = _V2IncVacacionesCtrl.GetByUsuario() });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return ValidateException(ex);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult SolicitudesN1()
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                return View(new ResV2Inicidencias { Vacaciones = _V2IncVacacionesCtrl.GetByJefeInmediato() });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return ValidateException(ex);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult SolicitudesN2()
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                return View(new ResV2Inicidencias { Vacaciones = _V2IncVacacionesCtrl.GetByGPSAdmin() });
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return ValidateException(ex);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
+        }
+
+        [NonAction]
+        private async void SendNotificationAsync(int IdPermiso)
         {
             try
             {
-                var data = IncVacacionesCtrl.Details(id);
-                if(data is null)
+                var incidencia = _V2IncVacacionesCtrl.Details(IdPermiso, true);
+                if (incidencia.Estatus == 2 || incidencia.Estatus == 3)
+                    incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Autorizar", "IncVacacion", new { id = IdPermiso, Mode = incidencia.Estatus })}";
+                else
+                    incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Details", "IncVacacion", new { id = IdPermiso })}";
+
+                var result = await _viewRenderService.RenderToStringAsync("IncVacacion/Notification", incidencia);
+
+                _V2IncVacacionesCtrl.EnviarNotificacion(IdPermiso, result);
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+
+            }
+        }
+        [NonAction]
+        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = false)
+        {
+            if (ex.Category == GPSInformation.Exceptions.TypeException.Noautorizado)
+            {
+                ViewData["MessageError"] = ex.Message;
+                return View("../ErrorPages/NoAccess");
+            }
+            else if (ex.Category == GPSInformation.Exceptions.TypeException.NotFound)
+            {
+                ViewData["MessageError"] = ex.Message;
+                return View("../Home/NotFoundPage");
+            }
+            else if (ex.Category == GPSInformation.Exceptions.TypeException.Info)
+            {
+                if (SinVista)
                 {
-                    return NotFound("Incidencia no encontrada");
+                    ViewData["MessageError"] = ex.Message;
+                    return View("../ErrorPages/Error");
+                }
+                else
+                {
+                    ViewData["MessageError"] = ex.Message;
+                    ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
+                    return View(DataModel);
                 }
 
-                if ((int)HttpContext.Session.GetInt32("user_id") == data.IdPersona || UsuarioCtrl.ValidAction((int)HttpContext.Session.GetInt32("user_id_permiss"), 1054))
-                {
-                    ViewData["Mode"] = "Edit";
-                    return View(data);
-                }
-                else
-                {
-                    return View("../ErrorPages/NoAccess");
-                }
             }
-            catch (GPSInformation.Exceptions.GPException ex)
+            else
             {
-                return NotFound(ex.Message);
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="IncidenciaVacacion"></param>
-        /// <returns></returns>
-        [AccessView]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Solicitar(IncidenciaVacacion IncidenciaVacacion)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return View(IncidenciaVacacion);
-                }
-                if (IncidenciaVacacion.IdPersona == (int)HttpContext.Session.GetInt32("user_id"))
-                {
-                    var idCreated = IncVacacionesCtrl.Create(IncidenciaVacacion, (int)HttpContext.Session.GetInt32("user_id"));
-                    //here sent email
-                    var incidenciaReg = IncVacacionesCtrl.Details(idCreated);
-                    ViewData["Mode"] = "Created";
-                    return View("Detalle", incidenciaReg);
-                }
-                else
-                {
-                    if (!UsuarioCtrl.ValidAction((int)HttpContext.Session.GetInt32("user_id_permiss"), 1054)) return View("../ErrorPages/NoAccess");
-                    else
-                    {
-                        var idCreated = IncVacacionesCtrl.Create(IncidenciaVacacion, (int)HttpContext.Session.GetInt32("user_id"));
-                        //here sent email
-                        var incidenciaReg = IncVacacionesCtrl.Details(idCreated);
-                        ViewData["Mode"] = "Created";
-                        return View("Detalle", incidenciaReg);
-                    }
-                }
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                if(ex.IdAux != "" || ex.IdAux != null)
-                {
-                    ModelState.AddModelError(ex.IdAux, ex.Message);
-                }
-                else
-                {
-                    ModelState.AddModelError("", ex.Message);
-                }
-                return View(IncidenciaVacacion);
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [AccessView]
-        public IActionResult Solicitar(int id)
-        {
-            try
-            {
-                if (id == 0 || (int)HttpContext.Session.GetInt32("user_id") == id)
-                {
-                    return View(new IncidenciaVacacion { Creado = DateTime.Now, IdPersona = (int)HttpContext.Session.GetInt32("user_id") });
-                }
-                else
-                {
-                    if (!UsuarioCtrl.ValidAction((int)HttpContext.Session.GetInt32("user_id_permiss"), 1054)) return View("../ErrorPages/NoAccess");
-                    else
-                    {
-                        return View(new IncidenciaVacacion { Creado = DateTime.Now, IdPersona = id });
-                    }
-                }
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
-            }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="status"></param>
-        /// <returns></returns>
-        [AccessView]
-        public IActionResult Solicitudes(int id, int status = 0)
-        {
-            try
-            {
-                if(id == 0 || (int)HttpContext.Session.GetInt32("user_id") == id)
-                {
-                    var data = IncVacacionesCtrl.GetVacacions( status, (int)HttpContext.Session.GetInt32("user_id"));
-                    return View(data);
-                }
-                else
-                {
-                    if (UsuarioCtrl.ValidAction((int)HttpContext.Session.GetInt32("user_id_permiss"), 1054))
-                    {
-                        var data = IncVacacionesCtrl.GetVacacions(status, id);
-                        return View(data);
-                    }
-                    else
-                    {
-                        return View("../ErrorPages/NoAccess");
-                    }
-                }
-            }
-            catch (GPSInformation.Exceptions.GPException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            finally
-            {
-                IncVacacionesCtrl.Terminar();
+                ViewData["MessageError"] = ex.Message;
+                return View("../ErrorPages/Error");
             }
         }
     }

@@ -34,6 +34,8 @@ namespace GestionPersonaContactol.Controllers
         //[AccessMultipleView(IdAction = new int[] { 19,20 })]
         public ActionResult List(int id)
         {
+            Parentezcos = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 9, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion");
+            ViewData["Parentezcos"] = Parentezcos;
             var result = darkManager.PersonaContacto.Get("" + id, "IdPersona");
             return PartialView(result);
         }

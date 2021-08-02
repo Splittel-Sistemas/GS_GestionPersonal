@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GestionPersonal.Models;
 using GPSInformation;
+using GPSInformation.Controllers;
 using GPSInformation.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,22 +13,20 @@ using Microsoft.Extensions.Configuration;
 
 namespace GestionPersonal.Controllers
 {
+    /*
+        estructura de permisos
+        12 - Lectura
+        13 - scritura
+     */
+
     public class DireccionController : Controller
     {
         private DarkManager darkManager;
-        private SelectList sociedads;
-        private SelectList Direcciones;
-
+        private V2OrganCtrl _V2OrganCtrl;
 
         public DireccionController(IConfiguration configuration)
         {
             darkManager = new DarkManager(configuration);
-            darkManager.OpenConnection();
-            darkManager.LoadObject(GpsManagerObjects.Direccion);
-            darkManager.LoadObject(GpsManagerObjects.Sociedad);
-
-            sociedads = new SelectList(darkManager.Sociedad.Get().OrderBy(a => a.Descripcion).ToList(), "IdSociedad", "Descripcion");
-            Direcciones = new SelectList(darkManager.Direccion.Get().OrderBy(a => a.Nombre).ToList(), "IdDireccion", "Nombre");
         }
 
         ~DireccionController()
@@ -39,34 +38,66 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] {12,13 })]
         public ActionResult Index()
         {
-            var result = darkManager.Direccion.Get().OrderBy(a => a.Nombre).ToList();
-            result.ForEach(a => {
-                a.Sociedad = darkManager.Sociedad.Get(a.IdSociedad);
-                a.DireccionPa = darkManager.Direccion.Get(a.DireccionParent);
-            });
-            return View(result);
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            try
+            {
+                var result = _V2OrganCtrl.DireGet();
+                ViewData["Access13"] = _V2OrganCtrl._UsrCrt.ValidAction(_V2OrganCtrl._IdUsuario, 13);
+                return View(result);
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // GET: Direccion/Details/5
         [AccessMultipleView(IdAction = new int[] { 12, 13 })]
         public ActionResult Details(int id)
         {
-            var result = darkManager.Direccion.Get(id);
-
-            if(result == null)
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            try
             {
-                return NotFound();
+                var result = _V2OrganCtrl.DireDetails(id);
+                if (result is null)
+                {
+                    return NotFound("direccion no encontrada");
+                }
+                ViewData["Access13"] = _V2OrganCtrl._UsrCrt.ValidAction(_V2OrganCtrl._IdUsuario, 13);
+                return View(result);
             }
-            return View(result);
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // GET: Direccion/Create
         [AccessMultipleView(IdAction = new int[] { 13 })]
         public ActionResult Create()
         {
-            ViewData["Sociedades"] = sociedads;
-            ViewData["Direcciones"] = Direcciones;
-            return View();
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            GenerateSelects();
+            try
+            {
+                return View();
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // POST: Direccion/Create
@@ -75,37 +106,27 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 13 })]
         public ActionResult Create(Direccion Direccion)
         {
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            _V2OrganCtrl.LoadTranssByMethod = true;
+            GenerateSelects(Direccion.IdSociedad);
             try
             {
-
                 if (!ModelState.IsValid)
                 {
-                    ViewData["Sociedades"] = sociedads;
-                    ViewData["Direcciones"] = Direcciones;
+                    
                     return View(Direccion);
                 }
-
-                darkManager.Direccion.Element = Direccion;
-                bool result = darkManager.Direccion.Add();
-                if (result)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ViewData["Sociedades"] = sociedads;
-                    ViewData["Direcciones"] = Direcciones;
-                    ModelState.AddModelError("", darkManager.GetLastMessage());
-                    return View(Direccion);
-                }
-                
+                int Created = _V2OrganCtrl.DireAdd(Direccion);
+                return RedirectToAction("Details", new { Id = Created });
             }
-            catch(GPSInformation.Exceptions.GpExceptions ex)
+            catch (GPSInformation.Exceptions.GPException ex)
             {
-                ViewData["Sociedades"] = sociedads;
-                ViewData["Direcciones"] = Direcciones;
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
                 return View(Direccion);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
             }
         }
 
@@ -113,14 +134,26 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 13 })]
         public ActionResult Edit(int id)
         {
-            ViewData["Sociedades"] = sociedads;
-            ViewData["Direcciones"] = Direcciones;
-            var result = darkManager.Direccion.Get(id);
-            if (result == null)
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            
+            try
             {
-                return NotFound();
+                var result = _V2OrganCtrl._darkM.Direccion.Get(id);
+                if (result is null)
+                {
+                    return NotFound("Sociedad no encontrada");
+                }
+                GenerateSelects(result.IdSociedad);
+                return View(result);
             }
-            return View(result);
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                _V2OrganCtrl.Terminar();
+            }
         }
 
         // POST: Direccion/Edit/5
@@ -129,63 +162,36 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 13 })]
         public ActionResult Edit(Direccion Direccion)
         {
+            _V2OrganCtrl = new V2OrganCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"));
+            _V2OrganCtrl._darkM.StartTransaction();
+            GenerateSelects(Direccion.IdSociedad);
             try
             {
-
                 if (!ModelState.IsValid)
                 {
-                    ViewData["Sociedades"] = sociedads;
-                    ViewData["Direcciones"] = Direcciones;
                     return View(Direccion);
                 }
-
-                darkManager.Direccion.Element = Direccion;
-                bool result = darkManager.Direccion.Update();
-                if (result)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    ViewData["Sociedades"] = sociedads;
-                    ViewData["Direcciones"] = Direcciones;
-                    ModelState.AddModelError("", darkManager.GetLastMessage());
-                    return View(Direccion);
-                }
-
-            }
-            catch (GPSInformation.Exceptions.GpExceptions ex)
-            {
-                ViewData["Sociedades"] = sociedads;
-                ViewData["Direcciones"] = Direcciones;
-                ModelState.AddModelError("", ex.Message);
+                _V2OrganCtrl.DireEdit(Direccion);
+                ViewData["MessageSuccess"] = "Se han guardado los cambios exitosamente, gracias por usar nuestra plataforma GPS";
+                _V2OrganCtrl._darkM.Commit();
                 return View(Direccion);
             }
-        }
-
-        // GET: Direccion/Delete/5
-        [AccessMultipleView(IdAction = new int[] { 13 })]
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Direccion/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [AccessMultipleView(IdAction = new int[] { 13 })]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
+            catch (GPSInformation.Exceptions.GPException ex)
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
+                _V2OrganCtrl._darkM.RolBack();
+                return View(Direccion);
             }
-            catch
+            finally
             {
-                return View();
+                _V2OrganCtrl.Terminar();
             }
+        }
+        
+        [NonAction]
+        private void GenerateSelects(int IdSociedad = 0)
+        {
+            ViewData["Sociedades"] = new SelectList(darkManager.Sociedad.Get().OrderBy(a => a.Descripcion).ToList(), "IdSociedad", "Descripcion", IdSociedad);
         }
     }
 }

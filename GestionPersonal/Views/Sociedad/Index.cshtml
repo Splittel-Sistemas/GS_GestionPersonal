@@ -1,17 +1,24 @@
 ﻿@model IEnumerable<GPSInformation.Models.Sociedad>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista de sociedades";
 }
-<div class="d-flex align-items-center justify-content-between mg-b-30">
-    <h4 class="tx-15 mg-b-0">@ViewData["Title"]</h4>
-    <div class="btn-group" role="group" aria-label="Basic example">
-        <h2 class="tx-15 mg-b-0"></h2>
-        <a asp-action="Create" class="btn btn-outline-primary btn-sm d-flex align-items-center"><i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>Crear nuevo</a>
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+        </div>
     </div>
-</div>
-<hr />
-<table class="table">
+}
+<table class="table" id="lista_sociedades">
     <thead>
         <tr>
             <th>
@@ -40,11 +47,32 @@
                     @Html.DisplayFor(modelItem => item.Direccion)
                 </td>
                 <td>
-                    @Html.ActionLink("Editar", "Edit", new { id = item.IdSociedad }) @*|
-                        @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                        @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })*@
+                    @if ((bool)ViewBag.Access11)
+                    {
+                        @Html.ActionLink("Editar", "Edit", new { id = item.IdSociedad }) <span>|</span>
+                    }
+                    @Html.ActionLink("Detalle", "Details", new { id = item.IdSociedad })
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(function () {
+            'use strict'
+
+            $('#lista_sociedades').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                ordering: false
+            });
+
+        });
+    </script>
+}

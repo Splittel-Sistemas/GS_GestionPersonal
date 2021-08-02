@@ -27,12 +27,12 @@
         <div class="row form-group">
             <label asp-for="Altura" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-4">
-                <input type="number" asp-for="Altura" class="form-control" />
+                <input type="number" asp-for="Altura" onchange="CalcularIMC" class="form-control" />
                 <span asp-validation-for="Altura" class="text-danger"></span>
             </div>
             <label asp-for="Peso" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-4">
-                <input type="number" asp-for="Peso" class="form-control" />
+                <input type="number" asp-for="Peso" onchange="CalcularIMC" class="form-control" />
                 <span asp-validation-for="Peso" class="text-danger"></span>
             </div>
         </div>

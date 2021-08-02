@@ -300,17 +300,35 @@ namespace GPSInformation
             try
             {
                 CheckConnection();
-                using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection))
+                if (IsTracsactionActive)
                 {
-                    sqlCommand.CommandTimeout = 120;
-                    using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand))
+                    using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection, tran))
                     {
-                        DataTable = new DataTable();
-                        sqlDataAdapter.Fill(DataTable);
-                        sqlDataAdapter.Dispose();
-                        return DataTable;
+                        sqlCommand.CommandTimeout = 120;
+                        using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand))
+                        {
+                            DataTable = new DataTable();
+                            sqlDataAdapter.Fill(DataTable);
+                            sqlDataAdapter.Dispose();
+                            return DataTable;
+                        }
                     }
                 }
+                else
+                {
+                    using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection))
+                    {
+                        sqlCommand.CommandTimeout = 120;
+                        using (SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand))
+                        {
+                            DataTable = new DataTable();
+                            sqlDataAdapter.Fill(DataTable);
+                            sqlDataAdapter.Dispose();
+                            return DataTable;
+                        }
+                    }
+                }
+                    
             }
             catch (SqlException ex)
             {
@@ -334,14 +352,16 @@ namespace GPSInformation
                 {
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection,tran))
                     {
-                        return string.IsNullOrEmpty(sqlCommand.ExecuteScalar().ToString()) ? 0 : int.Parse(sqlCommand.ExecuteScalar().ToString());
+                        var retunrDa = sqlCommand.ExecuteScalar();
+                        return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
                     }
                 }
                 else
                 {
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection))
                     {
-                        return string.IsNullOrEmpty(sqlCommand.ExecuteScalar().ToString()) ? 0 : int.Parse(sqlCommand.ExecuteScalar().ToString());
+                        var retunrDa = sqlCommand.ExecuteScalar();
+                        return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
                     }
                 }
                 
@@ -402,14 +422,16 @@ namespace GPSInformation
                 {
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection, tran))
                     {
-                        return sqlCommand.ExecuteScalar().ToString();
+                        var retunrDa = sqlCommand.ExecuteScalar();
+                        return DBNull.Value.Equals(retunrDa) ? "" : (string)retunrDa;
                     }
                 }
                 else
                 {
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection))
                     {
-                        return sqlCommand.ExecuteScalar().ToString();
+                        var retunrDa = sqlCommand.ExecuteScalar();
+                        return DBNull.Value.Equals(retunrDa) ? "" : (string)retunrDa;
                     }
                 }
             }
@@ -435,17 +457,19 @@ namespace GPSInformation
                 {
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection, tran))
                     {
-                        return string.IsNullOrEmpty(sqlCommand.ExecuteScalar().ToString()) ? 0 : double.Parse(sqlCommand.ExecuteScalar().ToString());
+                        var retunrDa = sqlCommand.ExecuteScalar();
+                        return DBNull.Value.Equals(retunrDa) ? 0 : (double)retunrDa;
                     }
                 }
                 else
                 {
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection))
                     {
-                        return string.IsNullOrEmpty(sqlCommand.ExecuteScalar().ToString()) ? 0 : double.Parse(sqlCommand.ExecuteScalar().ToString());
+                        var retunrDa = sqlCommand.ExecuteScalar();
+                        return DBNull.Value.Equals(retunrDa) ? 0 : (double)retunrDa;
                     }
                 }
-                    
+
             }
             catch (SqlException ex)
             {

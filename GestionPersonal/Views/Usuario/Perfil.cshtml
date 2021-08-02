@@ -139,9 +139,28 @@
                 },
             },
             mounted() {
-
+                this.CalcularIMC()
             },
             methods: {
+                AddEventIMC: function () {
+                    var Altura = document.getElementById("Altura")
+                    var Peso = document.getElementById("Peso")
+                    var IMC = document.getElementById("IMC")
+
+                    Altura.onchange = this.CalcularIMC()
+                    Peso.onchange = this.CalcularIMC()
+
+                },
+                CalcularIMC: function () {
+                    var Altura = document.getElementById("Altura")
+                    var Peso = document.getElementById("Peso")
+                    var IMC = document.getElementById("IMC")
+                    console.log("calculando IMC")
+                    if (Altura.value != "" && Peso.value != "") {
+                        var IMC_ = parseFloat(Peso.value) / (parseFloat(Altura.value) * parseFloat(Altura.value))
+                        IMC.value = IMC_ + ""
+                    }
+                },
                 ListContacto: function () {
                     axios.post('@Url.Action("List","PersonaContacto")', $('#formGetContacts').serialize(), null).then(response => {
                         document.getElementById("ListPersonasContacto").innerHTML = "";
@@ -284,6 +303,7 @@
                             axios.post('@Url.Action("Create","InformacionMedica")', $('#CreateInformacionMedicaForm').serialize(), null).then(response => {
                                 document.getElementById("CreateInformacionMedicaContent").innerHTML = "";
                                 document.getElementById("CreateInformacionMedicaContent").innerHTML = response.data;
+                                this.AddEventIMC()
                                 ShowMessageErrorShort("Datos del medicos empleado guardados", "success")
                             }).catch(error => {
                                 if (error.response) {
@@ -314,6 +334,7 @@
                             axios.post('@Url.Action("Edit","InformacionMedica")', $('#EditInformacionMedicaForm').serialize(), null).then(response => {
                                 document.getElementById("CreateInformacionMedicaContent").innerHTML = "";
                                 document.getElementById("CreateInformacionMedicaContent").innerHTML = response.data;
+                                this.AddEventIMC()
                                 ShowMessageErrorShort("Datos del medicos empleado guardados", "success")
                             }).catch(error => {
                                 if (error.response) {

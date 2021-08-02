@@ -2,10 +2,34 @@
 
 
 @{
-    ViewData["Title"] = "Editar departamento";
+    ViewData["Title"] = "Editar departamento: " + Model.Nombre;
 }
-<h4>@ViewData["Title"]</h4>
-<br />
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("Index","Departamento")">Lista de departamentos</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @*<a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>*@
+        </div>
+    </div>
+}
+@if (ViewBag.MessageSuccess != null)
+{
+    <div class="alert alert-success col-md-12  alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4 class="alert-heading">Estimado usuario</h4>
+        <p>@ViewBag.MessageSuccess</p>
+        <hr>
+        <p class="mb-0">Atte: Sistema Gestión de Personal.</p>
+    </div>
+}
 <div data-label="Informacion" class="df-example demo-forms">
     <form asp-action="Edit">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>

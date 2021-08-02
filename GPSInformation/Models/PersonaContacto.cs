@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GPSInformation.Models
 {
-    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false)]
+    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creado", Updated_at = "Editado")]
     public class PersonaContacto
     {
         [ColumnDB(IsMapped = true, IsKey = true)]
@@ -43,5 +43,13 @@ namespace GPSInformation.Models
         [Required]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string Direccion { get; set; }
+
+        [Display(Name = "Creado")]
+        [ColumnDB(Name = "Creado", IsMapped = true, IsKey = false)]
+        public DateTime Creado { get; set; }
+
+        [Display(Name = "Ult.Atualización")]
+        [ColumnDB(Name = "Editado", IsMapped = true, IsKey = false)]
+        public DateTime Editado { get; set; }
     }
 }

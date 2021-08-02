@@ -1,7 +1,7 @@
 ﻿@model GPSInformation.Models.Evaluacion
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Dashboard de evaluacion";
     List<GPSInformation.Models.EvaluacioSeccion> secciones = ViewBag.Preguntas;
     List<GPSInformation.Models.EvaluacionEmpleado> view_Empleados = (List<GPSInformation.Models.EvaluacionEmpleado>)ViewBag.Participantes;
     List<GPSInformation.Models.EvaluacionRespuestas> respuestas = (List<GPSInformation.Models.EvaluacionRespuestas>)ViewBag.Respuestas;
@@ -17,14 +17,22 @@
 
 
 }
-<nav aria-label="breadcrumb mb-4">
-    <ol class="breadcrumb mg-b-0">
-        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Inicio</a></li>
-        <li class="breadcrumb-item"><a asp-action="Index">Evaluaciones</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Detalle</li>
-    </ol>
-</nav>
-<hr />
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("Index","Evaluacion")">Lista de evaluaciones</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a href="#EmpleadosNoagregados" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" title="clic para ver empleados no agregados a esta evaluación" data-toggle="modal" onclick="app_det_eval.EmpleadosNoagregados()"><i data-feather="list" class="wd-10 mg-r-5"></i>Empleados sin participar</a>
+        </div>
+    </div>
+}
 <button id="bt_refress" onclick="location.reload();" style="display:none"></button>
 <div id="app_det_eval">
     <div class="d-sm-flex align-items-center justify-content-between">
@@ -190,7 +198,7 @@
             </div>
         </div>
         <hr />
-        <table class="table" id="table_del_part">
+        <table class="table table-bordered hable-hover" id="table_del_part">
             <thead>
                 <tr>
                     <th>Empleado</th>
@@ -204,9 +212,9 @@
                                 <i data-feather="more-vertical"></i> - {{ Eliminados.length }}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a v-bind:class="(Eliminados.length > 0 ? '' : 'disabled') + ' dropdown-item'" href="#participantes" id="btn_det_del" v-on:click="Eliminar" title="Quitar seleccionados"><i data-feather="options"></i>Eliminar seleccionados</a>
-                                <a v-bind:class="(Eliminados.length > 0 ? '' : 'disabled') + ' dropdown-item'" href="#participantesResend" id="btn_det_del" v-on:click="ReEnviar" title="Reenviar correo a participantes seleccionados"><i data-feather="options"></i>Reenviar correo</a>
-                                <a v-bind:class="(Eliminados.length > 0 ? '' : 'disabled') + ' dropdown-item'" href="#participantesResend" id="btn_det_del" v-on:click="Reactivar" title="Reactivar evaluación a participantes seleccionados"><i data-feather="options"></i>Reactivar evaluación</a>
+                                <a v-bind:class="(Eliminados.length > 0 ? '' : 'disabled') + ' dropdown-item'" href="#participantes" id="btn_det_del" v-on:click="Eliminar" title="Quitar seleccionados">Eliminar seleccionados</a>
+                                <a v-bind:class="(Eliminados.length > 0 ? '' : 'disabled') + ' dropdown-item'" href="#participantesResend" id="btn_det_del" v-on:click="ReEnviar" title="Reenviar correo a participantes seleccionados">eenviar correo</a>
+                                <a v-bind:class="(Eliminados.length > 0 ? '' : 'disabled') + ' dropdown-item'" href="#participantesResend" id="btn_det_del" v-on:click="Reactivar" title="Reactivar evaluación a participantes seleccionados">Reactivar evaluación</a>
                                 <a class="dropdown-item" href="#participantes" id="btn_det_del" v-on:click="MarcarTodos" title="Marcar todos">Marcar todos</a>
                                 <a class="dropdown-item" href="#participantes" title="Cancelar" v-on:click="Cancelar()">Cancelar</a>
                             </div>
@@ -249,9 +257,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body pd-20 pd-sm-30">
-                    <button type="button" class="close pos-absolute t-20 r-20" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i data-feather="x"></i></span>
-                    </button>
+
                     <h5 class="tx-18 tx-sm-20 mg-b-20 mg-sm-b-30">Agregar nuevos participantes</h5>
 
                     <div id="content_vacacionesAcitivit">
@@ -279,9 +285,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body pd-20 pd-sm-30">
-                    <button type="button" class="close pos-absolute t-20 r-20" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true"><i data-feather="x"></i></span>
-                    </button>
+
                     <h5 class="tx-18 tx-sm-20 mg-b-20 mg-sm-b-30">Agregar por departamentos</h5>
 
                     <div id="content_vacacionesAcitivit">
@@ -289,7 +293,7 @@
                             <div class="form-group">
                                 <label>selecciona uno o mas departamentos</label>
                                 <input type="hidden" name="IdEvaluacion" value="@Model.IdEvaluacion" />
-                                <select name="Departamentos" multiple="multiple" asp-items="ViewBag.Departamentos" class="form-control select2">
+                                <select name="Departamentos" id="sleectDepartamtnso" multiple="multiple" asp-items="ViewBag.Departamentos" class="form-control select2">
                                     <option value="0">Selecciona una opción</option>
                                 </select>
                             </div>
@@ -305,12 +309,35 @@
             </div><!-- modal-content -->
         </div><!-- modal-dialog -->
     </div><!-- modal -->
+
+    <div class="modal fade" id="EmpleadosNoagregados" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body pd-20 pd-sm-30">
+                    <h4 class="tx-18 tx-sm-20 mg-b-3">Empleados</h4>
+                    <p class="mg-b-20 tx-color-03">Listado de coraboradores sin participar en esta evaluación</p>
+                    <a href="" role="button" class="close pos-absolute t-15 r-15" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </a>
+
+                    <div class="bd" id="EmpleadosNoagregados_result">
+
+                    </div>
+
+                    <div class="d-flex justify-content-end mg-t-30">
+                        <button type="button" class="btn btn-white" data-dismiss="modal">Cerrar</button>
+                    </div>
+                </div><!-- modal-body -->
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
     <div>
         <a class="btn btn-danger" asp-action="Index">Regresar</a>
     </div>
 </div>
 
 @section Scripts {
+
     <script>
         var app_det_eval = new Vue({
             el: "#app_det_eval",
@@ -318,51 +345,44 @@
                 Eliminados: []
             },
             mounted() {
-                // Initialize PerfectScrollbar for sidebar menu
-                if ($('#sidebarMenu').length) {
-                    const psSidebar = new PerfectScrollbar('#sidebarMenu', {
-                        suppressScrollX: true
-                    });
-
-
-                    // Showing sub menu in sidebar
-                    $('.sidebar-nav .with-sub').on('click', function (e) {
-                        e.preventDefault();
-                        $(this).parent().toggleClass('show');
-
-                        psSidebar.update();
-                    })
-                }
-
-                $('#mainMenuOpen').on('click touchstart', function (e) {
-                    e.preventDefault();
-                    $('body').addClass('navbar-nav-show');
-                })
-
-                $('#sidebarMenuClose').on('click', function (e) {
-                    e.preventDefault();
-                    $('body').removeClass('sidebar-show');
-                })
-
-                // hide sidebar when clicking outside of it
-                $(document).on('click touchstart', function (e) {
-                    e.stopPropagation();
-
-                    // closing of sidebar menu when clicking outside of it
-                    if (!$(e.target).closest('.burger-menu').length) {
-                        var sb = $(e.target).closest('.sidebar').length;
-                        var nb = $(e.target).closest('.navbar-menu-wrapper').length;
-                        if (!sb && !nb) {
-                            if ($('body').hasClass('navbar-nav-show')) {
-                                $('body').removeClass('navbar-nav-show');
-                            } else {
-                                $('body').removeClass('sidebar-show');
-                            }
-                        }
-                    }
+                $('#table_del_part').DataTable({
+                    language: {
+                        searchPlaceholder: 'Search...',
+                        sSearch: '',
+                        lengthMenu: '_MENU_ items/page',
+                    },
+                    columnDefs: [
+                        { orderable: false, targets: 0 }
+                    ],
+                    "order": [[0, "desc"]]
                 });
+                
             },
             methods: {
+                EmpleadosNoagregados: async function () {
+                    var formData = new FormData();
+                    formData.append('id', '@Model.IdEvaluacion');
+                        document.getElementById("EmpleadosNoagregados_result").innerHTML = '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>'
+                    await axios.post('@Url.Action("EmpleFaltantes", "Evaluacion")', formData, null).then(response => {
+                        document.getElementById("EmpleadosNoagregados_result").innerHTML = response.data
+                        $('#EmpleaEvFaltantes').DataTable({
+                            language: {
+                                searchPlaceholder: 'Search...',
+                                sSearch: '',
+                                lengthMenu: '_MENU_ items/page',
+                            },
+                            ordering: true,
+                            dom: 'Bfrtip',
+                            buttons: [
+                                 'excel', 'pdf'
+                            ]
+                        });
+                    }).catch(error => {
+                        GlobalValidAxios(error);
+                    }).finally(() => {
+                        //this.Registrando = false
+                    })
+                },
                 span(text) {
                     return `<span> ${text} </span>`
                 },
@@ -540,13 +560,13 @@
 
                     }
                 }
-                        double total = Calificacion / countas;
-                        Valores.Add(total.ToString("0.00"));
+                double total = Calificacion / countas;
+                Valores.Add(total.ToString("0.00"));
 
-                    }
-                    Indices.Add(Preguntas + "");
-                    Preguntas++;
-                }
+            }
+            Indices.Add(Preguntas + "");
+            Preguntas++;
+        }
         <script>
 
             var ctxLabel = [@string.Join(",", Indices)];

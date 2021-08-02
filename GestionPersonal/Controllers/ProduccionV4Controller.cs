@@ -429,28 +429,30 @@ namespace GestionPersonal.Controllers
                     //int fila = 5;
                     int rows = excelWorksheet.Dimension.Rows; // 20
                     int columns = excelWorksheet.Dimension.Columns; // 7
-
+                    int numeroCols = Int32.Parse(excelWorksheet.Cells[1, 1].Value.ToString());
                     for (int fila = 5; fila <= rows; fila++)
                     {
                         if (!string.IsNullOrEmpty(Funciones.ValObjString(excelWorksheet.Cells[fila, 1].Value)))
                         {
-                            for (int col = 4; col < 12; col++)
+                            for (int col = 4; col < numeroCols; col++)
                             {
                                 int IdPersona = Int32.Parse(excelWorksheet.Cells[fila, 2].Value.ToString());
                                 string comentarios = $"Carga inicial de: {excelWorksheet.Cells[4, col].Value.ToString()}";
                                 int IdGrupo = Int32.Parse(excelWorksheet.Cells[fila, 3].Value.ToString());
                                 var scroe = excelWorksheet.Cells[fila, col].Value;
                                 int dias = Int32.Parse(excelWorksheet.Cells[2, col].Value.ToString());
-
+                                
+                                var fecha = excelWorksheet.Cells[3, col].Value.ToString();
                                 var data = new GrupoCambios
                                 {
                                     IdGrupo = IdGrupo,
                                     IdPersona = IdPersona,
                                     Comentarios = comentarios,
-                                    Creado = DateTime.Parse("2021-04-26").AddDays(dias * -1),
-                                    Fecha = DateTime.Parse("2021-04-26").AddDays(dias * -1),
+                                    Creado = DateTime.Parse(fecha).AddDays(dias * -1),
+                                    Fecha = DateTime.Parse(fecha).AddDays(dias * -1),
                                     Modificado = DateTime.Now,
-                                    FechaInicio = DateTime.Parse("2021-04-26").AddDays(dias * -1)
+                                    FechaInicio = DateTime.Parse(fecha),
+                                    
                                 };
                                 ProduccionV4Ctrl.darkManager.GrupoCambios.Element = data;
                                 if (!ProduccionV4Ctrl.darkManager.GrupoCambios.Add())
@@ -458,8 +460,10 @@ namespace GestionPersonal.Controllers
                                     throw new GPSInformation.Exceptions.GpExceptions("Error al guardar: " + excelWorksheet.Cells[fila, 2].Value.ToString());
                                 }
                                 lis.Add(data);
+
+
                                 //var corte = ProduccionV4Ctrl.darkManager.GrupoCorte.GetOpenquerys($"where IdPersona = {IdPersona} and Fecha = '{DateTime.Parse("2021-04-26").AddDays(dias * -1).ToString("yyyy-MM-dd")}'");
-                                //if(corte != null)
+                                //if (corte != null)
                                 //{
                                 //    corte.HrsGrupo = ProduccionV4Ctrl.darkManager.GrupoCorte.GetIntValue($"select sum(Horas) from GrupoHorario where EsCruce = 0 and descanso = 0 and IdGrupo = {IdGrupo}");
                                 //    ProduccionV4Ctrl.darkManager.GrupoCorte.Element = corte;
@@ -470,28 +474,28 @@ namespace GestionPersonal.Controllers
                                 //}
 
 
-                                //var corte = new GrupoCorte
-                                //{
-                                //    IdPersona = IdPersona,
-                                //    EsFinal = true,
-                                //    EsInicial = true,
-                                //    Extras = 0,
-                                //    HrsExtra = 0,
-                                //    Comentarios = comentarios,
-                                //    HrsGrupo = ProduccionV4Ctrl.darkManager.GrupoCorte.GetIntValue($"select sum(Horas) from GrupoHorario where EsCruce = 0 and descanso = 0 and IdGrupo = {IdGrupo}"),
-                                //    HrsNomina = 0,
-                                //    HrsScoreGen = scroe is null ? 0 : Convert.ToDouble(scroe) * -1,
-                                //    HrsReal = 0,
-                                //    HrsTxT = 0,
-                                //    IdGrupoCorte = 0,
-                                //    Fecha = DateTime.Parse("2021-04-26").AddDays(dias * -1),
-                                //    Score = 0
-                                //};
-                                //ProduccionV4Ctrl.darkManager.GrupoCorte.Element = corte;
-                                //if (!ProduccionV4Ctrl.darkManager.GrupoCorte.Add())
-                                //{
-                                //    throw new GPSInformation.Exceptions.GpExceptions("Error al guardar: " + excelWorksheet.Cells[fila, 2].Value.ToString());
-                                //}
+                                var corte = new GrupoCorte
+                                {
+                                    IdPersona = IdPersona,
+                                    EsFinal = true,
+                                    EsInicial = true,
+                                    Extras = 0,
+                                    HrsExtra = 0,
+                                    Comentarios = comentarios,
+                                    HrsGrupo = (double)ProduccionV4Ctrl.darkManager.GrupoCorte.GetDoubleValue($"select sum(Horas) from GrupoHorario where EsCruce = 0 and descanso = 0 and IdGrupo = {IdGrupo}"),
+                                    HrsNomina = 0,
+                                    HrsScoreGen = scroe is null ? 0 : Convert.ToDouble(scroe) * -1,
+                                    HrsReal = 0,
+                                    HrsTxT = 0,
+                                    IdGrupoCorte = 0,
+                                    Fecha = DateTime.Parse(fecha).AddDays(dias * -1),
+                                    Score = 0
+                                };
+                                ProduccionV4Ctrl.darkManager.GrupoCorte.Element = corte;
+                                if (!ProduccionV4Ctrl.darkManager.GrupoCorte.Add())
+                                {
+                                    throw new GPSInformation.Exceptions.GpExceptions("Error al guardar: " + excelWorksheet.Cells[fila, 2].Value.ToString());
+                                }
                                 //lis.Add(corte);
 
                             }

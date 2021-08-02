@@ -30,11 +30,11 @@ namespace GestionPersonal.Controllers
 
         // GET: EvaluacionController
         [AccessMultipleView(IdAction = new int[] { 37 })]
-        public ActionResult Index()
+        public ActionResult Index(int Page, int RowsPerPage)
         {
             try
             {
-                return View(EvaluacionCtrl.Get().OrderByDescending(a => a.Creada));
+                return View(EvaluacionCtrl.Get(Page, RowsPerPage));
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
@@ -57,7 +57,7 @@ namespace GestionPersonal.Controllers
                 ViewData["Preguntas"] = EvaluacionCtrl.GetPreguntas(id);
                 ViewData["Participantes"] = EvaluacionCtrl.GetParticipantes(id).ToList();
                 ViewData["Respuestas"] = EvaluacionCtrl.GetRespuestas(id).ToList();
-                ViewData["Empleados"] = new SelectList(EvaluacionCtrl.GetEmpleados().ToList(), "IdPersona", "NombreCompleto");
+                ViewData["Empleados"] = new SelectList(EvaluacionCtrl.GetEmpleadosNotEx(id), "IdPersona", "NombreCompleto");
                 ViewData["Departamentos"] = new SelectList(EvaluacionCtrl.GetDepartamentos().ToList(), "IdDepartamento", "Nombre");
                 
                 return View(EvaluacionCtrl.Get(id));
@@ -615,6 +615,42 @@ namespace GestionPersonal.Controllers
             {
                 Funciones.EscribeLog(ex.ToString());
                 return NotFound(ex.Message);
+            }
+            finally
+            {
+                EvaluacionCtrl.Terminar();
+                EvaluacionCtrl = null;
+            }
+        }
+
+        [AccessMultiplePartial(IdAction = new int[] { 37 })]
+        public ActionResult EmpleFaltantes(int id)
+        {
+            try
+            {
+                return PartialView(EvaluacionCtrl.GetEmpleadosNotEx(id));
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                EvaluacionCtrl.Terminar();
+                EvaluacionCtrl = null;
+            }
+        }
+
+        //[AccessMultiplePartial(IdAction = new int[] { 37 })]
+        public ActionResult GerByPagination(int Page, int RowsPerPage)
+        {
+            try
+            {
+                return Ok(EvaluacionCtrl.darkManager.Evaluacion.DataPage(Page, RowsPerPage,"",""));
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
             }
             finally
             {

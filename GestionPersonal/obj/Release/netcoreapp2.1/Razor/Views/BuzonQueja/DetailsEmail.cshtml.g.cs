@@ -65,7 +65,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n<!doctype html>\r\n<html>\r\n");
             EndContext();
             BeginContext(118, 3728, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "96d5a6e88f734462b2f17a2b7f793489", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("head", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "ca2caf7cf4f944dca4af9b3a250f9d3c", async() => {
                 BeginContext(124, 509, true);
                 WriteLiteral(@"
     <meta name=""viewport"" content=""width=device-width"">
@@ -199,7 +199,7 @@ using GestionPersonal.Models;
             WriteLiteral("\r\n");
             EndContext();
             BeginContext(3848, 8619, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "04c950745cf74725931fc019062c02d3", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("body", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a3170df9b6ac47efb41cbbfe0de05305", async() => {
                 BeginContext(4078, 3236, true);
                 WriteLiteral(@"
     <span class=""preheader"" style=""color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;"">Gestión de personal</span>

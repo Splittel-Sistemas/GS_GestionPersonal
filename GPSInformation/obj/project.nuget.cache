@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "YiCfa31zvfRMz7Yx1UxjLcnr30KXOZ3fczUIFdN5uF/rHNPwrbaE9fsCo9ZmPNRcG+TK0+eTbKBzWbxxtSYtkg==",
+  "dgSpecHash": "EY011lzVSrXnzt7f66DGqCOadc1qSAGI4YmbWqhu68UZrZAEBYbzOx7n3CyocWcrlIGiPWm+mIHuiEzqMG/l7g==",
   "success": true,
   "projectFilePath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GPSInformation\\GPSInformation.csproj",
   "expectedPackageFiles": [
@@ -12,6 +12,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
     "C:\\Users\\Luis Martinez\\.nuget\\packages\\microsoft.web.infrastructure\\1.0.0\\microsoft.web.infrastructure.1.0.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
+    "C:\\Users\\Luis Martinez\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
     "C:\\Users\\Luis Martinez\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.4.0\\system.runtime.compilerservices.unsafe.4.4.0.nupkg.sha512"
   ],
   "logs": [

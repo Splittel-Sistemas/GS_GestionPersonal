@@ -28,22 +28,36 @@ namespace GPSInformation.Controllers
             this.darkManager.LoadObject(GpsManagerObjects.ExpedienteEmpleado);
             this.darkManager.LoadObject(GpsManagerObjects.View_EmpleadoExpediente);
         }
-        public UsuarioCtrl(DarkManager darkManager)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="darkManager"></param>
+        /// <param name="IsValidAction">validation is false when is used to validate access actions</param>
+        public UsuarioCtrl(DarkManager darkManager, bool IsValidAction = false)
         {
             this.darkManager = darkManager;
-            darkManager.OpenConnection();
-            darkManager.LoadObject(GpsManagerObjects.Usuario);
-            darkManager.LoadObject(GpsManagerObjects.Persona);
-            darkManager.LoadObject(GpsManagerObjects.CatalogoOpcionesValores);
-            darkManager.LoadObject(GpsManagerObjects.InformacionMedica);
-            darkManager.LoadObject(GpsManagerObjects.Puesto);
-            darkManager.LoadObject(GpsManagerObjects.Sociedad);
-            darkManager.LoadObject(GpsManagerObjects.Departamento);
-            darkManager.LoadObject(GpsManagerObjects.Empleado);
-            darkManager.LoadObject(GpsManagerObjects.PersonaContacto);
-            darkManager.LoadObject(GpsManagerObjects.View_empleado);
-            darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
-            darkManager.LoadObject(GpsManagerObjects.SubModulo);
+            
+            if (!IsValidAction)
+            {
+                darkManager.OpenConnection();
+                darkManager.LoadObject(GpsManagerObjects.Usuario);
+                darkManager.LoadObject(GpsManagerObjects.Persona);
+                darkManager.LoadObject(GpsManagerObjects.CatalogoOpcionesValores);
+                darkManager.LoadObject(GpsManagerObjects.InformacionMedica);
+                darkManager.LoadObject(GpsManagerObjects.Puesto);
+                darkManager.LoadObject(GpsManagerObjects.Sociedad);
+                darkManager.LoadObject(GpsManagerObjects.Departamento);
+                darkManager.LoadObject(GpsManagerObjects.Empleado);
+                darkManager.LoadObject(GpsManagerObjects.PersonaContacto);
+                darkManager.LoadObject(GpsManagerObjects.View_empleado);
+                darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
+                darkManager.LoadObject(GpsManagerObjects.SubModulo);
+            }
+            else
+            {
+                darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
+            }
+            
         }
         #endregion
 
@@ -72,6 +86,22 @@ namespace GPSInformation.Controllers
             var data = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {IdUsuario} and IdSubModulo = {IdPermiso} and TieneAcceso = 1");
 
             return data is null ? false : data.TieneAcceso;
+        }
+        public List<AccesosUs> ValidatePermis(int IdUsuario, int[] acciones)
+        {
+            var permisos = new List<AccesosUs>();
+            if(acciones.Length > 0)
+            {
+                for (int i = 0; i < acciones.Length; i++)
+                {
+                    permisos.Add(new AccesosUs
+                    {
+                        IdSubModulo = acciones[i],
+                        TieneAcceso = ValidAction(IdUsuario, acciones[i])
+                    });
+                }
+            }
+            return permisos;
         }
         public bool SendEmail(UsuarioRe usuarioRe, string Body)
         {
@@ -233,5 +263,21 @@ namespace GPSInformation.Controllers
             return new SelectList(darkManager.CatalogoOpcionesValores.Get("" + id, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion", IdSelected);
         }
         #endregion
+    }
+
+    public class AccesosUs
+    {
+        /// <summary>
+        /// id de la accion
+        /// </summary>
+        public int IdSubModulo { get; set; }
+        /// <summary>
+        /// clave de la accion
+        /// </summary>
+        public string Clave { get{ return $"Acceso{IdSubModulo}"; } }
+        /// <summary>
+        /// Tiene acceso
+        /// </summary>
+        public bool TieneAcceso { get; set; }
     }
 }

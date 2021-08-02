@@ -126,6 +126,68 @@ namespace GestionPersonal.Models
             base.OnActionExecuting(filterContext);
         }
     }
+
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class AccessMultiplePartial : ActionFilterAttribute
+    {
+        private DarkManager darkManager;
+        public int[] IdAction { get; set; }
+
+
+        public AccessMultiplePartial()
+        {
+
+            //darkManager.OpenConnection();
+            //darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+
+            if (filterContext.HttpContext.Session.IsAvailable && filterContext.HttpContext.Session.GetInt32("user_id_permiss") != null)
+            {
+                if (IdAction.Length > 0)
+                {
+                    darkManager = new DarkManager(filterContext.HttpContext.Session.GetString("user_gpsdev"));
+                    darkManager.OpenConnection();
+                    darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
+                    var result = darkManager.AccesosSistema.Get("" + filterContext.HttpContext.Session.GetInt32("user_id_permiss"), nameof(darkManager.AccesosSistema.Element.IdUsuario));
+                    bool autorize = false;
+
+                    foreach (var item in IdAction)
+                    {
+                        if (result.Find(a => a.IdSubModulo == item && a.TieneAcceso) != null)
+                        {
+
+                            autorize = true;
+                        }
+                    }
+
+                    if (!autorize)
+                    {
+                        filterContext.Result = new PartialViewResult
+                        {
+                            ViewName = "../ErrorPages/NoAccess",
+                        };
+                        return;
+                    }
+                    darkManager.CloseConnection();
+                }
+            }
+            else
+            {
+                var isHtps = filterContext.HttpContext.Request.IsHttps;
+                var Host = filterContext.HttpContext.Request.Host;
+                var Path = filterContext.HttpContext.Request.Path;
+                string url = string.Format("{0}//{1}{2}{3}", (isHtps ? "https:" : "http:"), Host, Path, filterContext.HttpContext.Request.QueryString);
+                filterContext.HttpContext.Session.SetString("url_next", url);
+                filterContext.Result = new RedirectResult("~/");
+                return;
+            }
+
+            base.OnActionExecuting(filterContext);
+        }
+    }
     #endregion
 
     #region AccessView
@@ -149,6 +211,11 @@ namespace GestionPersonal.Models
             }
             else
             {
+                var isHtps = filterContext.HttpContext.Request.IsHttps;
+                var Host = filterContext.HttpContext.Request.Host;
+                var Path = filterContext.HttpContext.Request.Path;
+                string url = string.Format("{0}//{1}{2}{3}", (isHtps ? "https:" : "http:"), Host, Path, filterContext.HttpContext.Request.QueryString);
+                filterContext.HttpContext.Session.SetString("url_next", url);
                 filterContext.Result = new RedirectResult("~/");
                 return;
             }
@@ -156,6 +223,34 @@ namespace GestionPersonal.Models
             base.OnActionExecuting(filterContext);
         }
     }
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    public class AccessViewPartial : ActionFilterAttribute
+    {
+        private DarkManager darkManager;
+
+        public AccessViewPartial()
+        {
+            //darkManager = new DarkManager("Data Source=192.168.3.160;User ID=infra;Password=SAPca+Ah*76U19$*;Initial Catalog=GestionPersonal; Integrated Security=false; Connect timeout=60;Encrypt=False;TrustServerCertificate=false;ApplicationIntent=ReadWrite;MultiSubnetfailover=False");
+            //darkManager.OpenConnection();
+            //darkManager.LoadObject(GpsManagerObjects.AccesosSistema);
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            if (filterContext.HttpContext.Session.IsAvailable && filterContext.HttpContext.Session.GetInt32("user_id_permiss") != null)
+            {
+                
+            }
+            else
+            {
+                filterContext.Result = new RedirectResult("~/");
+                return;
+            }
+
+            base.OnActionExecuting(filterContext);
+        }
+    }
+    
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AccessJson : ActionFilterAttribute
     {

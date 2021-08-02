@@ -1,0 +1,39 @@
+﻿@model IEnumerable<GPSInformation.Views.View_empleado>
+
+
+<table class="table table-hover table-bordered table-striped" id="EmpleaEvFaltantes">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NumeroNomina)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreCompleto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PuestoNombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreDepartamento)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumeroNomina)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreCompleto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PuestoNombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreDepartamento)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

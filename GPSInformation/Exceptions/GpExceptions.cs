@@ -51,6 +51,8 @@ namespace GPSInformation.Exceptions
         Error = 1,
         Success = 2,
         Info = 3,
-        System = 4
+        System = 4,
+        Noautorizado = 5,
+        NotFound = 6
     }
 }

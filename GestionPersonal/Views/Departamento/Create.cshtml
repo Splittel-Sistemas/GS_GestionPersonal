@@ -1,18 +1,31 @@
 ﻿@model GPSInformation.Models.Departamento
-
-
 @{
     ViewData["Title"] = "Crear nuevo departamento";
 }
-    <h4>@ViewData["Title"]</h4>
-    <br />
+
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("Index","Departamento")">Lista de departamentos</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @*<a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>*@
+        </div>
+    </div>
+}
 <div data-label="Informacion" class="df-example demo-forms">
     <form asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
             <label asp-for="Nombre" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
-                <input type="hidden" asp-for="IdDepartamento" class="form-control" />
+                @*<input type="hidden" asp-for="IdDepartamento" class="form-control" />*@
                 <input asp-for="Nombre" class="form-control" />
                 <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>

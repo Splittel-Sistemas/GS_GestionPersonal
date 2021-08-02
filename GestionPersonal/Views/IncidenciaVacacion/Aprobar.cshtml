@@ -49,7 +49,13 @@ else
                 <input type="number" asp-for="NoDias" class="form-control" disabled />
                 <span asp-validation-for="NoDias" class="text-danger"></span>
             </div>
-
+            @if (Model.ArchivoScan != "")
+            {
+                <label asp-for="Archivo" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-4">
+                    <a href="@Url.Action("Dowload","IncidenciaVacacion",new  { fileName = Model.ArchivoScan, IdPersona = Model.IdPersona })" title="click aqui para descargar">@Model.ArchivoScan</a>
+                </div>
+            }
         </div>
         @*<div class="form-group row mg-b-0">
                 <div class="col-sm-12 text-right">

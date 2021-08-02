@@ -10,6 +10,10 @@ namespace GPSInformation.Attributes
         public string Name { get; set; }
         public bool IsMapped { get; set; }
         public bool IsKey { get; set; }
+        /// <summary>
+        /// primary key no autoincremente
+        /// </summary>
+        public bool IsKeyNotIdenti { get; set; }
 
     }
 }

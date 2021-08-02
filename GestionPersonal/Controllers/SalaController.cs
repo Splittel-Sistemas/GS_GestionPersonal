@@ -49,27 +49,65 @@ namespace GestionPersonal.Controllers
         [AccessMultipleView(IdAction = new int[] { 35 })]
         public ActionResult Index()
         {
+            try
+            {
+                return View(darkManager.Sala.Get());
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
+
             
-            return View(darkManager.Sala.Get());
         }
 
         [AccessMultipleView(IdAction = new int[] { 33, 35 })]
         public ActionResult Details(int id)
         {
-            var result = darkManager.Sala.Get(id);
-            if(result == null)
+            try
             {
-                return BadRequest("No se encontró ninguna sala");
+                var result = darkManager.Sala.Get(id);
+                if (result == null)
+                {
+                    return BadRequest("No se encontró ninguna sala");
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
         }
 
         [HttpPost]
         [AccessDataSession(IdAction = new int[] { 33 })]
         public ActionResult GetList()
         {
-            var result = darkManager.Sala.Get().OrderBy(a => a.Nombre);
-            return Ok(result);
+            try
+            {
+                var result = darkManager.Sala.Get().Where(a => a.Activa).OrderBy(a => a.Nombre);
+                return Ok(result);
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
+            
         }
 
         [HttpPost]
@@ -98,6 +136,11 @@ namespace GestionPersonal.Controllers
             {
                 ModelState.AddModelError("", ex.Message);
                 return View(Sala);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
             }
         }
 
@@ -128,17 +171,48 @@ namespace GestionPersonal.Controllers
                 ModelState.AddModelError("", ex.Message);
                 return View(Sala);
             }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
         }
         [AccessMultipleView(IdAction = new int[] { 35 })]
         public ActionResult Edit(int id)
         {
-            return View(darkManager.Sala.Get(id));
+            try
+            {
+                return View(darkManager.Sala.Get(id));
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
+           
         }
 
         [AccessMultipleView(IdAction = new int[] { 35 })]
         public ActionResult Create()
         {
-            return View();
+            try
+            {
+                return View();
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
+            
         }
 
         #endregion
@@ -147,21 +221,77 @@ namespace GestionPersonal.Controllers
         [AccessDataSession(IdAction = new int[] { 33 })]
         public ActionResult DetailsReservacion(int id)
         {
-            var result = darkManager.SalaReservacion.Get(id);
-            if (result == null)
+            try
             {
-                return BadRequest("No se encontró ninguna reservación");
+                var result = darkManager.SalaReservacion.Get(id);
+                if (result == null)
+                {
+                    return BadRequest("No se encontró ninguna reservación");
+                }
+                return Ok(result);
             }
-            return Ok(result);
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
+            
         }
 
         [HttpPost]
         [AccessDataSession(IdAction = new int[] { 33 })]
         public ActionResult GetListReservacion()
         {
-            var result = darkManager.SalaReservacion.Get().OrderByDescending(a => a.FechaInicio).ToList();
-            result.ForEach(a => a.CreadaPor = darkManager.View_empleado.Get(a.IdPersona).NombreCompleto);
-            return Ok(result);
+            try
+            {
+                var Res_Salas = new List<GPSInformation.Responses.Res_Salas>();
+
+                darkManager.Sala.Get().ForEach(sala =>
+                {
+                    var salaAux = new GPSInformation.Responses.Res_Salas
+                    {
+                        Id = sala.IdSala,
+                        BackgroundColor = sala.ColorFondo,
+                        BorderColor = sala.ColorBorder,
+                        Events = new List<GPSInformation.Responses.Res_Salarerservacion>()
+                    };
+                    darkManager.SalaReservacion.GetOpenquery($"where IdSala = {sala.IdSala} and Activa = 1", "order by FechaInicio desc").ForEach(a => {
+                        //a.CreadaPor = darkManager.View_empleado.Get(a.IdPersona).NombreCompleto
+                        var reserva = new GPSInformation.Responses.Res_Salarerservacion
+                        {
+                            Id = a.IdSalaReservacion,
+                            Start = a.FechaInicio.ToString("yyyy-MM-dd") + "T" + a.HoraIncio.ToString(@"hh\:mm\:ss"),
+                            End = a.FechaInicio.ToString("yyyy-MM-dd") + "T" + a.HolaFin.ToString(@"hh\:mm\:ss"),
+                            Title = a.Motivo,
+                            Description = a.Comentarios,
+                            IdSala = a.IdSala,
+                            IdPersona = a.IdPersona
+                        };
+                        salaAux.Events.Add(reserva);
+                    });
+                    Res_Salas.Add(salaAux);
+                });
+
+
+
+                //var result = ;
+                //result
+                return Ok(Res_Salas);
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
+            
         }
 
         [HttpPost]
@@ -204,6 +334,11 @@ namespace GestionPersonal.Controllers
             {
                 darkManager.RolBack();
                 return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
             }
         }
 
@@ -248,6 +383,11 @@ namespace GestionPersonal.Controllers
                 darkManager.RolBack();
                 return BadRequest(ex.Message);
             }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
         }
         [HttpGet]
         //[ValidateAntiForgeryToken]
@@ -273,6 +413,11 @@ namespace GestionPersonal.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
         }
         [HttpGet]
         //[ValidateAntiForgeryToken]
@@ -296,6 +441,11 @@ namespace GestionPersonal.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
+            }
         }
 
         [HttpGet]
@@ -318,6 +468,11 @@ namespace GestionPersonal.Controllers
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
                 return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
             }
         }
 
@@ -351,6 +506,11 @@ namespace GestionPersonal.Controllers
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
                 return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+                darkManager = null;
             }
         }
         #endregion
