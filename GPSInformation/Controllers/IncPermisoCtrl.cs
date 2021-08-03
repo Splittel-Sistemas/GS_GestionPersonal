@@ -38,7 +38,7 @@ namespace GPSInformation.Controllers
                 {
                     throw new GPException { ErrorCode = 200, Category = TypeException.Info, Description = "Error, informacion incorrecta", IdAux = "" };
                 }
-                var estatus = _Dkma.IncidenciaProcess.GetOpenquerys($" where IncidenciaPermiso = {inAutorizacion.IdIncidencia} and Nivel = {inAutorizacion.Mode}");
+                var estatus = _Dkma.IncidenciaProcess.GetOpenquerys($" where IncidenciaPermiso = {inAutorizacion.IdIncidencia} and Nivel = {inAutorizacion.Modee}");
                 //var estatus = HayRevisiones(inAutorizacion.IdIncidencia, inAutorizacion.Mode);
                 if (estatus is null)
                 {

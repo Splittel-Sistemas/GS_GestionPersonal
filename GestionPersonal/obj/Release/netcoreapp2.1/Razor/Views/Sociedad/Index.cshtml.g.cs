@@ -90,7 +90,7 @@ using GestionPersonal.Models;
                 WriteLiteral("</h4>\r\n        </div>\r\n        <div class=\"d-none d-md-block\">\r\n            ");
                 EndContext();
                 BeginContext(637, 138, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "40a2e2ed546d448595a9dbbd9300d1df", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "04c39ea6cb8c4a5ea0dc15aafa25dfff", async() => {
                     BeginContext(712, 59, true);
                     WriteLiteral("<i data-feather=\"plus\" class=\"wd-10 mg-r-5\"></i>Crear nuevo");
                     EndContext();

@@ -3,6 +3,7 @@ using GPSInformation.Models;
 using GPSInformation.Responses;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 
@@ -111,7 +112,7 @@ namespace GPSInformation.Controllers
             {
                 throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
             }
-            var data = _darkM.IncidenciaVacacion.GetOpenquery($" as t01 where t01.Estatus = 2 and (t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona}) or " +
+            var data = _darkM.IncidenciaVacacion.GetOpenquery($" as t01 where t01.Estatus = 2 and (t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona}) " +
                 $" or t01.IdPersona in (select t01.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona} and t02.Activa = 1 ) )", "Order by Creado");
             data.ForEach(result => LLenarTodo(result));
             return data;
@@ -136,12 +137,16 @@ namespace GPSInformation.Controllers
         /// <returns></returns>
         public List<IncidenciaVacacion> GetAdmin()
         {
-            if (!_Accesos.Find(a => a.IdSubModulo == _ALecturaEscrituraAdmin).TieneAcceso)
+            //if(!_Accesos.Find(a => a.IdSubModulo == _ALecturaEscrituraAdmin).TieneAcceso )
+            //{
+            //    throw new GPException { Description = $"Estimado usuario no tienes permisos para crear solicitudes a otros colaboradores", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+            //}
+            if (!_Accesos.Find(a => a.IdSubModulo == _AincidenciasAdmin).TieneAcceso)
             {
-                throw new GPException { Description = $"Estimado usuario no tienes permisos para crear solicitudes a otros colaboradores", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                throw new GPException { Description = $"Estimado usuario no tienes acceso a esta seccion", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
             }
 
-            var data = _darkM.IncidenciaVacacion.GetOpenquery($"", "Order by Creado");
+            var data = _darkM.IncidenciaVacacion.GetOpenquery($"where Estatus != 8", "Order by Creado");
 
             data.ForEach(result => LLenarTodo(result));
             return data;
@@ -162,6 +167,8 @@ namespace GPSInformation.Controllers
             _darkM.IncidenciaVacacion.Element = details;
 
             _darkM.IncidenciaVacacion.Update();
+
+            SPValidator(IdIncidencia, "Eliminar");
         }
         /// <summary>
         /// 
@@ -185,6 +192,9 @@ namespace GPSInformation.Controllers
             _darkM.IncidenciaVacacion.Element = details;
 
             _darkM.IncidenciaVacacion.Update();
+
+
+            SPValidator(IdIncidencia, "Cancelar");
         }
         /// <summary>
         /// 
@@ -198,14 +208,14 @@ namespace GPSInformation.Controllers
                 throw new GPException { Description = $"Estimado usuario no es posible procesar la incidencia solicitada, estatus actual: {details.EstatusDescricion}", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
             }
 
-            if (inAutorizacion.Mode != 2 && inAutorizacion.Mode != 3)
+            if (inAutorizacion.Modee != 2 && inAutorizacion.Modee != 3)
             {
                 throw new GPException { Description = $"Estimado usuario no es valido tu autorización, datos incorrectos", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
             }
 
-            if (inAutorizacion.Mode == details.Estatus)
+            if (inAutorizacion.Modee == details.Estatus)
             {
-                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Mode);
+                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Modee);
                 proceso.Comentarios = inAutorizacion.Comentarios;
                 proceso.IdPersona = inAutorizacion.IdAutorizante;
                 proceso.NombreEmpleado = _darkM.IncidenciaVacacion.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {inAutorizacion.IdAutorizante}");
@@ -225,10 +235,11 @@ namespace GPSInformation.Controllers
                 _darkM.IncidenciaVacacion.Element = details;
 
                 _darkM.IncidenciaVacacion.Update();
+                SPValidator(inAutorizacion.IdIncidencia, "Autorizar");
             }
             else
             {
-                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Mode);
+                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Modee);
                 if (proceso.Revisada)
                 {
                     throw new GPException { Description = $"Estimado usuario ya fue procesada esta autorización", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
@@ -360,7 +371,32 @@ namespace GPSInformation.Controllers
             else
             {
                 IncidenciaVacacion.CreadoPor = "E";
+
+                if(IncidenciaVacacion.Archivo == null)
+                    throw new GPException { Description = $"Estimado usuario porfavor selecciona un archivo para poder crear tu solicitud", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+                if (IncidenciaVacacion.Archivo.Length == 0)
+                        throw new GPException { Description = $"Estimado usuario el archivo {IncidenciaVacacion.Archivo.FileName} esta dañado", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+
+                int last = _darkM.IncidenciaVacacion.GetLastId(nameof(_darkM.IncidenciaVacacion.Element.IdPersona), IncidenciaVacacion.IdPersona + "");
+                IncidenciaVacacion.ArchivoScan = $"InVac_{(last + 1)}_archivo.{IncidenciaVacacion.Archivo.FileName.Split('.')[1]}";
+
+
             }
+
+            #region Mover archivo
+            string Directorio = $"C:\\Splittel\\GestionPersonal\\{IncidenciaVacacion.IdPersona}\\IncVacaciones\\";
+            if (!System.IO.Directory.Exists(Directorio))
+            {
+                System.IO.Directory.CreateDirectory(Directorio);
+            }
+            Directorio = $"{Directorio}{IncidenciaVacacion.ArchivoScan}";
+            using (FileStream fs = System.IO.File.Create(Directorio))
+            {
+                IncidenciaVacacion.Archivo.CopyTo(fs);
+                fs.Flush();
+            }
+            #endregion
+
 
             IncidenciaVacacion.NumAutorizaciones = 4;
             IncidenciaVacacion.Estatus = 2;
@@ -373,18 +409,24 @@ namespace GPSInformation.Controllers
 
             IncidenciaVacacion.IdIncidenciaVacacion = _darkM.IncidenciaVacacion.LastInserted($"select max(IdIncidenciaVacacion) from IncidenciaVacacion where IdPersona = {IncidenciaVacacion.IdPersona} ");
 
-            _darkM.dBConnection.StartProcedure($"SP_IncidenciaVacacion", new List<ProcedureModel>
-                {
-                    new ProcedureModel { Namefield = "IdIncidenciaVacacion", value = IncidenciaVacacion.IdIncidenciaVacacion },
-                    new ProcedureModel { Namefield = "Mode", value = "Create" }
-                });
-
-            if (_darkM.dBConnection.ErrorCode != 0)
-                throw new GPException { Description = _darkM.GetLastMessage(), ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+            SPValidator(IncidenciaVacacion.IdIncidenciaVacacion, "Create");
 
             AgregarPasos(IncidenciaVacacion, _IdPersona);
 
             return IncidenciaVacacion.IdIncidenciaVacacion;
+        }
+        private void SPValidator(int IdIncidenciaVacacion, string Mode)
+        {
+            _darkM.dBConnection.StartProcedure($"SP_IncidenciaVacacion", new List<ProcedureModel>
+                {
+                    new ProcedureModel { Namefield = "IdIncidenciaVacacion", value = IdIncidenciaVacacion },
+                    new ProcedureModel { Namefield = "IdPersona", value = _IdPersona },
+                    new ProcedureModel { Namefield = "IdUsuario", value = _IdUsuario },
+                    new ProcedureModel { Namefield = "Mode", value = Mode }
+                });
+
+            if (_darkM.dBConnection.ErrorCode != 0)
+                throw new GPException { Description = _darkM.GetLastMessage(), ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
         }
         /// <summary>
         /// 
@@ -419,14 +461,7 @@ namespace GPSInformation.Controllers
 
             _darkM.IncidenciaVacacion.Update();
 
-            _darkM.dBConnection.StartProcedure($"SP_IncidenciaVacacion", new List<ProcedureModel>
-                {
-                    new ProcedureModel { Namefield = "IdIncidenciaVacacion", value = IncidenciaVacacion.IdIncidenciaVacacion },
-                    new ProcedureModel { Namefield = "Mode", value = "Update" }
-                });
-
-            if (_darkM.dBConnection.ErrorCode != 0)
-                throw new GPException { Description = _darkM.GetLastMessage(), ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+            SPValidator(IncidenciaVacacion.IdIncidenciaVacacion, "Update");
         }
         /// <summary>
         /// Obtener dias de vacaciones atomar entre dos fechas de acuerdo a dias feriados

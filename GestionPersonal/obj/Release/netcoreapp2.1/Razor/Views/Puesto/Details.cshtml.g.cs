@@ -118,7 +118,7 @@ WriteAttributeValue("", 855, Url.Action("Edit", new { id = Model.Puesto.IdPuesto
                 WriteLiteral(" class=\"btn btn-sm pd-x-15 btn-white btn-uppercaser\"><i data-feather=\"edit\" class=\"wd-10 mg-r-5\"></i>Editar</a>\r\n                ");
                 EndContext();
                 BeginContext(1040, 138, false);
-                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "16392f0ce91949b3843fd3305e0e009d", async() => {
+                __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "abaf1cce3b3f427ea72e66da64999738", async() => {
                     BeginContext(1115, 59, true);
                     WriteLiteral("<i data-feather=\"plus\" class=\"wd-10 mg-r-5\"></i>Crear nuevo");
                     EndContext();
@@ -334,7 +334,7 @@ WriteAttributeValue("", 855, Url.Action("Edit", new { id = Model.Puesto.IdPuesto
             WriteLiteral("\r\n        </dd>\r\n    </dl>\r\n    <div class=\"col-sm-12 text-right\">\r\n        ");
             EndContext();
             BeginContext(3455, 73, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "1bb861e186e24a4c97037435953e2587", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("a", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c6846344d5f74a78830eefc7d3e6ed5f", async() => {
                 BeginContext(3510, 14, true);
                 WriteLiteral("Volver a lista");
                 EndContext();

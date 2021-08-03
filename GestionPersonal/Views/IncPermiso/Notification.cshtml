@@ -172,6 +172,7 @@
                                     @if (Model.Estatus == 7)
                                     {
                                         <strong><span style="font-size: 14px; width: 100%; color: #ec6d64;">Detalle de rechazo de solicitud</span></strong>
+                                        <br />
                                         <strong>
                                             @Html.DisplayNameFor(model => Model.Proceso.Find(a => a.Revisada && !a.Autorizada).Fecha)
                                         </strong>

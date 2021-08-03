@@ -472,7 +472,7 @@ WriteAttributeValue("", 5787, Html.Raw(item.GrupoName == "Gris" ? "secondary" : 
                             ");
             EndContext();
             BeginContext(7196, 55, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c491329be10f434d8f4446f86fc42b7e", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "e5e9f6fa5694467a84fc837c780b4f32", async() => {
                 BeginContext(7223, 19, true);
                 WriteLiteral("Secciona una opción");
                 EndContext();
@@ -506,7 +506,7 @@ WriteAttributeValue("", 5787, Html.Raw(item.GrupoName == "Gris" ? "secondary" : 
             WriteLiteral("                                ");
             EndContext();
             BeginContext(7419, 61, false);
-            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "c1fb7a3e5472444aa424f80371e887bd", async() => {
+            __tagHelperExecutionContext = __tagHelperScopeManager.Begin("option", global::Microsoft.AspNetCore.Razor.TagHelpers.TagMode.StartTagAndEndTag, "a8ef5b2766344aee9e2ab7f08efad9ef", async() => {
                 BeginContext(7452, 19, false);
 #line 165 "C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\Views\ProduccionV4\Index.cshtml"
                                                            Write(item.NombreCompleto);

@@ -1,7 +1,10 @@
 ﻿@model GPSInformation.Responses.InAutorizacion
+@using Microsoft.AspNetCore.Http;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IHttpContextAccessor HttpContextAccessor
 @{
     var Details = (GPSInformation.Models.IncidenciaVacacion)ViewBag.Details;
-    var sstepSelected = Details.Proceso.Find(a => a.Nivel == Model.Mode);
+    var sstepSelected = Details.Proceso.Find(a => a.Nivel == Model.Modee);
     ViewData["Title"] = "Autorizar solicitud: " + Details.Folio;
 }
 @section MenuTop{
@@ -9,6 +12,7 @@
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action(Model.Modee == 2 ? "SolicitudesN1" : "SolicitudesN2","Incidencias")">Solicitudes Pendientes</a> </li>
                     <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
                 </ol>
             </nav>
@@ -19,7 +23,7 @@
         </div>
     </div>
 }
-<div data-label="Crear Nuevo Permiso" class="df-example demo-forms" id="app_createPermiso">
+<div data-label="Autorizar permiso" class="df-example demo-forms" id="app_createPermiso">
     @if (Details.Estatus >= 4)
     {
         <div class="alert alert-@Details.EstatusColor mg-b-0 mt-3 mb-3" role="alert">
@@ -27,10 +31,8 @@
         </div>
     }
     <h4 class="bg-light">I. Solicitante</h4>
-    <hr />
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Details.IdPersona })
     <h4 class="bg-light">II. Detalle de solicitud</h4>
-    <hr />
     <dl class="dl-horizontal row">
         <dt class="col-md-2">
             @Html.DisplayNameFor(model => Details.IdIncidenciaVacacion)
@@ -56,45 +58,60 @@
         <dd class="col-md-4 border">
             @Html.DisplayFor(model => Details.NoDias)
         </dd>
-    </dl>
-    <h4 class="bg-light">III. Autorizar</h4>
-    <hr />
-    @if (Details.Estatus == Model.Mode)
-    {
-        <form asp-action="Autorizar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdIncidencia" class="form-control" />
-            <input type="hidden" asp-for="Mode" class="form-control" />
-            <input type="hidden" asp-for="IdAutorizante" class="form-control" />
-            <input type="hidden" asp-for="NombreApro" class="form-control" />
-            <div class="form-group row">
-                <div class="checkbox col-md-offset-2 col-md-4">
-                    <label>
-                        <input asp-for="Autoriza" /> @Html.DisplayNameFor(model => model.Autoriza)
-                    </label>
-                </div>
-            </div>
-            <div class="form-group row">
-                <label asp-for="Comentarios" class="col-sm-2 col-form-label"></label>
-                <div class="col-sm-10">
-                    <textarea asp-for="Comentarios" class="form-control"></textarea>
-                    <span asp-validation-for="Comentarios" class="text-danger"></span>
-                </div>
+        @if (Details.ArchivoScan != "")
+        {
+            <dt class="col-md-2">
+                @Html.DisplayNameFor(model => Details.NoDias)
+            </dt>
+            <dd class="col-md-4 border">
+                <a href="@Url.Action("DowloadFile","IncVacacion",new  { fileName = Details.ArchivoScan, IdPersona = Details.IdPersona })" title="click aqui para descargar">@Details.ArchivoScan</a>
+            </dd>
 
-            </div>
-            <div class="form-group row mg-b-0">
-                <div class="col-sm-12 text-right">
-                    <a href="@Url.Action( Model.Mode == 2 ? "SolicitudesN1" : "SolicitudesN2","IncVacacion")" class="btn btn-sm btn-secondary">Regresar a solicitudes</a>
-                    <button type="submit" class="btn btn-sm btn-primary">Guardar cambios</button>
-                </div>
-            </div>
-        </form>
+        }
+    </dl>
+    <h4 class="bg-light">III. Autorización</h4>
+    @if (Details.Estatus == Model.Modee)
+    {
+<form asp-action="Autorizar">
+    @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+    {
+        <div class="alert alert-danger  mg-b-0 mt-3 mb-3" role="alert">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            @Html.ValidationSummary(true, "Errores: ")
+        </div>
+    }
+    <input type="hidden" asp-for="IdIncidencia" class="form-control" />
+    <input type="hidden" asp-for="Modee" class="form-control" />
+    <input type="hidden" asp-for="IdAutorizante" class="form-control" />
+    <input type="hidden" asp-for="NombreApro" class="form-control" />
+    <div class="form-group row">
+        <div class="checkbox col-md-offset-2 col-md-4">
+            <label>
+                <input asp-for="Autoriza" /> @Html.DisplayNameFor(model => model.Autoriza)
+            </label>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label asp-for="Comentarios" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <textarea asp-for="Comentarios" class="form-control"></textarea>
+            <span asp-validation-for="Comentarios" class="text-danger"></span>
+        </div>
+
+    </div>
+    <div class="form-group row mg-b-0">
+        <div class="col-sm-12 text-right">
+            <a href="@Url.Action( Model.Modee == 2 ? "SolicitudesN1" : "SolicitudesN2","IncVacacion")" class="btn btn-sm btn-secondary">Regresar a solicitudes</a>
+            <button type="submit" class="btn btn-sm btn-primary">Guardar cambios</button>
+        </div>
+    </div>
+</form>
     }
     else
     {
 
 
-        if (Model.Mode == 3 && Details.Proceso.Find(a => a.Nivel == 2).Revisada == false)
+        if (Model.Modee == 3 && Details.Proceso.Find(a => a.Nivel == 2).Revisada == false)
         {
 
 
@@ -104,13 +121,28 @@
         }
         else
         {
-            if (Model.Mode == 2 || Model.Mode == 3)
+            if (Model.Modee == 2 || Model.Modee == 3)
             {
                 if (sstepSelected.Revisada)
                 {
-                    <div class="alert alert-warning mg-b-0 mt-4" role="alert">
-                        Estimado usuario, ya fue procesada esta solicitud
-                    </div>
+<div class="alert alert-warning mg-b-0 mt-4" role="alert">
+    @if (HttpContextAccessor.HttpContext.Session.GetInt32("user_id") == sstepSelected.IdPersona)
+    {
+        if (DateTime.Now.AddSeconds(-30) < sstepSelected.Fecha)
+        {
+            <span>Estimado usuario gracias por procesar esta solicitud</span>
+        }
+        else
+        {
+            <span>Estimado usuario ya has procesado esta solicitud</span>
+        }
+    }
+    else
+    {
+        <span>Estimado usuario, ya fue procesada esta solicitud</span>
+    }
+
+</div>
                     <dl class="dl-horizontal row  border pt-4 pb-4   @Html.Raw(sstepSelected.Revisada  ? "border-warning" : "" )">
                         <dt class="col-md-2">
                             @Html.DisplayNameFor(model => sstepSelected.Fecha)

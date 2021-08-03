@@ -199,6 +199,7 @@
                                         @if (Model.Estatus == 7)
                                         {
                                             <strong><span style="font-size: 14px; width: 100%; color: #ec6d64;">Detalle de rechazo de solicitud</span></strong>
+                                            <br />
                                             <strong>
                                                 @Html.DisplayNameFor(model => Model.Proceso.Find(a => a.Revisada && !a.Autorizada).Fecha)
                                             </strong>
@@ -231,14 +232,14 @@
                                         @Html.DisplayNameFor(model => model.Inicio)
                                     </strong>
                                     <br />
-                                    @Html.DisplayFor(model => model.Inicio)
+                                    @string.Format("{0:D}", Model.Inicio)
                                     <br />
                                     <br />
                                     <strong>
                                         @Html.DisplayNameFor(model => model.Fin)
                                     </strong>
                                     <br />
-                                    @Html.DisplayFor(model => model.Fin)
+                                    @string.Format("{0:D}", Model.Fin)
                                     <br />
                                     <br />
                                     <strong>
@@ -251,7 +252,7 @@
                                     @if (Model.Estatus == 3)
                                     {
                                         <strong>
-                                            Comentarios de aprobación por jefe inmediato: <span style="color: #ec6d64;">@Html.DisplayFor(model => Model.Proceso.Find(a => a.Nivel == 2).NombreEmpleado)</span> 
+                                            Comentarios de aprobación por jefe inmediato: <span style="color: #ec6d64;">@Html.DisplayFor(model => Model.Proceso.Find(a => a.Nivel == 2).NombreEmpleado)</span>
                                         </strong>
                                         <br />
                                         @Html.DisplayFor(model => Model.Proceso.Find(a => a.Nivel == 2).Comentarios)

@@ -4,15 +4,21 @@
     ViewData["Title"] = "Crear solicitud de vacaciones";
 }
 
-<div data-label="Crear Nuevo Permiso" class="df-example demo-forms" id="app_createPermiso">
+<div data-label="Crear nueva solicitud" class="df-example demo-forms" id="app_createPermiso">
     <h4>I. Solicitante</h4>
     <hr />
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
     @*@await Component.InvokeAsync("EmpleadoBasic", new { id = Model.IdPersona })*@
     <h4>II. Detalle de solicitud</h4>
     <hr />
-    <form asp-action="Create">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <form asp-action="Create" enctype="multipart/form-data">
+        @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+        {
+            <div class="alert alert-danger  mg-b-0 mt-3 mb-3" role="alert">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                @Html.ValidationSummary(true, "Errores: ")
+            </div>
+        }
         <div class="form-group row">
             <label asp-for="Inicio" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-4">
@@ -27,9 +33,17 @@
                 <span asp-validation-for="Fin" class="text-danger"></span>
             </div>
         </div>
+        <div class="form-group row">
+            <label asp-for="Archivo" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-4">
+                <input type="file" asp-for="Archivo" class="form-control" accept="application/pdf" />
+                <span asp-validation-for="Archivo" class="text-danger"></span>
+            </div>
+            
+        </div>
         <div class="form-group row mg-b-0">
             <div class="col-sm-12 text-right">
-                <a href="@Url.Action("Index","Incidencia", new { id = Model.IdPersona })" class="btn btn-sm btn-secondary">Cancelar</a>
+                <a href="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona })" class="btn btn-sm btn-secondary">Cancelar</a>
                 <button type="submit" class="btn btn-sm btn-primary">Guardar solicitud</button>
             </div>
         </div>

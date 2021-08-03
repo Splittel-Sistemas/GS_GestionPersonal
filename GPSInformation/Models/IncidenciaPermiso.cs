@@ -89,7 +89,7 @@ namespace GPSInformation.Models
         {
             get
             {
-                return string.Format("P-{0:0000}", IdIncidenciaPermiso);
+                return string.Format("P{0:0000}", IdIncidenciaPermiso);
             }
         }
 
@@ -98,7 +98,8 @@ namespace GPSInformation.Models
         {
             get
             {
-                return Estatus == 2 ? true : false;
+                //return Estatus == 2 ? true : false;
+                return false;
             }
         }
 
@@ -124,6 +125,7 @@ namespace GPSInformation.Models
                 else if (Estatus == 6) return "Cancelada";
                 else if (Estatus == 7) return "Rechazada";
                 else if (Estatus == 8) return "Eliminada";
+                else if (Estatus == 9) return "Expirada";
                 else return "--";
             }
         }
@@ -141,11 +143,15 @@ namespace GPSInformation.Models
                 else if (Estatus == 6) return "warning";
                 else if (Estatus == 7) return "danger";
                 else if (Estatus == 8) return "info";
+                else if (Estatus == 9) return "info";
                 else return "--";
             }
         }
 
         [ColumnDB(IsMapped = false, IsKey = false)]
         public string Link { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string EncriptId { get { return Tools.EncryptData.Encrypt(IdIncidenciaPermiso + ""); } }
     }
 }

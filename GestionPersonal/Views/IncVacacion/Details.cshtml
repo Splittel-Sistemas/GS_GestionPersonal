@@ -39,7 +39,7 @@
         </button>
     </div>
 }
-<div data-label="Crear Nuevo Permiso" class="df-example demo-forms" id="app_createPermiso">
+<div data-label="Detalle de solicitud" class="df-example demo-forms" id="app_createPermiso">
     <h4 class="bg-light">I. Solicitante</h4>
     <hr />
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
@@ -70,6 +70,16 @@
         <dd class="col-md-4 border">
             @Html.DisplayFor(model => model.NoDias)
         </dd>
+        @if (Model.ArchivoScan != "")
+        {
+            <dt class="col-md-2">
+                @Html.DisplayNameFor(model => model.NoDias)
+            </dt>
+            <dd class="col-md-4 border">
+                <a href="@Url.Action("DowloadFile","IncVacacion",new  { fileName = Model.ArchivoScan, IdPersona = Model.IdPersona })" title="click aqui para descargar">@Model.ArchivoScan</a>
+            </dd>
+            
+        }
     </dl>
     <h4 class="bg-light">III. Seguimiento</h4>
     <hr />

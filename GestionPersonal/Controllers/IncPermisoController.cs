@@ -9,6 +9,7 @@ using GestionPersonal.Models;
 using GPSInformation.Responses;
 using GestionPersonal.Service;
 using System.Threading.Tasks;
+using System;
 
 namespace GestionPersonal.Controllers
 {
@@ -47,15 +48,17 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult Autorizar(int id, int Mode)
+        public IActionResult Autorizar(string id, string Mode)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                _V2IncidenciaCtrl.ValidarAcciones(V2IncValidation.Aprove, id,Mode);
-                var incidencia = _V2IncidenciaCtrl.Details(id, true);
+                int _id = Int32.Parse(GPSInformation.Tools.EncryptData.Decrypt(id));
+                int _Mode = Int32.Parse(GPSInformation.Tools.EncryptData.Decrypt(Mode));
+                _V2IncidenciaCtrl.ValidarAcciones(V2IncValidation.Aprove, _id, _Mode);
+                var incidencia = _V2IncidenciaCtrl.Details(_id, true);
                 ViewData["Details"] = incidencia;
-                return View(new InAutorizacion { IdAutorizante = (int)HttpContext.Session.GetInt32("user_id"), IdIncidencia = id, Mode = Mode  });
+                return View(new InAutorizacion { IdAutorizante = (int)HttpContext.Session.GetInt32("user_id"), IdIncidencia = _id, Modee = _Mode  });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
@@ -74,10 +77,10 @@ namespace GestionPersonal.Controllers
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                _V2IncidenciaCtrl.ValidarAcciones(V2IncValidation.Aprove, inAutorizacion.IdIncidencia, inAutorizacion.Mode);
+                _V2IncidenciaCtrl.ValidarAcciones(V2IncValidation.Aprove, inAutorizacion.IdIncidencia, inAutorizacion.Modee);
                 _V2IncidenciaCtrl.Autorizar(inAutorizacion);
                 SendNotificationAsync(inAutorizacion.IdIncidencia);
-                return RedirectToAction("Autorizar", new { id = inAutorizacion.IdIncidencia, Mode = inAutorizacion.Mode });
+                return RedirectToAction("Autorizar", new { id = GPSInformation.Tools.EncryptData.Encrypt(inAutorizacion.IdIncidencia+""), Mode = GPSInformation.Tools.EncryptData.Encrypt(inAutorizacion.Modee+"") });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
@@ -303,9 +306,9 @@ namespace GestionPersonal.Controllers
             {
                 var incidencia = _V2IncidenciaCtrl.Details(IdPermiso, true);
                 if (incidencia.Estatus == 2 || incidencia.Estatus == 3)
-                    incidencia.Link =$"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Autorizar", "IncPermiso", new { id = IdPermiso, Mode = incidencia.Estatus })}";
+                    incidencia.Link =$"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Autorizar", "IncPermiso", new { id = incidencia.EncriptId, Mode = GPSInformation.Tools.EncryptData.Encrypt(incidencia.Estatus + "") })}";
                 else
-                    incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Details", "IncPermiso", new { id = IdPermiso })}";
+                    incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Details", "IncPermiso", new { id = incidencia.EncriptId })}";
 
                 var result = await _viewRenderService.RenderToStringAsync("IncPermiso/Notification", incidencia);
 

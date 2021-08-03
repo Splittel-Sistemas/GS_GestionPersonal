@@ -1,0 +1,170 @@
+﻿@{
+    ViewData["Title"] = "Solicitudes pendientes de aprobación N2";
+    List<GPSInformation.Models.IncidenciaPermiso> Permisos = ViewBag.Permisos;
+    List<GPSInformation.Models.IncidenciaVacacion> Vacaciones = ViewBag.Vacaciones;
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+        </div>
+    </div>
+}
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link @Html.Raw(ViewBag.Tab == "Vacaciones" ? "active" : "")" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Vacaciones</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @Html.Raw(ViewBag.Tab == "Permisos" ? "active" : "")" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Permisos</a>
+    </li>
+
+</ul>
+<div class="tab-content bd bd-gray-300 bd-t-0 pd-20" id="myTabContent">
+    <div class="tab-pane fade @Html.Raw(ViewBag.Tab == "Vacaciones" ? "show active" : "")" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <table class="table table-condensed table-hover display compact" id="lista_misSolicitudesVaca">
+            <thead>
+                <tr>
+                    <th>
+                        Folio
+                    </th>
+                    <th>
+                        Empleado
+                    </th>
+                    <th>
+                        No.Dias
+                    </th>
+                    <th>
+                        Salida
+                    </th>
+                    <th>
+                        ultimo día
+                    </th>
+                    <th>
+                        Estatus
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Vacaciones)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Folio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EmpleadoNombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NoDias)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Inicio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Fin)
+                        </td>
+                        <td>
+                            <span class="badge badge-pill badge-@Html.DisplayFor(modelItem => item.EstatusColor)">@Html.DisplayFor(modelItem => item.EstatusDescricion)</span>
+                        </td>
+                        <td>
+                            @Html.ActionLink("Autorizar", "Autorizar", "IncVacacion", new { id = item.EncriptId, Mode = GPSInformation.Tools.EncryptData.Encrypt("3") })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade @Html.Raw(ViewBag.Tab == "Permisos" ? "show active" : "")" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <table class="table table-condensed table-hover display compact" id="lista_misSolicitudes">
+            <thead>
+                <tr>
+                    <th>
+                        Folio
+                    </th>
+                    <th>
+                        Empleado
+                    </th>
+                    <th>
+                        Fe.Permiso
+                    </th>
+                    <th>
+                        Hora.Salida
+                    </th>
+                    <th>
+                        Hora.Regreso
+                    </th>
+                    <th>
+                        Estatus
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Permisos)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Folio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EmpleadoNombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Fecha)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Inicio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Fin)
+                        </td>
+                        <td>
+                            <span class="badge badge-pill badge-@Html.DisplayFor(modelItem => item.EstatusColor)">@Html.DisplayFor(modelItem => item.EstatusDescricion)</span>
+                        </td>
+                        <td>
+                            @Html.ActionLink("Autorizar", "Autorizar", "IncPermiso", new { id = item.EncriptId, Mode = GPSInformation.Tools.EncryptData.Encrypt("3") })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(function () {
+            'use strict'
+
+            $('#lista_misSolicitudes').DataTable({
+                //responsive:true,
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                ordering: false
+            });
+            $('#lista_misSolicitudesVaca').DataTable({
+                //responsive:true,
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                ordering: false
+            });
+
+        });
+    </script>
+}
+

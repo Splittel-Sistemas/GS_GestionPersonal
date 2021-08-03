@@ -59,9 +59,13 @@ namespace GPSInformation.Tools
                     }
                 }
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
-                throw new GpExceptions("Folio no valido");
+                throw new GPException { Category = TypeException.Error, Description = "Parametros incorrectos, pagina no encontrada", ErrorCode = -100 };
+            }
+            catch (Exception)
+            {
+                throw new GPException { Category = TypeException.Error, Description = "Parametros incorrectos, pagina no encontrada", ErrorCode = -100 };
             }
             
         }

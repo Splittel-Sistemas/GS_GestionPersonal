@@ -27,7 +27,7 @@ namespace GPSInformation.Responses
         public string Comentarios { get; set; }
         [Required]
         [Display]
-        public int Mode { get; set; }
+        public int Modee { get; set; }
         [Display(Name = "Aprobador")]
         public int IdAutorizante { get; set; }
         [Display(Name = "Aprobador")]

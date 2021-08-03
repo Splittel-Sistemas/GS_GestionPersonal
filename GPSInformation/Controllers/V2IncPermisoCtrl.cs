@@ -103,6 +103,8 @@ namespace GPSInformation.Controllers
             _darkM.IncidenciaPermiso.Element = details;
 
             _darkM.IncidenciaPermiso.Update();
+
+            SPValidator(IdIncidencia, "Eliminar");
         }
         /// <summary>
         /// 
@@ -126,6 +128,8 @@ namespace GPSInformation.Controllers
             _darkM.IncidenciaPermiso.Element = details;
 
             _darkM.IncidenciaPermiso.Update();
+
+            SPValidator(IdIncidencia, "Cancelar");
         }
         /// <summary>
         /// 
@@ -139,14 +143,14 @@ namespace GPSInformation.Controllers
                 throw new GPException { Description = $"Estimado usuario no es posible procesar la incidencia solicitada, estatus actual: {details.EstatusDescricion}", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
             }
 
-            if(inAutorizacion.Mode != 2 && inAutorizacion.Mode != 3)
+            if(inAutorizacion.Modee != 2 && inAutorizacion.Modee != 3)
             {
                 throw new GPException { Description = $"Estimado usuario no es valido tu autorización, datos incorrectos", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
             }
 
-            if(inAutorizacion.Mode == details.Estatus)
+            if(inAutorizacion.Modee == details.Estatus)
             {
-                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Mode);
+                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Modee);
                 proceso.Comentarios = inAutorizacion.Comentarios;
                 proceso.IdPersona = inAutorizacion.IdAutorizante;
                 proceso.NombreEmpleado = _darkM.IncidenciaPermiso.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {inAutorizacion.IdAutorizante}");
@@ -166,10 +170,12 @@ namespace GPSInformation.Controllers
                 _darkM.IncidenciaPermiso.Element = details;
 
                 _darkM.IncidenciaPermiso.Update();
+
+                SPValidator(inAutorizacion.IdIncidencia, "Autorizar");
             }
             else
             {
-                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Mode);
+                var proceso = details.Proceso.Find(a => a.Nivel == inAutorizacion.Modee);
                 if (proceso.Revisada)
                 {
                     throw new GPException { Description = $"Estimado usuario ya fue procesada esta autorización", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
@@ -186,12 +192,16 @@ namespace GPSInformation.Controllers
         /// <returns></returns>
         public List<IncidenciaPermiso> GetAdmin()
         {
-            if(!_Accesos.Find(a => a.IdSubModulo == _ALecturaEscrituraAdmin).TieneAcceso)
+            //if(!_Accesos.Find(a => a.IdSubModulo == _ALecturaEscrituraAdmin).TieneAcceso )
+            //{
+            //    throw new GPException { Description = $"Estimado usuario no tienes permisos para crear solicitudes a otros colaboradores", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+            //}
+            if(!_Accesos.Find(a => a.IdSubModulo == _AincidenciasAdmin).TieneAcceso)
             {
-                throw new GPException { Description = $"Estimado usuario no tienes permisos para crear solicitudes a otros colaboradores", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                throw new GPException { Description = $"Estimado usuario no tienes acceso a esta seccion", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
             }
 
-            var data = _darkM.IncidenciaPermiso.GetOpenquery($"","Order by Creado");
+            var data = _darkM.IncidenciaPermiso.GetOpenquery($"where Estatus != 8","Order by Creado");
 
             data.ForEach(result => LLenarTodo(result));
             return data;
@@ -312,7 +322,7 @@ namespace GPSInformation.Controllers
             {
                 throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
             }
-            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where t01.Estatus = 2 and (t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona}) or " +
+            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where t01.Estatus = 2 and (t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona}) " +
                 $" or t01.IdPersona in (select t01.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona} and t02.Activa = 1 ) )", "Order by Creado");
             data.ForEach(result => LLenarTodo(result));
             return data;
@@ -478,15 +488,8 @@ namespace GPSInformation.Controllers
 
             IncidenciaPermiso.IdIncidenciaPermiso = _darkM.IncidenciaPermiso.LastInserted($"select max(IdIncidenciaPermiso) from IncidenciaPermiso where IdPersona = {IncidenciaPermiso.IdPersona} ");
 
-            _darkM.dBConnection.StartProcedure($"SP_IncidenciaPermiso", new List<ProcedureModel>
-                {
-                    new ProcedureModel { Namefield = "IdIncidenciaPermiso", value = IncidenciaPermiso.IdIncidenciaPermiso },
-                    new ProcedureModel { Namefield = "Mode", value = "Create" }
-                });
-
-            if (_darkM.dBConnection.ErrorCode != 0)
-                throw new GPException { Description = _darkM.GetLastMessage(), ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
-
+            SPValidator(IncidenciaPermiso.IdIncidenciaPermiso, "Create");
+            
             AgregarPasos(IncidenciaPermiso, _IdPersona);
 
             return IncidenciaPermiso.IdIncidenciaPermiso;
@@ -530,10 +533,16 @@ namespace GPSInformation.Controllers
 
             _darkM.IncidenciaPermiso.Update();
 
+            SPValidator(IncidenciaPermiso.IdIncidenciaPermiso, "Update");
+        }
+        private void SPValidator(int IdIncidenciaPermiso, string Mode)
+        {
             _darkM.dBConnection.StartProcedure($"SP_IncidenciaPermiso", new List<ProcedureModel>
                 {
-                    new ProcedureModel { Namefield = "IdIncidenciaPermiso", value = IncidenciaPermiso.IdIncidenciaPermiso },
-                    new ProcedureModel { Namefield = "Mode", value = "Update" }
+                    new ProcedureModel { Namefield = "IdIncidenciaPermiso", value = IdIncidenciaPermiso },
+                    new ProcedureModel { Namefield = "IdPersona", value = _IdPersona },
+                    new ProcedureModel { Namefield = "IdUsuario", value = _IdUsuario },
+                    new ProcedureModel { Namefield = "Mode", value = Mode }
                 });
 
             if (_darkM.dBConnection.ErrorCode != 0)

@@ -20,12 +20,12 @@ namespace GPSInformation.Models
         public int IdPersona { get; set; }
 
         [Required]
-        [Display(Name = "Inicio")]
+        [Display(Name = "Salida")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Inicio { get; set; }
 
         [Required]
-        [Display(Name = "Fin")]
+        [Display(Name = "Último día")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Fin { get; set; }
 
@@ -73,7 +73,7 @@ namespace GPSInformation.Models
         { 
             get 
             { 
-                return string.Format("V-{0:0000}", IdIncidenciaVacacion); 
+                return string.Format("V{0:0000}", IdIncidenciaVacacion); 
             } 
         }
 
@@ -86,7 +86,8 @@ namespace GPSInformation.Models
         {
             get
             {
-                return Estatus == 2 ? true : false;
+                //return Estatus == 2 ? true : false;
+                return false;
             }
         }
 
@@ -112,6 +113,7 @@ namespace GPSInformation.Models
                 else if (Estatus == 6) return "Cancelada";
                 else if (Estatus == 7) return "Rechazada";
                 else if (Estatus == 8) return "Eliminada";
+                else if (Estatus == 9) return "Expirada";
                 else return "--";
             }
         }
@@ -129,12 +131,16 @@ namespace GPSInformation.Models
                 else if (Estatus == 6) return "warning";
                 else if (Estatus == 7) return "danger";
                 else if (Estatus == 8) return "info";
+                else if (Estatus == 9) return "info";
                 else return "--";
             }
         }
 
         [ColumnDB(IsMapped = false, IsKey = false)]
         public string Link { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string EncriptId { get { return Tools.EncryptData.Encrypt(IdIncidenciaVacacion + ""); } }
     }
 
     [TableDB(IsMappedByLabels = false, IsStoreProcedure = false)]

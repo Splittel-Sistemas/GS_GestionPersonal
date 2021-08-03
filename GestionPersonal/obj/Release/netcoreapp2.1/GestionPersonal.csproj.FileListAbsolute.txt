@@ -349,3 +349,7 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\IncVacacion\Autorizar.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\IncVacacion\MisSolicitudes.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\IncVacacion\Notification.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Incidencias\MisSolicitudes.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Incidencias\SolicitudesAdmin.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Incidencias\SolicitudesN1.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp2.1\Razor\Views\Incidencias\SolicitudesN2.cshtml.g.cs
