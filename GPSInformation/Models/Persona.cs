@@ -1,4 +1,5 @@
 ﻿using GPSInformation.Attributes;
+using GPSInformation.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,6 +31,7 @@ namespace GPSInformation.Models
 
         [Display(Name = "Fe.Nacimiento")]
         [Required]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:D}")]
         [ColumnDB(Name = "Nacimiento", IsMapped = true, IsKey = false)]
         public DateTime Nacimiento { get; set; }
 
@@ -86,14 +88,17 @@ namespace GPSInformation.Models
         public string Calle { get; set; }
 
         [Display(Name = "Empleado")]
-
         [ColumnDB(Name = "Empleado", IsMapped = true, IsKey = false)]
         public int Empleado { get; set; }
 
         [ColumnDB(Name = "Creado", IsMapped = true, IsKey = false)]
+        [Display(Name = "Fe.Registro")]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:F}")]
         public DateTime Creado { get; set; }
 
+        [Display(Name = "Ult.Actualización")]
         [ColumnDB(Name = "Actualizado", IsMapped = true, IsKey = false)]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:F}")]
         public DateTime Actualizado { get; set; }
 
         [Required]
@@ -112,5 +117,16 @@ namespace GPSInformation.Models
         [Display(Name = "Nombre Completo")]
         [ColumnDB(IsMapped = false, IsKey = false)]
         public string NombreCompelto { get { return string.Format("{0} {1} {2}",Nombre,ApellidoPaterno,ApellidoMaterno); } }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_Generos { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_EstadosCiviles { get; set; }
     }
 }

@@ -2,33 +2,65 @@
 @{
     ViewData["Title"] = "Detalle de solicitud: " + Model.Folio;
 }
-@section MenuTop{
+@if ((bool)ViewBag.isPartial == true)
+{
     <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="#" data-rute="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona, isPartial = true, Tab = "Vacaciones" })" onclick="GetViewAccess(this)">Lista de solicitudes</a> </li>
                     <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
                 </ol>
             </nav>
             <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
         </div>
         <div class="d-none d-md-block">
+            <a  class="btn btn-sm pd-x-15 btn-white btn-uppercaser" onclick="GetViewAccess(this)" href="#" data-rute="@Url.Action("Details","IncVacacion", new  { id = Model.IdIncidenciaVacacion, isPartial = true })" data-mode="form" >
+                <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+            </a>
             @if ((bool)ViewBag.ShowEdit && Model.Estatus == 2)
             {
-                <a href="@Url.Action("Edit","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
+                <a onclick="GetViewAccess(this)" href="#" data-rute="@Url.Action("Edit","IncVacacion", new { id = Model.IdIncidenciaVacacion })" data-mode="form" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
             }
-            @if ((bool)ViewBag.ShowCancel && Model.Estatus <= 4 )
+            @if ((bool)ViewBag.ShowCancel && Model.Estatus <= 4 && Model.CreadoPor == "E")
             {
-                <a href="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="x" class="wd-10 mg-r-5"></i>Cancel</a>
+                <a onclick="ValidViewActionAccess(this,'Cancelar esta solicitud')" href="#" data-rute="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion, isPartial = true  })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="x" class="wd-10 mg-r-5"></i>Cancel</a>
             }
             @if ((bool)ViewBag.ShowDelete)
             {
-                <a href="@Url.Action("Delete","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="trash" class="wd-10 mg-r-5"></i>Eliminar</a>
+                <a onclick="ValidViewActionAccess(this,'Eliminar esta solicitud')" href="#" data-rute="@Url.Action("Delete","IncVacacion", new { id = Model.IdIncidenciaVacacion, isPartial = true  })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="trash" class="wd-10 mg-r-5"></i>Eliminar</a>
             }
-
-
         </div>
     </div>
+}
+else
+{
+    @section MenuTop{
+        <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                        <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                    </ol>
+                </nav>
+                <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+            </div>
+            <div class="d-none d-md-block">
+                @if ((bool)ViewBag.ShowEdit && Model.Estatus == 2)
+                {
+                    <a href="@Url.Action("Edit","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
+                }
+                @if ((bool)ViewBag.ShowCancel && Model.Estatus <= 4)
+                {
+                    <a href="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="x" class="wd-10 mg-r-5"></i>Cancel</a>
+                }
+                @if ((bool)ViewBag.ShowDelete)
+                {
+                    <a href="@Url.Action("Delete","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="trash" class="wd-10 mg-r-5"></i>Eliminar</a>
+                }
+            </div>
+        </div>
+    }
 }
 @if (ViewBag.MessageSuccess != null)
 {
@@ -78,7 +110,7 @@
             <dd class="col-md-4 border">
                 <a href="@Url.Action("DowloadFile","IncVacacion",new  { fileName = Model.ArchivoScan, IdPersona = Model.IdPersona })" title="click aqui para descargar">@Model.ArchivoScan</a>
             </dd>
-            
+
         }
     </dl>
     <h4 class="bg-light">III. Seguimiento</h4>

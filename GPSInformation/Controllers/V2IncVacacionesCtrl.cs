@@ -59,7 +59,7 @@ namespace GPSInformation.Controllers
         /// <summary>
         /// crear, editar incidencias a otros empleados
         /// </summary>
-        public readonly int _ALecturaEscrituraAdmin = 1058;
+        public readonly int _ALecturaEscrituraAdmin = 1054;
         /// <summary>
         /// ids de permisos por usuario en session
         /// </summary>
@@ -95,9 +95,10 @@ namespace GPSInformation.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public List<IncidenciaVacacion> GetByUsuario()
+        public List<IncidenciaVacacion> GetByUsuario(int IdPersonaa)
         {
-            var data = _darkM.IncidenciaVacacion.GetOpenquery($" where IdPersona = {_IdPersona }", "Order by Creado");
+            if (IdPersonaa == 0) IdPersonaa = _IdPersona;
+            var data = _darkM.IncidenciaVacacion.GetOpenquery($" where IdPersona = {IdPersonaa } and Estatus != 8", "Order by Creado desc");
 
             data.ForEach(result => LLenarTodo(result));
             return data;
@@ -177,7 +178,7 @@ namespace GPSInformation.Controllers
         public void Cancelar(int IdIncidencia)
         {
             var details = Details(IdIncidencia);
-            if (details.IdPersona != _IdPersona)
+            if (details.IdPersona != _IdPersona  || details.CreadoPor == "A")
             {
                 if (!_Accesos.Find(a => a.IdSubModulo == _ALecturaEscrituraAdmin).TieneAcceso)
                 {
@@ -186,8 +187,8 @@ namespace GPSInformation.Controllers
             }
             if (!details.ActiveCancelar)
                 throw new GPException { Description = $"Estimado usuario no es posible procesar la incidencia solicitada, estatus actual: {details.EstatusDescricion}", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
-            if (details.Inicio >= DateTime.Now)
-                throw new GPException { Description = $"Estimado usuario ya no puedes cancelar esta solicitud, las cancelaciones deberam de hacerce un dia antes", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+            if ( DateTime.Now > details.Inicio)
+                throw new GPException { Description = $"Estimado usuario ya no puedes cancelar esta solicitud, las cancelaciones deberan de hacerce un dia antes", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
             details.Estatus = 6;
             _darkM.IncidenciaVacacion.Element = details;
 
@@ -353,6 +354,10 @@ namespace GPSInformation.Controllers
 
             }
         }
+        public int GetIdPersona(int IdIncidenciaVacacion)
+        {
+            return _darkM.IncidenciaVacacion.GetIntValue($"select IdPersona from IncidenciaVacacion where IdIncidenciaVacacion = { IdIncidenciaVacacion}");
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -372,24 +377,28 @@ namespace GPSInformation.Controllers
             {
                 IncidenciaVacacion.CreadoPor = "E";
 
-                if(IncidenciaVacacion.Archivo == null)
-                    throw new GPException { Description = $"Estimado usuario porfavor selecciona un archivo para poder crear tu solicitud", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
-                if (IncidenciaVacacion.Archivo.Length == 0)
-                        throw new GPException { Description = $"Estimado usuario el archivo {IncidenciaVacacion.Archivo.FileName} esta dañado", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
-
-                int last = _darkM.IncidenciaVacacion.GetLastId(nameof(_darkM.IncidenciaVacacion.Element.IdPersona), IncidenciaVacacion.IdPersona + "");
-                IncidenciaVacacion.ArchivoScan = $"InVac_{(last + 1)}_archivo.{IncidenciaVacacion.Archivo.FileName.Split('.')[1]}";
-
-
             }
 
             #region Mover archivo
+            if (IncidenciaVacacion.Archivo == null)
+                throw new GPException { Description = $"Estimado usuario porfavor selecciona un archivo para poder crear tu solicitud", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+            if (IncidenciaVacacion.Archivo.Length == 0)
+                throw new GPException { Description = $"Estimado usuario el archivo {IncidenciaVacacion.Archivo.FileName} esta dañado", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+
+            int last = _darkM.IncidenciaVacacion.GetLastId(nameof(_darkM.IncidenciaVacacion.Element.IdPersona), IncidenciaVacacion.IdPersona + "");
+            IncidenciaVacacion.ArchivoScan = $"InVac_{(last + 1)}_archivo.{IncidenciaVacacion.Archivo.FileName.Split('.')[1]}";
+
+            
             string Directorio = $"C:\\Splittel\\GestionPersonal\\{IncidenciaVacacion.IdPersona}\\IncVacaciones\\";
             if (!System.IO.Directory.Exists(Directorio))
             {
                 System.IO.Directory.CreateDirectory(Directorio);
             }
-            Directorio = $"{Directorio}{IncidenciaVacacion.ArchivoScan}";
+            Directorio = $"{Directorio}\\{IncidenciaVacacion.ArchivoScan}";
+
+            //var filePath = Path.Combine(Directorio, IncidenciaVacacion.ArchivoScan);
+
+
             using (FileStream fs = System.IO.File.Create(Directorio))
             {
                 IncidenciaVacacion.Archivo.CopyTo(fs);
@@ -399,7 +408,7 @@ namespace GPSInformation.Controllers
 
 
             IncidenciaVacacion.NumAutorizaciones = 4;
-            IncidenciaVacacion.Estatus = 2;
+            IncidenciaVacacion.Estatus = IncidenciaVacacion.CreadoPor == "E" ? 2 : 4;
             IncidenciaVacacion.Tipo = "A";
             IncidenciaVacacion.NoDias = GetDays(IncidenciaVacacion.Inicio, IncidenciaVacacion.Fin);
 
@@ -409,9 +418,9 @@ namespace GPSInformation.Controllers
 
             IncidenciaVacacion.IdIncidenciaVacacion = _darkM.IncidenciaVacacion.LastInserted($"select max(IdIncidenciaVacacion) from IncidenciaVacacion where IdPersona = {IncidenciaVacacion.IdPersona} ");
 
-            SPValidator(IncidenciaVacacion.IdIncidenciaVacacion, "Create");
+            AgregarPasos(IncidenciaVacacion, _IdPersona, IncidenciaVacacion.CreadoPor);
 
-            AgregarPasos(IncidenciaVacacion, _IdPersona);
+            SPValidator(IncidenciaVacacion.IdIncidenciaVacacion, "Create");
 
             return IncidenciaVacacion.IdIncidenciaVacacion;
         }
@@ -494,13 +503,13 @@ namespace GPSInformation.Controllers
         /// <returns></returns>
         public IncidenciaVacacion Details(int IdIncidenciaVacacion, bool LanzarExcep = false)
         {
-            var result = _darkM.IncidenciaVacacion.Get(IdIncidenciaVacacion);
+            var result = _darkM.IncidenciaVacacion.GetOpenquerys($"where IdIncidenciaVacacion = {IdIncidenciaVacacion} and Estatus != 8");
 
             LLenarTodo(result, true);
 
             if (LanzarExcep && result is null)
             {
-                throw new GPException { Description = $"Estimado usuario noo se encontró la incidencia seleccionada", ErrorCode = 0, Category = TypeException.NotFound, IdAux = "" };
+                throw new GPException { Description = $"Estimado usuario no se encontró la incidencia seleccionada", ErrorCode = 0, Category = TypeException.NotFound, IdAux = "" };
             }
 
 
@@ -525,7 +534,7 @@ namespace GPSInformation.Controllers
         /// </summary>
         /// <param name="IncidenciaVacacion"></param>
         /// <param name="IdPersonaCreador"></param>
-        private void AgregarPasos(IncidenciaVacacion IncidenciaVacacion, int IdPersonaCreador)
+        private void AgregarPasos(IncidenciaVacacion IncidenciaVacacion, int IdPersonaCreador, string CreadoPor)
         {
             var procesoStep = new IncidenciaProcess();
             procesoStep.IdIncidenciaPermiso = 0;
@@ -545,11 +554,11 @@ namespace GPSInformation.Controllers
             procesoStep.IdPersona = 0;
             procesoStep.Fecha = null;
             procesoStep.Titulo = "Aprobación por jefe inmediato";
-            procesoStep.Comentarios = "";
+            procesoStep.Comentarios = CreadoPor == "A" ? "Autorización por default" : "";
             procesoStep.Nivel = 2;
-            procesoStep.Revisada = false;
-            procesoStep.Autorizada = false;
-            procesoStep.NombreEmpleado = "";
+            procesoStep.Revisada = CreadoPor == "A" ? true : false;
+            procesoStep.Autorizada = CreadoPor == "A" ? true : false;
+            procesoStep.NombreEmpleado = CreadoPor == "A" ? "Sistema gestión de Personal" : "";
             _darkM.IncidenciaProcess.Element = procesoStep;
             _darkM.IncidenciaProcess.Add();
 
@@ -557,11 +566,11 @@ namespace GPSInformation.Controllers
             procesoStep.IdPersona = 0;
             procesoStep.Fecha = null;
             procesoStep.Titulo = "Aprobación por gestión de personal";
-            procesoStep.Comentarios = "";
+            procesoStep.Comentarios = CreadoPor == "A" ? "Autorización por default" : "";
             procesoStep.Nivel = 3;
-            procesoStep.Revisada = false;
-            procesoStep.Autorizada = false;
-            procesoStep.NombreEmpleado = "";
+            procesoStep.Revisada = CreadoPor == "A" ? true : false; 
+            procesoStep.Autorizada = CreadoPor == "A" ? true : false;
+            procesoStep.NombreEmpleado = CreadoPor == "A" ? "Sistema gestión de Personal" : "";
             _darkM.IncidenciaProcess.Element = procesoStep;
             _darkM.IncidenciaProcess.Add();
 

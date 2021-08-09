@@ -214,17 +214,17 @@ namespace GestionPersonal.Controllers
                 ViewData["Permisos"] = Permisos;
                 if (Inicio == DateTime.Parse("0001-01-01 00:00:00"))
                 {
-                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
+                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00")));
                 }
                 else
                 {
                     Inicio = Funciones.GetFirtsDatWeek(Inicio);
                 }
-                if (Inicio < Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00"))))
+                if (Inicio < Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00"))))
                 {
                     if (Permisos.Find(a => a.IdSubModulo == 1052).Autorization == false && Permisos.Find(a => a.IdSubModulo == 1048).Autorization == false)
                     {
-                        Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
+                        Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00")));
                     }
                 }
 
@@ -245,7 +245,7 @@ namespace GestionPersonal.Controllers
                 var Permisos = ProduccionV4Ctrl.VerPermisos((int)HttpContext.Session.GetInt32("user_id"));
                 if (Inicio == DateTime.Parse("0001-01-01 00:00:00"))
                 {
-                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
+                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00")));
                 }
                 else
                 {
@@ -255,7 +255,7 @@ namespace GestionPersonal.Controllers
                 {
                     if (Permisos.Find(a => a.IdSubModulo == 1052).Autorization == false && Permisos.Find(a => a.IdSubModulo == 1048).Autorization == false)
                     {
-                        Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
+                        Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00")));
                     }
                 }
 
@@ -279,7 +279,7 @@ namespace GestionPersonal.Controllers
                 var Permisos = ProduccionV4Ctrl.VerPermisos((int)HttpContext.Session.GetInt32("user_id"));
                 if (Inicio == DateTime.Parse("0001-01-01 00:00:00"))
                 {
-                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
+                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00")));
                 }
                 else
                 {
@@ -289,7 +289,7 @@ namespace GestionPersonal.Controllers
                 {
                     if (Permisos.Find(a => a.IdSubModulo == 1052).Autorization == false && Permisos.Find(a => a.IdSubModulo == 1048).Autorization == false)
                     {
-                        Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
+                        Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00")));
                     }
                 }
 
@@ -314,7 +314,7 @@ namespace GestionPersonal.Controllers
                 int IdPersona = (int)HttpContext.Session.GetInt32("user_id");
                 if (Inicio == DateTime.Parse("0001-01-01 00:00:00"))
                 {
-                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 05:45:00")));
+                    Inicio = Funciones.GetFirtsDatWeek(DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd 03:00:00")));
                 }
                 else
                 {

@@ -1,0 +1,31 @@
+﻿@model IEnumerable<GPSInformation.Models.PersonaContacto>
+
+<div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+    <div>
+        <h4 class="mg-b-0 tx-spacing--1">Información contacto de emergencia</h4>
+    </div>
+    <div class="d-none d-md-block">
+        <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpContEmergenciaList","ColaboradorSplittel", new  { id = ViewBag.IdPersona })" id="test_btn" onclick="GetViewAccess(this)">
+            <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+        </a>
+
+    </div>
+</div>
+<hr />
+
+<div class="row row-xs mg-b-25">
+    @foreach (var item in Model)
+    {
+    <div class="col-sm-4 col-md-3 col-lg-4 col-xl-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@Html.DisplayFor(modelItem => item.NombreCompleto)</h5>
+                <h6 class="card-subtitle mb-2 text-muted">@Html.DisplayFor(modelItem => item.Cat_Parentezcos.Label)</h6>
+                <p class="card-text">@Html.DisplayFor(modelItem => item.Editado)</p>
+                <a href="#" class="card-link" data-rute="@Url.Action("EmpContEmergenciaDetails","ColaboradorSplittel", new  { id = item.IdPersonaContacto })" id="test_btn" onclick="GetViewAccess(this)">Detalles</a>
+            </div>
+        </div>
+    </div><!-- col -->
+    }
+
+</div><!-- contact-list -->

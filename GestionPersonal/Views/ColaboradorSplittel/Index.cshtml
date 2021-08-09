@@ -1,0 +1,181 @@
+﻿@model GPSInformation.DBManagers.ModelPagination<GPSInformation.Views.View_empleado>
+@{
+    ViewData["Title"] = "Empleados ";
+}
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a asp-action="Create" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="plus" class="wd-10 mg-r-5"></i>Crear nuevo</a>
+        </div>
+    </div>
+}
+<div class="table-responsive-sm">
+    <nav aria-label="Page navigation " class="mt-4 mb-4">
+        <form asp-action="Index" method="get" id="f_filter">
+            <div class="form-row col-6">
+                <div class="form-group col-md-5">
+                    <label>Filtro</label>
+                    <input type="hidden" name="Page" asp-for="PageSelected" />
+                    <div class="search-form">
+                        <input type="search" class="form-control form-control-sm" asp-for="FilterPatterns" placeholder="buscar">
+                        <button class="btn" type="button"><i data-feather="search"></i></button>
+                    </div>
+                </div>
+                <div class="form-group col-md-2 d-flex align-items-end">
+
+                    <select asp-for="RowsPerPage" onchange="document.getElementById('f_filter').submit()" class="form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        <ul class="pagination  pagination-filled justify-content-end mg-b-0">
+            @foreach (var item in Model.Pages)
+            {
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Before)
+                {
+                    <li class="page-item"><a class="page-link page-link-icon" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })"><i data-feather="chevron-left"></i></a></li>
+                }
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Next)
+                {
+                    <li class="page-item"><a class="page-link page-link-icon" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })"><i data-feather="chevron-right"></i></a></li>
+                }
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Page)
+                {
+                    if (item.Active)
+                    {
+                        <li class="page-item active"><a class="page-link" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })">@item.Numero</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })">@item.Numero</a></li>
+                    }
+                }
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Space)
+                {
+                    <li class="page-item"><span class="page-link">...</span></li>
+                }
+            }
+        </ul>
+    </nav>
+    <table class="table table-condensed table-sm">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Data.FirstOrDefault().NumeroNomina)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Data.FirstOrDefault().NombreCompleto)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Data.FirstOrDefault().NombreDepartamento)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Data.FirstOrDefault().PuestoNombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Data.FirstOrDefault().TipoNomina)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Data.FirstOrDefault().EstatusDescripcion)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Data)
+            {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumeroNomina)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreCompleto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NombreDepartamento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PuestoNombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TipoNomina)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EstatusDescripcion)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.IdPersona })
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <span>Total de registros: @Model.Data.Count()</span>
+    <nav aria-label="Page navigation " class="mt-4">
+        <ul class="pagination  pagination-filled justify-content-end mg-b-0">
+            @foreach (var item in Model.Pages)
+            {
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Before)
+                {
+                    <li class="page-item"><a class="page-link page-link-icon" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })"><i data-feather="chevron-left"></i></a></li>
+                }
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Next)
+                {
+                    <li class="page-item"><a class="page-link page-link-icon" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })"><i data-feather="chevron-right"></i></a></li>
+                }
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Page)
+                {
+                    if (item.Active)
+                    {
+                        <li class="page-item active"><a class="page-link" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })">@item.Numero</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" href="@Url.Action("Index", new { Page = item.Numero, RowsPerPage = Model.RowsPerPage })">@item.Numero</a></li>
+                    }
+                }
+                if (item.Tipe == GPSInformation.DBManagers.PagesButons.Space)
+                {
+                    <li class="page-item"><span class="page-link">...</span></li>
+                }
+            }
+        </ul>
+    </nav>
+
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(function () {
+            'use strict'
+
+            $('.table').DataTable({
+                language: {
+                    searchPlaceholder: 'Search...',
+                    sSearch: '',
+                    lengthMenu: '_MENU_ items/page',
+                },
+                searching: false,
+                paging: false,
+                info: false,
+                columnDefs: [{ orderable: false, targets: 0 }],
+            });
+
+        });
+    </script>
+}

@@ -4,11 +4,32 @@
     ViewData["Title"] = "Crear solicitud de permiso";
 
 }
-@section MenuTop{
+@if ((bool)ViewBag.isPartial == true)
+{
     <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="#" data-rute="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona, isPartial = true, Tab = "Permisos" })" onclick="GetViewAccess(this)">Lista de solicitudes</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("Create","IncPermiso", new  { idPersona_ = Model.IdPersona, isPartial = true })" data-mode="form" onclick="GetViewAccess(this)">
+                <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona, isPartial = false, Tab = "Permisos" })">Lista de solicitudes</a> </li>
                     <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
                 </ol>
             </nav>
@@ -21,12 +42,10 @@
 }
 <div data-label="Crear Nuevo Permiso" class="df-example demo-forms" id="app_createPermiso">
     <h4>I. Solicitante</h4>
-    <hr />
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
     @*@await Component.InvokeAsync("EmpleadoBasic", new { id = Model.IdPersona })*@
     <h4>II. Detalle de solicitud</h4>
-    <hr />
-    <form asp-action="Create">
+    <form asp-action="Create" onload="ValidateFormIncPerm()" asp-route-isPartial="@Html.Raw((bool)ViewBag.isPartial)" enctype="multipart/form-data" class="ExcecForm">
         @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
         {
             <div class="alert alert-danger  mg-b-0 mt-3 mb-3" role="alert">
@@ -58,7 +77,7 @@
         <div class="form-group row">
             <label asp-for="IdAsunto" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
-                <select asp-for="IdAsunto" asp-items="ViewBag.TiposPermisos" onchange="app_createPermiso.ValidateForm()" class="form-control select2">
+                <select asp-for="IdAsunto" asp-items="ViewBag.TiposPermisos" onchange="ValidateFormIncPerm()" class="form-control select2">
                     <option value="0">Selecciona una opción</option>
                 </select>
                 <span asp-validation-for="IdAsunto" class="text-danger"></span>
@@ -82,10 +101,21 @@
             </div>
         </div>
         <div class="form-group row mg-b-0">
+            
+            @if ((bool)ViewBag.isPartial == false)
+            {
             <div class="col-sm-12 text-right">
                 <a href="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona })" class="btn btn-sm btn-secondary">Cancelar</a>
                 <button type="submit" class="btn btn-sm btn-primary">Guardar solicitud</button>
             </div>
+            }
+            else
+            {
+                <div class="col-sm-12 text-right">
+                    <a href="#" data-rute="@Url.Action("MisSolicitudes","Incidencias",new { id = Model.IdPersona, isPartial = true,Tab = "Permisos" })" onclick="GetViewAccess(this)" class="btn btn-sm btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-sm btn-primary">Guardar solicitud</button>
+                </div>
+            }
         </div>
     </form>
 </div>

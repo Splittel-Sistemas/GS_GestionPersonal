@@ -57,7 +57,7 @@ namespace GPSInformation.Controllers
         /// <summary>
         /// crear, editar incidencias a otros empleados
         /// </summary>
-        public readonly int _ALecturaEscrituraAdmin = 1058;
+        public readonly int _ALecturaEscrituraAdmin = 1054;
         /// <summary>
         /// ids de permisos por usuario en session
         /// </summary>
@@ -305,9 +305,10 @@ namespace GPSInformation.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public List<IncidenciaPermiso> GetByUsuario()
+        public List<IncidenciaPermiso> GetByUsuario(int IdPersonaa)
         {
-            var data = _darkM.IncidenciaPermiso.GetOpenquery($" where IdPersona = {_IdPersona }", "Order by Creado");
+            if (IdPersonaa == 0) IdPersonaa = _IdPersona;
+            var data = _darkM.IncidenciaPermiso.GetOpenquery($" where IdPersona = {IdPersonaa }  and Estatus != 8", "Order by Creado desc");
 
             data.ForEach(result => LLenarTodo(result));
             return data;
@@ -359,6 +360,10 @@ namespace GPSInformation.Controllers
 
 
             return result;
+        }
+        public int GetIdPersona(int IdIncidenciaPermiso)
+        {
+            return _darkM.IncidenciaPermiso.GetIntValue($"select IdPersona from IncidenciaPermiso where IdIncidenciaPermiso = { IdIncidenciaPermiso}");
         }
         /// <summary>
         /// 
@@ -478,7 +483,7 @@ namespace GPSInformation.Controllers
             {
                 throw new GPException { Description = $"Por favor selecciona un tipo de permiso", ErrorCode = 0, Category = TypeException.Info, IdAux = "IdPagoPermiso" };
             }
-            IncidenciaPermiso.Estatus = 2;
+            IncidenciaPermiso.Estatus = IncidenciaPermiso.CreadoPor == "Admin" ? 4: 2;
             //IncidenciaPermiso.Creado = DateTime.Now;
             //IncidenciaPermiso.Editado = DateTime.Now;
 
@@ -488,9 +493,10 @@ namespace GPSInformation.Controllers
 
             IncidenciaPermiso.IdIncidenciaPermiso = _darkM.IncidenciaPermiso.LastInserted($"select max(IdIncidenciaPermiso) from IncidenciaPermiso where IdPersona = {IncidenciaPermiso.IdPersona} ");
 
+            AgregarPasos(IncidenciaPermiso, _IdPersona, IncidenciaPermiso.CreadoPor);
+
             SPValidator(IncidenciaPermiso.IdIncidenciaPermiso, "Create");
             
-            AgregarPasos(IncidenciaPermiso, _IdPersona);
 
             return IncidenciaPermiso.IdIncidenciaPermiso;
         }
@@ -553,7 +559,7 @@ namespace GPSInformation.Controllers
         /// </summary>
         /// <param name="IncidenciaPermiso"></param>
         /// <param name="IdPersonaCreador"></param>
-        private void AgregarPasos(IncidenciaPermiso IncidenciaPermiso, int IdPersonaCreador)
+        private void AgregarPasos(IncidenciaPermiso IncidenciaPermiso, int IdPersonaCreador, string CreadoPor)
         {
             var procesoStep = new IncidenciaProcess();
             procesoStep.IdIncidenciaPermiso = IncidenciaPermiso.IdIncidenciaPermiso;
@@ -573,11 +579,11 @@ namespace GPSInformation.Controllers
             procesoStep.IdPersona = 0;
             procesoStep.Fecha = null;
             procesoStep.Titulo = "Aprobación por jefe inmediato";
-            procesoStep.Comentarios = "";
+            procesoStep.Comentarios = CreadoPor == "Admin" ? "Autorización po default": "";
             procesoStep.Nivel = 2;
-            procesoStep.Revisada = false;
-            procesoStep.Autorizada = false;
-            procesoStep.NombreEmpleado = "";
+            procesoStep.Revisada = CreadoPor == "Admin" ? true : false; ;
+            procesoStep.Autorizada = CreadoPor == "Admin" ? true : false; ;
+            procesoStep.NombreEmpleado = CreadoPor == "Admin" ? "Sistema Gestion de personal" : "";
             _darkM.IncidenciaProcess.Element = procesoStep;
             _darkM.IncidenciaProcess.Add();
 
@@ -585,11 +591,11 @@ namespace GPSInformation.Controllers
             procesoStep.IdPersona = 0;
             procesoStep.Fecha = null;
             procesoStep.Titulo = "Aprobación por gestión de personal";
-            procesoStep.Comentarios = "";
+            procesoStep.Comentarios = CreadoPor == "Admin" ? "Autorización po default" : "";
             procesoStep.Nivel = 3;
-            procesoStep.Revisada = false;
-            procesoStep.Autorizada = false;
-            procesoStep.NombreEmpleado = "";
+            procesoStep.Revisada = CreadoPor == "Admin" ? true : false;
+            procesoStep.Autorizada = CreadoPor == "Admin" ? true : false; ;
+            procesoStep.NombreEmpleado = CreadoPor == "Admin" ? "Sistema Gestion de personal" : "";
             _darkM.IncidenciaProcess.Element = procesoStep;
             _darkM.IncidenciaProcess.Add();
 

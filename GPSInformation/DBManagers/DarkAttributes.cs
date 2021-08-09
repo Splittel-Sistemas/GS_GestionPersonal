@@ -248,7 +248,7 @@ namespace GPSInformation.DBManagers
         /// <returns></returns>
         public ModelPagination<T> DataPage(int Page, int RowsPerPage,string where = "", string OrderPage = "")
         {
-            int TotalRows = dBConnection.GetIntegerValue(string.Format("select count(*) from {0}", Nametable));
+            int TotalRows = dBConnection.GetIntegerValue(string.Format("select count(*) from {0} {1}", Nametable, where));
 
             if (RowsPerPage <= 0)
                 RowsPerPage = 10;
@@ -320,7 +320,11 @@ namespace GPSInformation.DBManagers
 
             return columna;
         }
-
+        /// <summary>
+        /// get list of data
+        /// </summary>
+        /// <param name="SqlStatements"></param>
+        /// <returns></returns>
         public List<T> GetSpecialStat(string SqlStatements)
         {
             return DataReader(SqlStatements);
@@ -332,6 +336,11 @@ namespace GPSInformation.DBManagers
 
             return Data;
         }
+        /// <summary>
+        /// get one data
+        /// </summary>
+        /// <param name="SqlStatements"></param>
+        /// <returns></returns>
         public T GetUnicSatatment(string SqlStatements)
         {
             List<T> Lista = DataReader(SqlStatements);
@@ -637,6 +646,7 @@ namespace GPSInformation.DBManagers
         public int PageSelected { get; set; }
         public decimal MaxPages { get; internal set; }
         public int RowsPerPage { get; internal set; }
+        public string FilterPatterns { get; internal set; }
 
         public List<Pages> Pages { 
             get {

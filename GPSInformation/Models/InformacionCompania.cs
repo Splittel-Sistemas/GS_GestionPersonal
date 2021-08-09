@@ -30,9 +30,11 @@ namespace GPSInformation.Models
         [ColumnDB(IsMapped = true, IsKey = false)]
         public bool Activa { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:D}")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Creada { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:D}")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Actualizada { get; set; }
     }

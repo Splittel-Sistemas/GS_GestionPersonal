@@ -1,0 +1,72 @@
+﻿@model GPSInformation.Models.InformacionMedica
+
+<div>
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <h4 class="mg-b-0 tx-spacing--1">Información medica</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpInfoMedicaDetails","ColaboradorSplittel", new  { id = Model.IdPersona })" onclick="GetViewAccess(this)">
+                <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+            </a>
+            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpInfoMedicaEdit","ColaboradorSplittel", new  { id = Model.IdPersona })" data-mode="form" onclick="GetViewAccess(this)"><i data-feather="refresh" class="wd-10 mg-r-5"></i>Editar</a>
+        </div>
+    </div>
+    <hr />
+    <dl class="row">
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.TipoSangre)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Cat_TiposSangre.Label)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Alergias)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Cat_Alergias.Label)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Altura)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Altura)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Peso)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Peso)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Talla)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Talla)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.IMC)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.IMC)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Comentarios)
+        </dt>
+        <dd class="col-lg-10 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Comentarios)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Creado)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Creado)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Editado)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Editado)
+        </dd>
+    </dl>
+</div>

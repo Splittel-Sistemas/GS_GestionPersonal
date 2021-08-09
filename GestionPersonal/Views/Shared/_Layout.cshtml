@@ -84,8 +84,27 @@ controllerName == "Evaluacion" && controllerAction == "EmailDetails")
         }
 
     }
-
-
+    <div class="modal fade" id="ModalFormProcessing" tabindex="-1" role="dialog" aria-labelledby="loadMeLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="loader"></div>
+                    <div clas="loader-txt">
+                        <p id="ModalFormProcessing_text">Guardando información</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ModalFormViewMedium" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body pd-20 pd-sm-30" id="ModalFormViewMedium_contente" data-renderContent="Empleado">
+                    
+                </div><!-- modal-body -->
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
     <environment include="Development">
         <partial name="_Scripts" />
     </environment>
@@ -131,7 +150,7 @@ controllerName == "Evaluacion" && controllerAction == "EmailDetails")
                         searchInputPlaceholder: 'Search options',
                         dropdownParent: $('#modal_addDepartamentos')
                     });
-                    
+
                 });
             </script>
         }

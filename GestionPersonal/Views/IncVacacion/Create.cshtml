@@ -3,6 +3,42 @@
 @{
     ViewData["Title"] = "Crear solicitud de vacaciones";
 }
+@if ((bool)ViewBag.isPartial == true)
+{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="#" data-rute="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona, isPartial = true, Tab = "Vacaciones" })" onclick="GetViewAccess(this)">Lista de solicitudes</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("Create","IncVacacion", new  { idPersona_ = Model.IdPersona, isPartial = true })" data-mode="form" onclick="GetViewAccess(this)">
+                <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona, isPartial = false, Tab = "Vacaciones" })" >Lista de solicitudes</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            
+        </div>
+    </div>
+}
 
 <div data-label="Crear nueva solicitud" class="df-example demo-forms" id="app_createPermiso">
     <h4>I. Solicitante</h4>
@@ -11,7 +47,7 @@
     @*@await Component.InvokeAsync("EmpleadoBasic", new { id = Model.IdPersona })*@
     <h4>II. Detalle de solicitud</h4>
     <hr />
-    <form asp-action="Create" enctype="multipart/form-data">
+    <form asp-action="Create" asp-route-isPartial="@Html.Raw((bool)ViewBag.isPartial)" enctype="multipart/form-data" class="ExcecForm">
         @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
         {
             <div class="alert alert-danger  mg-b-0 mt-3 mb-3" role="alert">
@@ -24,6 +60,7 @@
             <div class="col-sm-4">
                 @*<input type="hidden" asp-for="IdIncidenciaVacacion" class="form-control" />*@
                 <input type="hidden" asp-for="IdPersona" class="form-control" />
+                @*<input type="hidden" name="IdPersona" class="form-control" value="@Html.Raw((bool)ViewBag.isPartial)" />*@
                 <input type="date" asp-for="Inicio" class="form-control" />
                 <span asp-validation-for="Inicio" class="text-danger"></span>
             </div>
@@ -39,13 +76,24 @@
                 <input type="file" asp-for="Archivo" class="form-control" accept="application/pdf" />
                 <span asp-validation-for="Archivo" class="text-danger"></span>
             </div>
-            
+
         </div>
         <div class="form-group row mg-b-0">
-            <div class="col-sm-12 text-right">
-                <a href="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona })" class="btn btn-sm btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-sm btn-primary">Guardar solicitud</button>
-            </div>
+            @if ((bool)ViewBag.isPartial == false)
+            {
+                <div class="col-sm-12 text-right">
+                    <a href="@Url.Action("MisSolicitudes","Incidencias", new { id = Model.IdPersona })" class="btn btn-sm btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-sm btn-primary">Guardar solicitud</button>
+                </div>
+            }
+            else
+            {
+                <div class="col-sm-12 text-right">
+                    <a href="#" data-rute="@Url.Action("MisSolicitudes","Incidencias",new { id = Model.IdPersona, isPartial = true,Tab = "Vacaciones" })" onclick="GetViewAccess(this)" class="btn btn-sm btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-sm btn-primary">Guardar solicitud</button>
+                </div>
+            }
+
         </div>
     </form>
 </div>

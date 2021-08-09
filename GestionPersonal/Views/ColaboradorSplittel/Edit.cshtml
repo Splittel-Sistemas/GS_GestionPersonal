@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Detalle de empleado: "  + ViewBag.NombreCompleto;
+}
+<link href="~/template/assets/css/dashforge.contacts.css" rel="stylesheet" />
+
+@section MenuTop{
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+            @*<div class="search-form mg-t-20 mg-sm-t-0">
+                <input type="search" class="form-control" placeholder="Buscar empleado" id="app_search_emp">
+                <button class="btn" type="button"><i data-feather="search"></i></button>
+            </div>*@
+        </div>
+    </div>
+}
+<div id="app_det_empleado">
+    <div class="row">
+        <div class="col-lg-3 col-xl-2 d-none d-lg-block">
+            <label class="tx-sans tx-10 tx-medium tx-spacing-1 tx-uppercase tx-color-03 mg-b-15">Secciones</label>
+            <nav class="nav nav-classic">
+                <a href="#" v-bind:class="contentActive == 'content_persona' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_persona', false)">Información personal</a>
+                <a href="#" v-bind:class="contentActive == 'content_medica' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_medica', false)">Información medica</a>
+                <a href="#" v-bind:class="contentActive == 'content_splittel' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_splittel', false)">Grupo Splittel</a>
+                <a href="#" v-bind:class="contentActive == 'content_contEmergen' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_contEmergen', false)">Contactos de emergencia</a>
+                <a href="#" v-bind:class="contentActive == 'content_Incidencias' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_Incidencias')">Incidencias</a>
+            </nav>
+        </div><!-- col -->
+        <div class="col-lg-9 col-xl-10">
+            <div data-label="Informacion" class="df-example demo-forms"  id="content_seccionsempleado" data-renderContent="Empleado"></div>
+        </div><!-- col -->
+    </div><!-- row -->
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    var app_det_empleado = new Vue({
+        el: "#app_det_empleado",
+        data: {
+            contentActive: "content_persona",
+            listSeccions: [
+                { mode: "Details", viewHtml: "", seccion: "content_persona", ruta: "@Url.Action("EmpPersonalDetails", "ColaboradorSplittel", new { id = ViewBag.IdPersona })"},
+                { mode: "Details", viewHtml: "", seccion: "content_medica", ruta: "@Url.Action("EmpInfoMedicaDetails", "ColaboradorSplittel", new { id = ViewBag.IdPersona })"},
+                { mode: "Details", viewHtml: "", seccion: "content_splittel", ruta: "@Url.Action("EmpInfoSplittelDetails", "ColaboradorSplittel", new { id = ViewBag.IdPersona })"},
+                { mode: "Details", viewHtml: "", seccion: "content_contEmergen", ruta: "@Url.Action("EmpContEmergenciaList", "ColaboradorSplittel", new { id = ViewBag.IdPersona })"},
+                { mode: "Details", viewHtml: "", seccion: "content_Incidencias", ruta: "@Url.Action("MisSolicitudes","Incidencias",new { id = ViewBag.IdPersona, isPartial = true,Tab = "" })"},
+            ]
+        },
+        mounted() {
+            this.GetView(this.contentActive)
+        },
+        methods: {
+            GetView: async function (seccionName, forceRefresh = false) {
+                var seccion = this.listSeccions.find(a => a.seccion == seccionName)
+                if (seccion != null && seccion != undefined) {
+                    this.contentActive = seccionName;
+                    console.log("Evaluando: " + seccionName)
+                    if (seccion.viewHtml != "" && forceRefresh == false) {
+                        console.log("obteniendo vista html 2: " + seccionName)
+                        document.getElementById("content_seccionsempleado").innerHTML = seccion.viewHtml
+                    }
+                    if (seccion.viewHtml != "" && forceRefresh == true || seccion.viewHtml == "") {
+                        console.log("obteniendo vista html : " + seccionName)
+                        document.getElementById("content_seccionsempleado").innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                        await axios.get(seccion.ruta, null, null).then(response => {
+                            document.getElementById("content_seccionsempleado").innerHTML = response.data
+                            seccion.viewHtml = response.data
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                        }).finally(() => {
+                            //this.Registrando = false
+                        })
+                    }
+                }
+                
+                
+            }
+        }
+    });
+</script>
+}

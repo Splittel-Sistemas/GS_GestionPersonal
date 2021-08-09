@@ -359,8 +359,8 @@ namespace GPSInformation.Controllers
             #region Procesar logs
             var Logs = darkManager.View_gps_ensambleSinFiltro.GetOpenquery(
                                     $"where tIdentification = '{Empleado.NumeroNomina}' " +
-                                    $"AND dtEventReal >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
-                                    $"AND dtEventReal <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' " +
+                                    $"AND dtEventReal >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 03:00:00")}' " +
+                                    $"AND dtEventReal <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 03:00:00")}' " +
                                     $"AND IdReader = 17",
                                     $"ORDER BY iEmployeeNum , dtEventReal");
 
@@ -384,8 +384,8 @@ namespace GPSInformation.Controllers
             #region procesar arreglos a logs
             var arreglos = darkManager.GrupoArreglo.GetOpenquery($"where " +
                $"IdEvent is null and IdPersona = { Empleado.IdPersona} " +
-               $"AND FechaHora >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 05:50:00")}' " +
-               $"AND FechaHora <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 05:45:00")}' ",
+               $"AND FechaHora >= '{EmpleadoProd.Incio.ToString("yyyy-MM-dd 03:00:00")}' " +
+               $"AND FechaHora <= '{EmpleadoProd.Fin.ToString("yyyy-MM-dd 03:00:00")}' ",
                $"Order by FechaHora");
 
             arreglos.ForEach(arr => {

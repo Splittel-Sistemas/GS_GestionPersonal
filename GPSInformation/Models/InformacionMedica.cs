@@ -1,4 +1,5 @@
 ﻿using GPSInformation.Attributes;
+using GPSInformation.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -62,5 +63,16 @@ namespace GPSInformation.Models
         [Display(Name = "Ult.Atualización")]
         [ColumnDB(Name = "Editado", IsMapped = true, IsKey = false)]
         public DateTime Editado { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_Alergias { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_TiposSangre { get; set; }
     }
 }

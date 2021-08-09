@@ -6,7 +6,6 @@ using GPSInformation.Models;
 using GPSInformation.DBManagers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using GPSInformation;
 using GestionPersonal.Models;

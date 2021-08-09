@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -59,7 +58,7 @@ namespace GestionPersonal
             services.AddSingleton<IConfiguration>(Configuration);
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,18 +77,17 @@ namespace GestionPersonal
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
-                    app.UseCors(builder => builder
-             .AllowAnyOrigin()
-             .AllowAnyMethod()
-             .AllowAnyHeader());
-            app.UseCors("ApiCorsPolicy");
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
             app.UseSession();
-            app.UseMvc(routes =>
+            app.UseEndpoints(routes =>
             {
-                routes.MapRoute(
+                routes.MapControllerRoute(
                     name: "default",
-                    template: "{controller=Login}/{action=DoLogin}/{id?}");
+                    pattern: "{controller=Login}/{action=DoLogin}/{id?}");
             });
 
             // Configuramos Rotativa indicándole el Path RELATIVO donde se

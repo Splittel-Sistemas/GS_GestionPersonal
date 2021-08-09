@@ -92,18 +92,22 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int id, bool isPartial)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncidenciaCtrl._darkM.StartTransaction();
             try
             {
+                int idPersonaa = _V2IncidenciaCtrl.GetIdPersona(id);
                 _V2IncidenciaCtrl.ValidarAcciones(V2IncValidation.Delete, id);
                 _V2IncidenciaCtrl.Eliminar(id);
-                return RedirectToAction("Details", new { id = id });
+                _V2IncidenciaCtrl._darkM.Commit();
+                return RedirectToAction("MisSolicitudes", "Incidencias", new { id = idPersonaa, isPartial = isPartial, Tab = "Permisos" });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex, null, true);
+                _V2IncidenciaCtrl._darkM.RolBack();
+                return ValidateException(ex, null, true, isPartial);
             }
             finally
             {
@@ -111,19 +115,22 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult Cancelar(int id)
+        public IActionResult Cancelar(int id, bool isPartial)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncidenciaCtrl._darkM.StartTransaction();
             try
             {
                 _V2IncidenciaCtrl.ValidarAcciones(V2IncValidation.Cancel, id);
                 _V2IncidenciaCtrl.Cancelar(id);
                 SendNotificationAsync(id);
+                _V2IncidenciaCtrl._darkM.Commit();
                 return RedirectToAction("Details", new { id = id });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex,null, true);
+                _V2IncidenciaCtrl._darkM.RolBack();
+                return ValidateException(ex,null, true, isPartial);
             }
             finally
             {
@@ -131,7 +138,7 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult Details(int id, string AnteriorView)
+        public IActionResult Details(int id, bool isPartial)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
@@ -141,12 +148,13 @@ namespace GestionPersonal.Controllers
                 ViewData["ShowEdit"] = incidencia.IdPersona == (int)HttpContext.Session.GetInt32("user_id") && incidencia.CreadoPor == "Empleado" ? true : incidencia.CreadoPor != "Empleado" && accessoAd.TieneAcceso ? true : false;
                 ViewData["ShowCancel"] = incidencia.IdPersona == (int)HttpContext.Session.GetInt32("user_id") && incidencia.CreadoPor == "Empleado" ? true : incidencia.CreadoPor != "Empleado" && accessoAd.TieneAcceso ? true : false;
                 ViewData["ShowDelete"] = accessoAd.TieneAcceso ? true : false;
-                ViewData["AnteriorView"] = AnteriorView;
-                return View(incidencia);
+                ViewData["isPartial"] = isPartial;
+                if (isPartial) return PartialView(incidencia);
+                else return View(incidencia);
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex);
+                return ValidateException(ex, null, false, isPartial);
             }
             finally
             {
@@ -156,20 +164,25 @@ namespace GestionPersonal.Controllers
         [AccessView]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(IncidenciaPermiso incidencia)
+        public IActionResult Edit(IncidenciaPermiso incidencia, bool isPartial)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncidenciaCtrl._darkM.StartTransaction();
             ViewData["TiposPermisos"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1009", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion", incidencia.IdAsunto);
             ViewData["PagoPermisoPersonal"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1010", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion", incidencia.IdPagoPermiso);
+            
             try
             {
+                ViewData["isPartial"] = isPartial;
                 _V2IncidenciaCtrl.Edit(incidencia);
                 ViewData["MessageSuccess"] = "Incidencia guardada";
+                _V2IncidenciaCtrl._darkM.Commit();
                 return RedirectToAction("Details", new { id = incidencia.IdIncidenciaPermiso });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex);
+                _V2IncidenciaCtrl._darkM.RolBack();
+                return ValidateException(ex, incidencia, false, isPartial);
             }
             finally
             {
@@ -177,7 +190,7 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int id, bool isPartial)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
@@ -200,21 +213,23 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult Create(int id)
+        public IActionResult Create(int idPersona_, bool isPartial)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             ViewData["TiposPermisos"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1009", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion");
             ViewData["PagoPermisoPersonal"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1010", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion");
             try
             {
-                var nuevo = new IncidenciaPermiso { IdPersona = id == 0 ? (int)HttpContext.Session.GetInt32("user_id") : 0, Fecha = System.DateTime.Now };
+                ViewData["isPartial"] = isPartial;
+                var nuevo = new IncidenciaPermiso { IdPersona = idPersona_ == 0 ? (int)HttpContext.Session.GetInt32("user_id") : idPersona_, Fecha = System.DateTime.Now };
                 _V2IncidenciaCtrl.ValidarAcciones(V2IncValidation.Edit, 0, 0, nuevo);
 
-                return View(nuevo);
+                if (isPartial) return PartialView(nuevo);
+                else return View(nuevo);
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex);
+                return ValidateException(ex, null, true, isPartial);
             }
             finally
             {
@@ -224,20 +239,24 @@ namespace GestionPersonal.Controllers
         [AccessView]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(IncidenciaPermiso incidencia)
+        public IActionResult Create(IncidenciaPermiso incidencia, bool isPartial)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncidenciaCtrl._darkM.StartTransaction();
             ViewData["TiposPermisos"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1009", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion", incidencia.IdAsunto);
             ViewData["PagoPermisoPersonal"] = new SelectList(darkManager.CatalogoOpcionesValores.GetOpenquery("where IdCatalogoOpciones = 1010", "order by Descripcion"), "IdCatalogoOpcionesValores", "Descripcion", incidencia.IdPagoPermiso);
             try
             {
+                ViewData["isPartial"] = isPartial;
                 var _id = _V2IncidenciaCtrl.Create(incidencia);
                 SendNotificationAsync(_id);
-                return RedirectToAction("Details",new { id = _id });
+                _V2IncidenciaCtrl._darkM.Commit();
+                return RedirectToAction("Details",new { id = _id, isPartial = isPartial });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex);
+                _V2IncidenciaCtrl._darkM.RolBack();
+                return ValidateException(ex, incidencia, false, isPartial);
             }
             finally
             {
@@ -245,12 +264,12 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult MisSolicitudes()
+        public IActionResult MisSolicitudes(int id)
         {
             _V2IncidenciaCtrl = new V2IncPermisoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                return View(new ResV2Inicidencias { Permisos = _V2IncidenciaCtrl.GetByUsuario() });
+                return View(new ResV2Inicidencias { Permisos = _V2IncidenciaCtrl.GetByUsuario(id) });
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
@@ -305,14 +324,21 @@ namespace GestionPersonal.Controllers
             try
             {
                 var incidencia = _V2IncidenciaCtrl.Details(IdPermiso, true);
-                if (incidencia.Estatus == 2 || incidencia.Estatus == 3)
-                    incidencia.Link =$"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Autorizar", "IncPermiso", new { id = incidencia.EncriptId, Mode = GPSInformation.Tools.EncryptData.Encrypt(incidencia.Estatus + "") })}";
-                else
-                    incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Details", "IncPermiso", new { id = incidencia.EncriptId })}";
 
-                var result = await _viewRenderService.RenderToStringAsync("IncPermiso/Notification", incidencia);
+                if(incidencia.CreadoPor != "Admin")
+                {
+                    if (incidencia.Estatus == 2 || incidencia.Estatus == 3)
+                        incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Autorizar", "IncPermiso", new { id = incidencia.EncriptId, Mode = GPSInformation.Tools.EncryptData.Encrypt(incidencia.Estatus + "") })}";
+                    else
+                        incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Details", "IncPermiso", new { id = incidencia.EncriptId })}";
 
-                _V2IncidenciaCtrl.EnviarNotificacion(IdPermiso, result);
+                    var result = await _viewRenderService.RenderToStringAsync("IncPermiso/Notification", incidencia);
+
+                    _V2IncidenciaCtrl.EnviarNotificacion(IdPermiso, result);
+
+                }
+
+                
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
@@ -320,37 +346,52 @@ namespace GestionPersonal.Controllers
             }
         }
         [NonAction]
-        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = false)
+        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = false, bool isPartial = false)
         {
             if (ex.Category == GPSInformation.Exceptions.TypeException.Noautorizado)
             {
                 ViewData["MessageError"] = ex.Message;
-                return View("../ErrorPages/NoAccess");
+                if (isPartial)
+                    return PartialView("../ErrorPages/NoAccess");
+                else
+                    return View("../ErrorPages/NoAccess");
             }
-            else if(ex.Category == GPSInformation.Exceptions.TypeException.NotFound)
+            else if (ex.Category == GPSInformation.Exceptions.TypeException.NotFound)
             {
                 ViewData["MessageError"] = ex.Message;
-                return View("../Home/NotFoundPage");
+                if (isPartial)
+                    return PartialView("../Home/NotFoundPage");
+                else
+                    return View("../Home/NotFoundPage");
             }
-            else if(ex.Category == GPSInformation.Exceptions.TypeException.Info)
+            else if (ex.Category == GPSInformation.Exceptions.TypeException.Info)
             {
                 if (SinVista)
                 {
                     ViewData["MessageError"] = ex.Message;
-                    return View("../ErrorPages/Error");
+                    if (isPartial)
+                        return PartialView("../ErrorPages/Error");
+                    else
+                        return View("../ErrorPages/Error");
                 }
                 else
                 {
                     ViewData["MessageError"] = ex.Message;
                     ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
-                    return View(DataModel);
+                    if (isPartial)
+                        return PartialView(DataModel);
+                    else
+                        return View(DataModel);
                 }
-                
+
             }
             else
             {
                 ViewData["MessageError"] = ex.Message;
-                return View("../ErrorPages/Error");
+                if (isPartial)
+                    return PartialView("../ErrorPages/Error");
+                else
+                    return View("../ErrorPages/Error");
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using GPSInformation.Attributes;
+using GPSInformation.Views;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace GPSInformation.Models
 {
-    [TableDB(Name = "InformacionMedica", IsMappedByLabels = false, IsStoreProcedure = false)]
+    [TableDB(Name = "InformacionMedica", IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creado", Updated_at = "Actualizado")]
     public class Empleado
     {
         [ColumnDB(Name = "IdPersona", IsMapped = true, IsKey = true)]
@@ -47,11 +48,13 @@ namespace GPSInformation.Models
 
         [Display(Name = "Fe.Ingreso")]
         [Required]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:D}")]
         [ColumnDB(Name = "Nombre", IsMapped = true, IsKey = false)]
         public DateTime Ingreso { get; set; }
 
         [Display(Name = "Fe.Baja")]
         [Required]
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:D}")]
         [ColumnDB(Name = "Nombre", IsMapped = true, IsKey = false)]
         public DateTime Egreso { get; set; }
 
@@ -130,12 +133,36 @@ namespace GPSInformation.Models
         [ColumnDB(Name = "Placas", IsMapped = true, IsKey = false)]
         public string Placas { get; set; }
 
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:D}")]
         [ColumnDB(Name = "Creado", IsMapped = true, IsKey = false)]
         public DateTime Creado { get; set; }
 
-
+        [DisplayFormat(ApplyFormatInEditMode = false, DataFormatString = "{0:D}")]
         [ColumnDB(Name = "Actualizado", IsMapped = true, IsKey = false)]
         public DateTime Actualizado { get; set; }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_TipoNomina { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_EstatusEmpleado { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_Puestos { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public SystSelect Cat_Sociedades { get; set; }
 
     }
 }

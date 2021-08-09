@@ -27,7 +27,7 @@ namespace GestionPersonal.Controllers
             darkManager = new DarkManager(configuration);
         }
         [AccessView]
-        public IActionResult MisSolicitudes(string Tab)
+        public IActionResult MisSolicitudes(string Tab, int id, bool isPartial)
         {
             Tab = string.IsNullOrEmpty(Tab) || Tab.Trim() != "Permisos" && Tab.Trim() != "Vacaciones" ? "Permisos" : Tab;
             _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
@@ -35,13 +35,20 @@ namespace GestionPersonal.Controllers
             try
             {
                 ViewData["Tab"] = Tab;
-                ViewData["Vacaciones"] = _V2IncVacacionesCtrl.GetByUsuario();
-                ViewData["Permisos"] = _V2IncPermisoCtrl.GetByUsuario();
+                ViewData["isPartial"] = isPartial;
+                ViewData["IdPersona"] = id;
+                ViewData["Vacaciones"] = _V2IncVacacionesCtrl.GetByUsuario(id);
+                ViewData["Permisos"] = _V2IncPermisoCtrl.GetByUsuario(id);
+                if (isPartial)
+                {
+                    return PartialView();
+                }
+                else
                 return View();
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex);
+                return ValidateException(ex,null,true, isPartial);
             }
             finally
             {
@@ -126,37 +133,52 @@ namespace GestionPersonal.Controllers
         /// <param name="SinVista"> set false for return view with model</param>
         /// <returns></returns>
         [NonAction]
-        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = false)
+        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = false, bool isPartial = false)
         {
             if (ex.Category == GPSInformation.Exceptions.TypeException.Noautorizado)
             {
                 ViewData["MessageError"] = ex.Message;
-                return View("../ErrorPages/NoAccess");
+                if (isPartial)
+                    return PartialView("../ErrorPages/NoAccess");
+                else
+                    return View("../ErrorPages/NoAccess");
             }
             else if (ex.Category == GPSInformation.Exceptions.TypeException.NotFound)
             {
                 ViewData["MessageError"] = ex.Message;
-                return View("../Home/NotFoundPage");
+                if (isPartial)
+                    return PartialView("../Home/NotFoundPage");
+                else
+                    return View("../Home/NotFoundPage");
             }
             else if (ex.Category == GPSInformation.Exceptions.TypeException.Info)
             {
                 if (SinVista)
                 {
                     ViewData["MessageError"] = ex.Message;
-                    return View("../ErrorPages/Error");
+                    if (isPartial)
+                        return PartialView("../ErrorPages/Error");
+                    else
+                        return View("../ErrorPages/Error");
                 }
                 else
                 {
                     ViewData["MessageError"] = ex.Message;
                     ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
-                    return View(DataModel);
+                    if (isPartial)
+                        return PartialView(DataModel);
+                    else
+                        return View(DataModel);
                 }
 
             }
             else
             {
                 ViewData["MessageError"] = ex.Message;
-                return View("../ErrorPages/Error");
+                if (isPartial)
+                    return PartialView("../ErrorPages/Error");
+                else
+                    return View("../ErrorPages/Error");
             }
         }
     }

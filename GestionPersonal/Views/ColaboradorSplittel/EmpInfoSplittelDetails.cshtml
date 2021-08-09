@@ -1,0 +1,110 @@
+﻿@model GPSInformation.Models.Empleado
+
+<div>
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <h4 class="mg-b-0 tx-spacing--1">Información Personal</h4>
+        </div>
+        <div class="d-none d-md-block">
+            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpInfoSplittelDetails","ColaboradorSplittel", new  { id = Model.IdPersona })" onclick="GetViewAccess(this)">
+                <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+            </a>
+            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpInfoSplittelEdit","ColaboradorSplittel", new  { id = Model.IdPersona })" data-mode="form" onclick="GetViewAccess(this)"><i data-feather="refresh" class="wd-10 mg-r-5"></i>Editar</a>
+        </div>
+    </div>
+    <hr />
+    <dl class="row">
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.NumeroNomina)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.NumeroNomina)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.TipoNomina)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Cat_TipoNomina.Label)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.IdSociedad)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Cat_Sociedades.Label)
+        </dd>
+
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.IdPuesto)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Cat_Puestos.Label)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Ingreso)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Ingreso)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Egreso)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @if (20 == Model.IdEstatus)
+            {
+                @Html.DisplayFor(model => model.Egreso)
+            }
+            else
+            {
+                <span>--</span>
+            }
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Extension)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Extension)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Salario)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Salario)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.IdEstatus)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Cat_EstatusEmpleado.Label)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.TarjetaAcceso)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.TarjetaAcceso)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Placas)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Placas)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Creado)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Creado)
+        </dd>
+        <dt class="col-lg-2 col-form-label">
+            @Html.DisplayNameFor(model => model.Actualizado)
+        </dt>
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
+            @Html.DisplayFor(model => model.Actualizado)
+        </dd>
+    </dl>
+</div>
