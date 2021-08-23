@@ -54,19 +54,19 @@
         <div class="row form-group">
             <label asp-for="Altura" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-4">
-                <input type="number" asp-for="Altura" onchange="CalcularIMC" class="form-control" />
+                <input type="text" asp-for="Altura" onchange="CalcularIMC" class="form-control" />
                 <span asp-validation-for="Altura" class="text-danger"></span>
             </div>
             <label asp-for="Peso" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-4">
-                <input type="number" asp-for="Peso" onchange="CalcularIMC" class="form-control" />
+                <input type="text" asp-for="Peso" onchange="CalcularIMC" class="form-control" />
                 <span asp-validation-for="Peso" class="text-danger"></span>
             </div>
         </div>
         <div class="row form-group">
             <label asp-for="Talla" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-4">
-                <input type="number" asp-for="Talla" class="form-control" />
+                <input type="text" asp-for="Talla" class="form-control" />
                 <span asp-validation-for="Talla" class="text-danger"></span>
             </div>
             <label asp-for="IMC" class="col-sm-2 col-form-label"></label>

@@ -353,7 +353,7 @@ namespace GPSInformation
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection,tran))
                     {
                         var retunrDa = sqlCommand.ExecuteScalar();
-                        return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
+                        return retunrDa is null || DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
                     }
                 }
                 else
@@ -361,7 +361,7 @@ namespace GPSInformation
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection))
                     {
                         var retunrDa = sqlCommand.ExecuteScalar();
-                        return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
+                        return retunrDa is null || DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
                     }
                 }
                 
@@ -423,7 +423,7 @@ namespace GPSInformation
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection, tran))
                     {
                         var retunrDa = sqlCommand.ExecuteScalar();
-                        return DBNull.Value.Equals(retunrDa) ? "" : (string)retunrDa;
+                        return retunrDa is null || DBNull.Value.Equals(retunrDa) ? "" : (string)retunrDa;
                     }
                 }
                 else
@@ -431,7 +431,7 @@ namespace GPSInformation
                     using (SqlCommand sqlCommand = new SqlCommand(sqlStatement, SqlConnection))
                     {
                         var retunrDa = sqlCommand.ExecuteScalar();
-                        return DBNull.Value.Equals(retunrDa) ? "" : (string)retunrDa;
+                        return retunrDa is null || DBNull.Value.Equals(retunrDa) ? "" : (string)retunrDa;
                     }
                 }
             }
@@ -602,6 +602,13 @@ namespace GPSInformation
             {
                 throw new GpExceptions("No database connection");
             }
+        }
+
+        public bool IsOpenConnection()
+        {
+            if (SqlConnection.State != ConnectionState.Open)
+                return false;
+            else return true;
         }
 
         public string GetMensaje()

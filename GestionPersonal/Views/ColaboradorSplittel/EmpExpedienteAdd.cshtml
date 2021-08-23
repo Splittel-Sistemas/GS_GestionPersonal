@@ -1,0 +1,61 @@
+﻿@model GPSInformation.Models.ExpedienteEmpleado
+@{
+    ViewData["Title"] = "Agregar documento al expediente";
+
+}
+<div>
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="#" data-rute="@Url.Action("EmpExpedienteList","ColaboradorSplittel", new { IdPersona = Model.IdPersona })" onclick="GetViewAccess(this)">Expediente</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+        </div>
+        <div class="d-none d-md-block">
+
+        </div>
+    </div>
+    <hr />
+    <form asp-action="EmpExpedienteAdd" enctype="multipart/form-data" class="ExcecForm" name="EmpPersonaEdit" id="EmpPersonaEdit">
+        @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+        {
+            <div class="alert alert-danger  mg-b-0 mt-3 mb-3" role="alert">
+                <button type="button" class="close" data-dismiss="alert">×</button>
+                @Html.ValidationSummary(true, "Errores: ")
+            </div>
+        }
+        <div class="form-group row">
+            <label asp-for="Archivo" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-4">
+                <input asp-for="IdExpedienteEmpleado" type="hidden" class="form-control" />
+                <input asp-for="Ruta" type="hidden" class="form-control" />
+                <input asp-for="TipoFile" type="hidden" class="form-control" />
+                <input asp-for="IdPersona" type="hidden" class="form-control" />
+                <input type="file" asp-for="Archivo" class="form-control" />
+                <span asp-validation-for="Archivo" class="text-danger"></span>
+            </div>
+            <label asp-for="IdExpedienteArchivo" class="col-sm-2 col-form-label"></label>
+            <div class="col-sm-4">
+                <select asp-for="IdExpedienteArchivo" asp-items="ViewBag.ExpedienteTipoFile" class="form-control select2">
+                    <option value="0">Selecciona una opción</option>
+                </select>
+                <span asp-validation-for="IdExpedienteArchivo" class="text-danger"></span>
+            </div>
+        </div>
+        
+        <div class="col-sm-12 text-right">
+            <button type="reset" class="btn btn-sm btn-secondary" data-rute="@Url.Action("EmpExpedienteList","ColaboradorSplittel", new  { IdPersona = Model.IdPersona })" onclick="GetViewAccess(this)">
+                @Html.Raw(ViewBag.SuccessMessage == null ? "Cancelar" : "Terminar")
+            </button>
+            <button type="submit" class="btn btn-sm btn-primary">Guardar información</button>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

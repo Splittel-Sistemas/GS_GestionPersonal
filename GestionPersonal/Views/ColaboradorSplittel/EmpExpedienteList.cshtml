@@ -1,0 +1,50 @@
+﻿@model IEnumerable<GPSInformation.Models.ExpedienteEmpleado>
+@using Microsoft.AspNetCore.Http;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Expediente";
+    var Accesos = (Dictionary<string, GPSInformation.Controllers.AccesosUs>)ViewBag.Accesos;
+}
+<div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+    <div>
+        <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
+    </div>
+    <div class="d-none d-md-block">
+        @if (HttpContextAccessor.HttpContext.Session.GetInt32("user_id") == ViewBag.IdPersona || Accesos["AEscrituraEmpleados"].TieneAcceso)
+            {
+                <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpExpedienteAdd","ColaboradorSplittel", new  { IdPersona = ViewBag.IdPersona })" data-mode="form" onclick="GetViewAccess(this)"><i data-feather="refresh" class="wd-10 mg-r-5"></i>Agregar</a>
+            }
+        <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpExpedienteList","ColaboradorSplittel", new  { IdPersona = ViewBag.IdPersona })" id="test_btn" onclick="GetViewAccess(this)">
+            <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+        </a>
+
+    </div>
+</div>
+<hr />
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-2">
+            <div class="card card-file">
+                <div class="card-file-thumb tx-danger text-center">
+                    <img src="https://img.icons8.com/fluency/96/000000/pdf-2.png" />
+                </div>
+                <div class="card-body">
+                    <h6><a href="@Url.Action("EmpExpedienteFileDownload","ColaboradorSplittel", new {IdPersona = ViewBag.IdPersona, IdExpedienteArchivo = item.IdExpedienteArchivo })" title="@item.Ruta" class="link-02">@item.TipDocument</a></h6>
+                    <span></span>
+                </div>
+                <div class="card-footer"><span class="d-none d-sm-inline">Actualizado: </span>@item.Actualizado</div>
+            </div>
+        </div>
+    }
+    @if (Model.Count() == 0)
+    {
+        <div class="container ht-100p tx-center">
+            <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+                <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://img.icons8.com/fluency/96/000000/matt-paper.png" class="img-fluid" alt=""></div>
+                <h3 class="tx-color-02 ">Sin documentos en el expediente!</h3>
+            </div>
+        </div><!-- container -->
+    }
+</div>

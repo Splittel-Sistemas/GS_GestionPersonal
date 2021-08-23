@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using GestionPersonal.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace GestionPersonal.Controllers
 {
@@ -44,6 +45,18 @@ namespace GestionPersonal.Controllers
         public IActionResult NotFoundPage()
         {
             return View();
+        }
+
+        public IActionResult CheckSession()
+        {
+            if(HttpContext.Session.IsAvailable && HttpContext.Session.GetInt32("user_id_permiss") != null)
+            {
+                return Ok("Session activa");
+            }
+            else
+            {
+                return Unauthorized("Inicia session de nuevo");
+            }
         }
     }
 }

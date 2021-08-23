@@ -91,8 +91,70 @@ namespace GPSInformation
         public virtual DarkAttributes<IncidenciaAuthAux> IncidenciaAuthAux { get; set; }
         public virtual DarkAttributes<Reporte> Reporte { get; set; }
         public virtual DarkAttributes<ReporteAccss> ReporteAccss { get; set; }
+        public virtual DarkAttributes<Notificacion> Notificacion { get; set; }
+        public virtual DarkAttributes<NotificacionAsig> NotificacionAsig { get; set; }
+        public virtual DarkAttributes<View_notificacionEmp> View_notificacionEmp { get; set; }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapTempl> CapTempl { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapSess> CapSess { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapTema> CapTema { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapEva> CapEva { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapEvaPrg> CapEvaPrg { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapEvaPrgRes> CapEvaPrgRes { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapSessEva> CapSessEva { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapProg> CapProg { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapProgPonts> CapProgPonts { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapProgSess> CapProgSess { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapProgEmp> CapProgEmp { get; internal set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public virtual DarkAttributes<CapProgEmpSes> CapProgEmpSes { get; internal set; }
         private string CorreosBCC { get; set; }
         private bool ModeProduction { get; set; }
 
@@ -405,11 +467,84 @@ namespace GPSInformation
             {
                 ReporteAccss = new DarkAttributes<ReporteAccss>(dBConnection);
             }
+            else if (gpsManagerObjects == GpsManagerObjects.Notificacion)
+            {
+                Notificacion  = new DarkAttributes<Notificacion>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.NotificacionAsig)
+            {
+                NotificacionAsig = new DarkAttributes<NotificacionAsig>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.View_notificacionEmp)
+            {
+                View_notificacionEmp = new DarkAttributes<View_notificacionEmp>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapTempl)
+            {
+                CapTempl = new DarkAttributes<CapTempl>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapSess)
+            {
+                CapSess = new DarkAttributes<CapSess>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapTema)
+            {
+                CapTema = new DarkAttributes<CapTema>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapEva)
+            {
+                CapEva = new DarkAttributes<CapEva>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapEvaPrg)
+            {
+                CapEvaPrg = new DarkAttributes<CapEvaPrg>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapEvaPrgRes)
+            {
+                CapEvaPrgRes = new DarkAttributes<CapEvaPrgRes>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapSessEva)
+            {
+                CapSessEva = new DarkAttributes<CapSessEva>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapProg)
+            {
+                CapProg = new DarkAttributes<CapProg>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapProgPonts)
+            {
+                CapProgPonts = new DarkAttributes<CapProgPonts>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapProgSess)
+            {
+                CapProgSess = new DarkAttributes<CapProgSess>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapProgEmp)
+            {
+                CapProgEmp = new DarkAttributes<CapProgEmp>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapProgEmpSes)
+            {
+                CapProgEmpSes = new DarkAttributes<CapProgEmpSes>(dBConnection);
+            }
         }
         public void OpenConnection()
         {
-            dBConnection = new DBConnection(this.StringConnectionDb);
-            dBConnection.OpenConnection();
+            if (dBConnection == null)
+            {
+                dBConnection = new DBConnection(this.StringConnectionDb);
+                dBConnection.OpenConnection();
+            }
+            else
+            {
+                if (!dBConnection.IsOpenConnection())
+                {
+                    dBConnection = new DBConnection(this.StringConnectionDb);
+                    dBConnection.OpenConnection();
+                }
+            }
+                
+            
         }
         public void CloseConnection()
         {
@@ -531,5 +666,20 @@ namespace GPSInformation
         IncidenciaAuthAux = 62,
         Reporte = 63,
         ReporteAccss = 64,
+        Notificacion = 65,
+        NotificacionAsig = 66,
+        View_notificacionEmp = 67,
+        CapTempl = 68,
+        CapSess = 69,
+        CapTema = 70,
+        CapEva = 71,
+        CapEvaPrg = 72,
+        CapEvaPrgRes = 73,
+        CapSessEva = 74,
+        CapProg = 75,
+        CapProgPonts = 76,
+        CapProgSess = 77,
+        CapProgEmp = 78,
+        CapProgEmpSes = 79,
     }
 }

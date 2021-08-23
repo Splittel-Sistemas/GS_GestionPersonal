@@ -1,0 +1,91 @@
+﻿@model IEnumerable<GPSInformation.Views.View_notificacionEmp>
+
+@if (ViewBag.ViewMode == "NavBar")
+{
+    if (Model.Count() != 0)
+    {
+        <a href="" class="dropdown-link new-indicator" data-toggle="dropdown">
+            <img src="https://img.icons8.com/fluency/48/000000/bell.png" style="width: 24px;" />
+            <span>@Model.Count()</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right">
+            <div class="dropdown-header">Notificaciones</div>
+            @foreach (var item in Model)
+            {
+                <a href="@Url.Action("CheckAsReaded", "System", new { IdPersona = item.IdPersona, IdNotificacion = item.IdNotificacion, URL_next = item.URL })" target="_blank" class="dropdown-item @Html.Raw(!item.Revisado ? "bg-light" : "")">
+                    <div class="media">
+                        <div class="avatar avatar-sm"><img src="https://img.icons8.com/fluency/48/000000/link.png" class="rounded-circle" alt=""></div>
+                        <div class="media-body mg-l-15">
+                            <strong>@Html.Raw(item.Titulo)</strong>
+                            <p>@Html.Raw(item.Descripcion)</p>
+                            <span>@item.Creado.ToString("F")</span>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                </a>
+            }
+
+            <div class="dropdown-footer">
+                <a href="#" data-rute="@Url.Action("Notification","System", new { Mode = "SinLeer",ViewMode=  "NavBar" })" onclick="GetViewAccess(this, false)">Refrescar</a> |
+                <a href="#" data-rute="@Url.Action("Notification","System", new { Mode = "",ViewMode=  "ModalList" })" data-rendermode="modal" onclick="GetViewAccess(this, false)">Ver todas</a>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <a href="#" class="dropdown-link new-indicator" data-toggle="dropdown" id="start_showNot">
+            <img src="https://img.icons8.com/fluency/48/000000/bell.png" style="width: 24px;" />
+            <span>0</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right">
+            <div class="dropdown-header">Notificaciones</div>
+            <div class="container ht-100p tx-center">
+                <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+                    <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://img.icons8.com/fluency/96/000000/matt-paper.png" class="img-fluid" alt=""></div>
+                    <h5 class="tx-color-02 ">Sin notificaciones!</h5>
+                </div>
+            </div><!-- container -->
+            <div class="dropdown-footer">
+                <a href="#" data-rute="@Url.Action("Notification","System", new { Mode = "SinLeer",ViewMode=  "NavBar" })" onclick="GetViewAccess(this, false)">Refrescar</a> |
+                <a href="#" data-rute="@Url.Action("Notification","System", new { Mode = "",ViewMode=  "ModalList" })" data-rendermode="modal" onclick="GetViewAccess(this, false)">Ver todas</a>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <a href="" role="button" class="close pos-absolute t-15 r-15" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </a>
+    <div class="form-group row mg-b-0 col-form-label bg-light">
+        <div class="col-sm-12 text-right">
+            <button type="button" class="btn btn-sm btn-white" data-rute="@Url.Action("Notification","System", new { Mode = "",ViewMode=  "ModalList" })" data-rendermode="modal" onclick="GetViewAccess(this)">
+                Refrescar
+            </button>
+        </div>
+    </div>
+    <ul class="list-unstyled media-list tx-12 tx-sm-13 mg-b-0">
+        @foreach (var item in Model)
+        {
+            <li class="media bg-ui-01 pd-y-10 pd-x-15 mg-t-1 @Html.Raw(!item.Revisado ? "bg-light" : "")">
+                <div class="avatar avatar-sm"><img src="https://img.icons8.com/fluency/48/000000/link.png" class="rounded-circle" alt=""></div>
+                <div class="media-body mg-l-15">
+                    <strong>@Html.Raw(item.Titulo)</strong>
+                    <p>@Html.Raw(item.Descripcion)</p>
+                    <span>@item.Creado.ToString("F")</span>
+                </div><!-- media-body -->
+                <a href="@Url.Action("CheckAsReaded", "System", new { IdPersona = item.IdPersona, IdNotificacion = item.IdNotificacion, URL_next = item.URL })" class="btn btn-white rounded-circle btn-icon mg-l-15"><i data-feather="plus"></i></a>
+            </li><!-- media -->
+        }
+    </ul>
+
+    if (Model.Count() == 0)
+    {
+        <div class="container ht-100p tx-center">
+            <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+                <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://img.icons8.com/fluency/96/000000/matt-paper.png" class="img-fluid" alt=""></div>
+                <h5 class="tx-color-02 ">Sin notificaciones!</h5>
+            </div>
+        </div><!-- container -->
+    }
+}

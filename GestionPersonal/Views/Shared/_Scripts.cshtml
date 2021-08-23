@@ -56,6 +56,7 @@
             }
             let params = new FormData(dtForm);
             if (dtForm.method == "post") {
+
                 await axios.post(dtForm.action, params, config).then(response => {
                     if (isOnlyAction == false) {
                         if (isview) {
@@ -65,7 +66,6 @@
                         }
                     }
 
-
                     if (callbackSucsess != null && callbackSucsess != undefined) {
                         callbackSucsess()
                     }
@@ -74,7 +74,8 @@
                     if (callbackErr != null && callbackErr != undefined) {
                         callbackErr()
                     }
-                }).finally()
+                }).finally(() => {
+                })
             } else {
 
             }
@@ -188,7 +189,7 @@
         }
 
 
-        
+
     }
     var getRenderViewCon = async function (element) {
 
@@ -200,160 +201,221 @@
         }
     }
     var ValidViewActionAccess = async function (element, mensaje) {
-        Swal.fire({
-            title: 'Estas seguro de: " ' + mensaje +'"?',
-            text: "!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si adelante!'
-        }).then(async(result) => {
-            if (result.isConfirmed) {
-                //data - renderContent="Empleado"
-                console.log(element)
-                let rendermode = element.dataset["rendercontent"]
-                if (rendermode == undefined || rendermode == "") {
-                    let ContetExis = false;
-                    //var contenedor = await getRenderViewCon(element)
+        gl_validSess(async () => {
+            Swal.fire({
+                title: 'Estas seguro de: " ' + mensaje + '"?',
+                text: "!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si adelante!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    //data - renderContent="Empleado"
+                    console.log(element)
+                    let rendermode = element.dataset["rendercontent"]
+                    if (rendermode == undefined || rendermode == "") {
+                        let ContetExis = false;
+                        //var contenedor = await getRenderViewCon(element)
 
-                    var contenedor = element.parentElement
-                    while (contenedor.dataset["rendercontent"] == undefined) {
-                        contenedor = contenedor.parentElement
-                    }
-                    if (contenedor != null) {
-                        var ruta = element.dataset["rute"];
-                        if (ruta != "" && ruta != undefined) {
-                            contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
-                            await axios.get(ruta, null, null).then(response => {
-                                contenedor.innerHTML = response.data
+                        var contenedor = element.parentElement
+                        while (contenedor.dataset["rendercontent"] == undefined) {
+                            contenedor = contenedor.parentElement
+                        }
+                        if (contenedor != null) {
+                            var ruta = element.dataset["rute"];
+                            if (ruta != "" && ruta != undefined) {
+                                contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                                await axios.get(ruta, null, null).then(response => {
+                                    contenedor.innerHTML = response.data
 
-                                var mode = element.dataset["mode"];
-                                if (mode != undefined && mode == "form") {
-                                    ExcecForm(contenedor)
-                                } else {
-                                    $('.commontable').DataTable({
-                                        //responsive:true,
-                                        language: {
-                                            searchPlaceholder: 'Search...',
-                                            sSearch: '',
-                                            lengthMenu: '_MENU_ items/page',
-                                        },
-                                        ordering: false
-                                    });
-                                }
+                                    var mode = element.dataset["mode"];
+                                    if (mode != undefined && mode == "form") {
+                                        ExcecForm(contenedor)
+                                    } else {
+                                        $('.commontable').DataTable({
+                                            //responsive:true,
+                                            language: {
+                                                searchPlaceholder: 'Search...',
+                                                sSearch: '',
+                                                lengthMenu: '_MENU_ items/page',
+                                            },
+                                            ordering: false
+                                        });
+                                    }
 
-                            }).catch(error => {
-                                GlobalValidAxios(error);
-                            }).finally(() => {
+                                }).catch(error => {
+                                    GlobalValidAxios(error);
+                                }).finally(() => {
 
-                            })
+                                })
+                            }
                         }
                     }
                 }
-            }
-        })
-
+            })
+        });
     }
-    var GetViewAccess = async function (element) {
-        //data - renderContent="Empleado"
-        console.log(element)
-        let rendermode = element.dataset["rendercontent"]
-        if (rendermode == undefined || rendermode == "") {
-            let ContetExis = false;
-            //var contenedor = await getRenderViewCon(element)
-
-            var contenedor = element.parentElement
-            while (contenedor.dataset["rendercontent"] == undefined) {
-                contenedor = contenedor.parentElement
-            }
-            if (contenedor != null) {
-                var ruta = element.dataset["rute"];
-                if (ruta != "" && ruta != undefined) {
-                    contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
-                    await axios.get(ruta, null, null).then(response => {
-                        contenedor.innerHTML = response.data
-
-                        var mode = element.dataset["mode"];
-                        if (mode != undefined && mode == "form") {
-                            ExcecForm(contenedor)
-                            ValidateFormIncPerm();
-                        }
-
-                    }).catch(error => {
-                        GlobalValidAxios(error);
-                    }).finally(() => {
-
-                    })
-                }
-            }
-        } else {
-            $("#ModalFormViewMedium").modal({
-                backdrop: "static", //remove ability to close modal with click
-                keyboard: false, //remove option to close with keyboard
-                show: true //Display loader!
-            });
-            let contenedor = document.getElementById("ModalFormViewMedium_contente")
-            if (contenedor != null) {
-                var ruta = element.dataset["rute"];
-                if (ruta != "" && ruta != undefined) {
-                    contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
-                    await axios.get(ruta, null, null).then(response => {
-                        contenedor.innerHTML = response.data
-
-                        var mode = element.dataset["mode"];
-                        if (mode != undefined && mode == "form") {
-                            ExcecForm(contenedor)
-                        }
-
-                    }).catch(error => {
-                        GlobalValidAxios(error);
-                    }).finally(() => {
-
-                    })
-                }
-            }
-        }
-    }
-    var ExcecForm = async function (contenedor) {
-        console.log(contenedor)
-        var forms = document.getElementsByClassName("ExcecForm");
-        for (var i = 0; i < forms.length; i++) {
-            forms[i].onsubmit = async (e) => {
-                e.preventDefault();
-                var contenedor = e.srcElement.parentElement
+    var GetViewAccess = async function (element, ShowLoader = true) {
+        gl_validSess(async () => {
+            //data - renderContent="Empleado"
+            console.log(element)
+            let rendermode = element.dataset["rendermode"]
+            if (rendermode == undefined || rendermode == "") {
+                let ContetExis = false;
+                //var contenedor = await getRenderViewCon(element)
+                var contenedor = element.parentElement
                 while (contenedor.dataset["rendercontent"] == undefined) {
                     contenedor = contenedor.parentElement
                 }
                 if (contenedor != null) {
-                    $("#ModalFormProcessing").modal({
-                        backdrop: "static", //remove ability to close modal with click
-                        keyboard: false, //remove option to close with keyboard
-                        show: true //Display loader!
-                    });
-                    let data = new FormData(e.srcElement);
-                    let enctype = e.srcElement.enctype
-                    let method = e.srcElement.method
-                    let action = e.srcElement.action
-                    await axios({
-                        method: method,
-                        url: action,
-                        data: data,
-                        headers: { 'Content-Type': enctype }
-                    }).then(response2 => {
-                        contenedor.innerHTML = response2.data
-                    }).catch(error2 => {
-                        $("#ModalFormProcessing").modal("hide");
-                        GlobalValidAxios(error2);
-                    }).finally(() => {
-                        ExcecForm(contenedor)
-                        $("#ModalFormProcessing").modal("hide");
-                    })
-                    $("#ModalFormProcessing").modal("hide");
-                }
+                    var ruta = element.dataset["rute"];
+                    if (ruta != "" && ruta != undefined) {
+                        if (ShowLoader) {
+                            contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                        } else {
+                            contenedor.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="sr-only" > Loading...</span></div>'
+                        }
+                        await axios.get(ruta, null, null).then(response => {
+                            contenedor.innerHTML = response.data
 
+                            var mode = element.dataset["mode"];
+                            if (mode != undefined && mode == "form") {
+                                ExcecForm(contenedor)
+                                ValidateFormIncPerm();
+                            }
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                        }).finally(() => {
+
+                        })
+                    }
+                }
+            } else {
+                $("#ModalFormViewMedium").modal({
+                    backdrop: "static", //remove ability to close modal with click
+                    keyboard: false, //remove option to close with keyboard
+                    show: true //Display loader!
+                });
+                let contenedor = document.getElementById("ModalFormViewMedium_contente")
+                if (contenedor != null) {
+                    var ruta = element.dataset["rute"];
+                    if (ruta != "" && ruta != undefined) {
+                        contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                        await axios.get(ruta, null, null).then(response => {
+                            contenedor.innerHTML = response.data
+
+                            var mode = element.dataset["mode"];
+                            if (mode != undefined && mode == "form") {
+                                ExcecForm(contenedor)
+                            }
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                        }).finally(() => {
+
+                        })
+                    }
+                }
             }
-        }
+        });
+    }
+    var closeModal = function (model) {
+        $(model).modal("hide");
+    }
+    var ExcecForm = async function (contenedor) {
+        
+        //gl_validSess(async () => {
+            console.log(contenedor)
+            var forms = document.getElementsByClassName("ExcecForm");
+            for (var i = 0; i < forms.length; i++) {
+                forms[i].onsubmit = async (e) => {
+                    e.preventDefault();
+                    gl_validSess(async () => {
+                        var contenedor = e.srcElement.parentElement
+                        while (contenedor.dataset["rendercontent"] == undefined) {
+                            contenedor = contenedor.parentElement
+                        }
+                        if (contenedor != null) {
+                            $("#ModalFormProcessing").modal({
+                                backdrop: "static", //remove ability to close modal with click
+                                keyboard: false, //remove option to close with keyboard
+                                show: true //Display loader!
+                            });
+                            let data = new FormData(e.srcElement);
+                            let enctype = e.srcElement.enctype
+                            let method = e.srcElement.method
+                            let action = e.srcElement.action
+                            await axios({
+                                method: method,
+                                url: action,
+                                data: data,
+                                headers: { 'Content-Type': enctype }
+                            }).then(response2 => {
+                                contenedor.innerHTML = response2.data
+                            }).catch(error2 => {
+                                $("#ModalFormProcessing").modal("hide");
+                                GlobalValidAxios(error2);
+                            }).finally(() => {
+                                ExcecForm(contenedor)
+                                $("#ModalFormProcessing").modal("hide");
+                            })
+                            $("#ModalFormProcessing").modal("hide");
+                        }
+                    });
+                }
+            }
+        //});
+    }
+    var gl_callback = null;
+    var gl_validSessionFomr = async function (element) {
+        element.disabled = true
+        element.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validando..';
+        await axios.post('@Url.Action("Login", "Login")', {
+            UserName: document.getElementById("gl_UserName").value,
+            Pass: document.getElementById("gl_Pass").value
+        }, null).then(response => {
+            ShowMessageErrorShort("Sessión iniciada", "success")
+            if (gl_callback != null && gl_callback != undefined) {
+                $("#modalFormSartSession").modal('hide')
+                element.innerHTML = 'Iniciar'
+                element.disabled = false
+                gl_callback();
+            }
+        }).catch(error => {
+            GlobalValidAxios(error);
+        }).finally(() => {
+            //this.Registrando = false
+            element.innerHTML = 'Iniciar'
+            element.disabled = false
+            console.log("finally")
+        })
+    }
+    var gl_validSess = async function (callback) {
+        await axios.get('@Url.Action("CheckSession", "Home")', null, null).then(response => {
+            console.log("then")
+           
+            callback();
+        }).catch(error => {
+            if (error.response) {
+                console.log("catch")
+                if (error.response.status === 401) {
+                    /*alert(error.response.data)*/
+                    $("#modalFormSartSession").modal({
+                        backdrop: 'static',
+                        show: true,
+                        keyboard: false
+                    })
+                    gl_callback = callback;
+                }
+                else {
+                    GlobalValidAxios(error);
+                }
+            }
+        }).finally(() => {
+            //this.Registrando = false
+            console.log("finally")
+        })
     }
     $(document).ready(function () {
         //$('.select2').select2({
@@ -367,6 +429,17 @@
         //    placeholder: "Select a country",
         //    width: '100%'
         //});
+        var btn_start_showNot = document.getElementById("start_showNot")
+        if (btn_start_showNot != undefined && btn_start_showNot != null) {
+            btn_start_showNot.click()
+        }
+        setInterval(function () {
+            var btn_start_showNot = document.getElementById("start_showNot")
+            if (btn_start_showNot != undefined && btn_start_showNot != null) {
+                btn_start_showNot.click()
+            }
+        }, 300000);
+
     });
 
 </script>

@@ -41,6 +41,9 @@
                                 Empleado
                             </th>
                             <th>
+                                F.Solicitud
+                            </th>
+                            <th>
                                 No.Dias
                             </th>
                             <th>
@@ -64,6 +67,9 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.EmpleadoNombre)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Creado)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.NoDias)
@@ -96,6 +102,9 @@
                                 Empleado
                             </th>
                             <th>
+                                F.Solicitud
+                            </th>
+                            <th>
                                 Fe.Permiso
                             </th>
                             <th>
@@ -121,6 +130,9 @@
                                 @Html.DisplayFor(modelItem => item.EmpleadoNombre)
                             </td>
                             <td>
+                                @Html.DisplayFor(modelItem => item.Creado)
+                            </td>
+                            <td>
                                 @Html.DisplayFor(modelItem => item.Fecha)
                             </td>
                             <td>
@@ -133,7 +145,7 @@
                                 <span class="badge badge-pill badge-@Html.DisplayFor(modelItem => item.EstatusColor)">@Html.DisplayFor(modelItem => item.EstatusDescricion)</span>
                             </td>
                             <td>
-                                @Html.ActionLink("Detalle", "Details","IncPermiso", new { id = item.IdIncidenciaPermiso })
+                                @Html.ActionLink("Detalle", "Details", "IncPermiso", new { id = item.IdIncidenciaPermiso })
                             </td>
                         </tr>
                         }
@@ -154,7 +166,11 @@
                     sSearch: '',
                     lengthMenu: '_MENU_ items/page',
                 },
-                ordering: false
+                ordering: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel', 'pdf'
+                ]
             });
             $('#lista_misSolicitudesVaca').DataTable({
                 //responsive:true,
@@ -163,7 +179,11 @@
                     sSearch: '',
                     lengthMenu: '_MENU_ items/page',
                 },
-                ordering: false
+                ordering: false,
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel', 'pdf'
+                ]
             });
 
         });

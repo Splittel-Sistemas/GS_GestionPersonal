@@ -215,6 +215,9 @@ namespace GestionPersonal.Controllers
             
         }
 
+        
+        
+
         [AccessMultipleView(IdAction = new int[] { 20 })]
         [HttpPost]
         [ValidateAntiForgeryToken]

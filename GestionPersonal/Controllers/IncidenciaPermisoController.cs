@@ -233,70 +233,74 @@ namespace GestionIncidenciaPermisol.Controllers
         [AccessMultipleView(IdAction = new int[] { 32,36 })]
         public ActionResult Aprobar(int id, string Mode)
         {
-            try
-            {
-
-                var response = darkManager.IncidenciaPermiso.Get(id);
-                if (response is null)
-                {
-                    return NotFound();
-                }
-                if (response.Estatus == 5)
-                {
-                    return NotFound("No existe la incidencia");
-                }
-                if (Mode == "1")
-                {
-                    
-                    var resulst = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 32");
-                    if(resulst == null || resulst != null && resulst.TieneAcceso == false)
-                    {
-                        return NotFound();
-                    }
-                }
-                if (Mode == "2")
-                {
-
-                    var resulst = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 36");
-                    if (resulst == null || resulst != null && resulst.TieneAcceso == false)
-                    {
-                        return NotFound();
-                    }
-                }
+                int Mode_ = Int32.Parse(Mode) +1;
+                return RedirectToAction("Autorizar", "IncPermiso", new { id = GPSInformation.Tools.EncryptData.Encrypt(id+""), Mode = GPSInformation.Tools.EncryptData.Encrypt(Mode_ + "") });
+            //try
+            //{
 
 
-                TiposPermisos = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 1009, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion");
-                PagoPermisoPersonal = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 1010, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion");
-                ViewData["TiposPermisos"] = TiposPermisos;
-                ViewData["PagoPermisoPersonal"] = PagoPermisoPersonal;
 
-                ViewData["ModeAprobar"] = Mode;
+            //var response = darkManager.IncidenciaPermiso.Get(id);
+            //if (response is null)
+            //{
+            //    return NotFound();
+            //}
+            //if (response.Estatus == 5)
+            //{
+            //    return NotFound("No existe la incidencia");
+            //}
+            //if (Mode == "1")
+            //{
 
-                var result = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaPermiso));
-                if (Mode == "1")
-                {
-                    var nivel = result.Find(a => a.Nivel == 2);
-                    ViewData["Procesada"] = nivel;
-                }
+            //    var resulst = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 32");
+            //    if(resulst == null || resulst != null && resulst.TieneAcceso == false)
+            //    {
+            //        return NotFound();
+            //    }
+            //}
+            //if (Mode == "2")
+            //{
 
-                if (Mode == "2")
-                {
-                    var nivel = result.Find(a => a.Nivel == 3);
-                    ViewData["Procesada"] = nivel;
-                }
+            //    var resulst = darkManager.AccesosSistema.GetOpenquerys($"where IdUsuario = {(int)HttpContext.Session.GetInt32("user_id_permiss")} and IdSubModulo = 36");
+            //    if (resulst == null || resulst != null && resulst.TieneAcceso == false)
+            //    {
+            //        return NotFound();
+            //    }
+            //}
 
 
-                return View(response);
-            }
-            catch (GPSInformation.Exceptions.GpExceptions ex)
-            {
-                //darkManager.RolBack();
-                return NotFound(ex.Message);
-            }
-            finally
-            {
-                darkManager.CloseConnection();
-            }
+            //TiposPermisos = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 1009, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion");
+            //PagoPermisoPersonal = new SelectList(darkManager.CatalogoOpcionesValores.Get("" + 1010, "IdCatalogoOpciones").OrderBy(a => a.Descripcion).ToList(), "IdCatalogoOpcionesValores", "Descripcion");
+            //ViewData["TiposPermisos"] = TiposPermisos;
+            //ViewData["PagoPermisoPersonal"] = PagoPermisoPersonal;
+
+            //ViewData["ModeAprobar"] = Mode;
+
+            //var result = darkManager.IncidenciaProcess.Get("" + id, nameof(darkManager.IncidenciaProcess.Element.IdIncidenciaPermiso));
+            //if (Mode == "1")
+            //{
+            //    var nivel = result.Find(a => a.Nivel == 2);
+            //    ViewData["Procesada"] = nivel;
+            //}
+
+            //if (Mode == "2")
+            //{
+            //    var nivel = result.Find(a => a.Nivel == 3);
+            //    ViewData["Procesada"] = nivel;
+            //}
+
+
+            //    return View(response);
+            //}
+            //catch (GPSInformation.Exceptions.GpExceptions ex)
+            //{
+            //    //darkManager.RolBack();
+            //    return NotFound(ex.Message);
+            //}
+            //finally
+            //{
+            darkManager.CloseConnection();
+            //}
         }
         
         [AccessMultipleView(IdAction = new int[] { 32, 36 })]

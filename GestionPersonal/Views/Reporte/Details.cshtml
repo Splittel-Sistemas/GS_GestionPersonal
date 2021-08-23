@@ -136,7 +136,7 @@
             el: "#app_reporteAplication",
                 data: {
                     ReqReporteRun: {
-                        IdReporte: '@Model.IdReporte',
+                        IdReporte: parseInt('@Model.IdReporte'),
                         OmitCols: ["IdPersona","IdGenero"],
                         Parametros: []
                     }
@@ -157,6 +157,8 @@
                                     "Variable": parametros[i].dataset["variable"],
                                     "Tipo": parametros[i].dataset["tipo"],
                                     "Valor": parametros[i].value,
+                                    "Multiple": 0,
+                                    "OptionsSQL" : ""
                                 });
                             }
                         }

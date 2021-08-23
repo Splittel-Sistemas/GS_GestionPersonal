@@ -1,6 +1,7 @@
 ﻿@model GPSInformation.DBManagers.ModelPagination<GPSInformation.Views.View_empleado>
 @{
-    ViewData["Title"] = "Empleados ";
+    ViewData["Title"] = "Lista de Colaboradores";
+    var Accesos = (Dictionary<string, GPSInformation.Controllers.AccesosUs>)ViewBag.Accesos;
 }
 @section MenuTop{
     <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
@@ -26,7 +27,7 @@
                     <input type="hidden" name="Page" asp-for="PageSelected" />
                     <div class="search-form">
                         <input type="search" class="form-control form-control-sm" asp-for="FilterPatterns" placeholder="buscar">
-                        <button class="btn" type="button"><i data-feather="search"></i></button>
+                        <button class="btn" type="submit"><i data-feather="search"></i></button>
                     </div>
                 </div>
                 <div class="form-group col-md-2 d-flex align-items-end">
@@ -117,7 +118,25 @@
                     @Html.DisplayFor(modelItem => item.EstatusDescripcion)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.IdPersona })
+                    <div class="dropdown">
+                        <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropleftMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Opciones
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropleftMenuButton">
+                            @if (Accesos["AlecturaEmpleados"].TieneAcceso)
+                            {
+                                @Html.ActionLink("Detalle", "Edit", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                            }
+
+                            @if (Accesos["AEscrituraEmpleados"].TieneAcceso)
+                            {
+                                @Html.ActionLink("Acceso", "Create", "Usuario", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                                @Html.ActionLink("Contrato", "Index", "Contrato", new { id = item.IdPersona }, new { @class = "dropdown-item" })
+                                @Html.ActionLink("Ver peridos", "Periodos", "IncidenciaVacacion", new { id = item.NumeroNomina }, new { @class = "dropdown-item" })
+                            }
+
+                        </div>
+                    </div>
                 </td>
             </tr>
             }

@@ -1,5 +1,7 @@
 ﻿@{
-    ViewData["Title"] = "Detalle de empleado: "  + ViewBag.NombreCompleto;
+    ViewData["Title"] = "Detalle del colaborador: " + ViewBag.NombreCompleto;
+
+    var Accesos = (Dictionary<string, GPSInformation.Controllers.AccesosUs>)ViewBag.Accesos;
 }
 <link href="~/template/assets/css/dashforge.contacts.css" rel="stylesheet" />
 
@@ -26,11 +28,21 @@
         <div class="col-lg-3 col-xl-2 d-none d-lg-block">
             <label class="tx-sans tx-10 tx-medium tx-spacing-1 tx-uppercase tx-color-03 mg-b-15">Secciones</label>
             <nav class="nav nav-classic">
-                <a href="#" v-bind:class="contentActive == 'content_persona' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_persona', false)">Información personal</a>
-                <a href="#" v-bind:class="contentActive == 'content_medica' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_medica', false)">Información medica</a>
-                <a href="#" v-bind:class="contentActive == 'content_splittel' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_splittel', false)">Grupo Splittel</a>
-                <a href="#" v-bind:class="contentActive == 'content_contEmergen' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_contEmergen', false)">Contactos de emergencia</a>
-                <a href="#" v-bind:class="contentActive == 'content_Incidencias' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_Incidencias')">Incidencias</a>
+
+                @if (Accesos["AlecturaEmpleados"].TieneAcceso)
+                {
+                    <a href="#" v-bind:class="contentActive == 'content_persona' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_persona', false)">Información personal</a>
+                    <a href="#" v-bind:class="contentActive == 'content_medica' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_medica', false)">Información medica</a>
+                    <a href="#" v-bind:class="contentActive == 'content_splittel' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_splittel', false)">Grupo Splittel</a>
+                    <a href="#" v-bind:class="contentActive == 'content_contEmergen' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_contEmergen', false)">Contactos de emergencia</a>
+                    <a href="#" v-bind:class="contentActive == 'content_Expediente' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_Expediente')">Expediente</a>
+                }
+                @if (Accesos["ACrearIncidencias"].TieneAcceso)
+                {
+                    <a href="#" v-bind:class="contentActive == 'content_Incidencias' ? 'nav-link active' : 'nav-link'" v-on:click="GetView('content_Incidencias')">Incidencias</a>
+                    <a href="#" v-bind:class="contentActive == 'content_IncAuxAuth' ? 'nav-link active' : 'nav-link'" v-on:click="GetIncAutAdd(); contentActive = 'content_IncAuxAuth'">Jefe auxiliar incidencias</a>
+                }
+
             </nav>
         </div><!-- col -->
         <div class="col-lg-9 col-xl-10">
@@ -41,7 +53,7 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 <script>
-    var app_det_empleado = new Vue({
+    var App_editEmpleado = new Vue({
         el: "#app_det_empleado",
         data: {
             contentActive: "content_persona",
@@ -51,6 +63,8 @@
                 { mode: "Details", viewHtml: "", seccion: "content_splittel", ruta: "@Url.Action("EmpInfoSplittelDetails", "ColaboradorSplittel", new { id = ViewBag.IdPersona })"},
                 { mode: "Details", viewHtml: "", seccion: "content_contEmergen", ruta: "@Url.Action("EmpContEmergenciaList", "ColaboradorSplittel", new { id = ViewBag.IdPersona })"},
                 { mode: "Details", viewHtml: "", seccion: "content_Incidencias", ruta: "@Url.Action("MisSolicitudes","Incidencias",new { id = ViewBag.IdPersona, isPartial = true,Tab = "" })"},
+                { mode: "Details", viewHtml: "", seccion: "content_Expediente", ruta: "@Url.Action("EmpExpedienteList", "ColaboradorSplittel", new { IdPersona = ViewBag.IdPersona })"},
+                { mode: "Details", viewHtml: "", seccion: "content_IncAuxAuth", ruta: "@Url.Action("IncAutAdd", "Empleado", new { id = ViewBag.IdPersona })"},
             ]
         },
         mounted() {
@@ -58,30 +72,78 @@
         },
         methods: {
             GetView: async function (seccionName, forceRefresh = false) {
-                var seccion = this.listSeccions.find(a => a.seccion == seccionName)
-                if (seccion != null && seccion != undefined) {
-                    this.contentActive = seccionName;
-                    console.log("Evaluando: " + seccionName)
-                    if (seccion.viewHtml != "" && forceRefresh == false) {
-                        console.log("obteniendo vista html 2: " + seccionName)
-                        document.getElementById("content_seccionsempleado").innerHTML = seccion.viewHtml
+                gl_validSess(async () => {
+                    var seccion = App_editEmpleado.listSeccions.find(a => a.seccion == seccionName)
+                    if (seccion != null && seccion != undefined) {
+                        App_editEmpleado.contentActive = seccionName;
+                        console.log("Evaluando: " + seccionName)
+                        if (seccion.viewHtml != "" && forceRefresh == false) {
+                            console.log("obteniendo vista html 2: " + seccionName)
+                            document.getElementById("content_seccionsempleado").innerHTML = seccion.viewHtml
+                        }
+                        if (seccion.viewHtml != "" && forceRefresh == true || seccion.viewHtml == "") {
+                            console.log("obteniendo vista html : " + seccionName)
+                            document.getElementById("content_seccionsempleado").innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                            await axios.get(seccion.ruta, null, null).then(response => {
+                                document.getElementById("content_seccionsempleado").innerHTML = response.data
+                                seccion.viewHtml = response.data
+                            }).catch(error => {
+                                GlobalValidAxios(error);
+                            }).finally(() => {
+                                //this.Registrando = false
+                            })
+                        }
                     }
-                    if (seccion.viewHtml != "" && forceRefresh == true || seccion.viewHtml == "") {
-                        console.log("obteniendo vista html : " + seccionName)
-                        document.getElementById("content_seccionsempleado").innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
-                        await axios.get(seccion.ruta, null, null).then(response => {
-                            document.getElementById("content_seccionsempleado").innerHTML = response.data
-                            seccion.viewHtml = response.data
-                        }).catch(error => {
-                            GlobalValidAxios(error);
-                        }).finally(() => {
-                            //this.Registrando = false
+
+                })
+            },
+            IncAutRemove: async function () {
+                await axios.get('@Url.Action("IncAutRemove", "Empleado")/@ViewBag.IdPersona', null, null).then(response => {
+                    this.GetIncAutAdd();
+                }).catch(error => {
+                    GlobalValidAxios(error)
+                }).finally()
+            },
+            LoadEnvetsNode: function () {
+                $('.select2').select2({
+                    placeholder: 'Choose one',
+                    searchInputPlaceholder: 'Search options',
+
+                });
+                //add new puesto
+                var form = document.getElementById("IncAutAdd");
+                if (form != null && form != undefined) {
+                    form.addEventListener("submit", function (event) {
+                        event.preventDefault();
+                        console.log("event prevent")
+
+                        GlobalSendForm(true, false, "IncAutAdd", "content_seccionsempleado", function () {
+                            $('.select2').select2({
+                                placeholder: 'Choose one',
+                                searchInputPlaceholder: 'Search options',
+
+                            });content_seccionsempleado
+                            App_editEmpleado.GetIncAutAdd()
+                            $("#ModalFormProcessing").modal("hide");
                         })
-                    }
+
+                    });
+                } else {
+                    console.log("form not found, plese contact with TI Departament")
                 }
-                
-                
-            }
+            },
+            GetIncAutAdd: async function () {
+                gl_validSess(async () => {
+                    document.getElementById("content_seccionsempleado").innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                    await axios.get('@Url.Action("IncAutAdd", "Empleado")/@ViewBag.IdPersona', null, null).then(response => {
+                    document.getElementById("content_seccionsempleado").innerHTML = response.data
+                        App_editEmpleado.LoadEnvetsNode();
+                }).catch(error => {
+                    GlobalValidAxios(error)
+                }).finally()
+                });
+
+            },
         }
     });
 </script>

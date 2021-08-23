@@ -103,6 +103,11 @@ namespace GPSInformation.DBManagers
             var retunrDa = dBConnection.GetIntegerValue(string.Format("select max(Id{0}) from {0}", Nametable));
             return DBNull.Value.Equals(retunrDa) ? 0 : (int)retunrDa;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="where">sin where </param>
+        /// <returns></returns>
         public int Count(string where = "")
         {
             if (where == "")

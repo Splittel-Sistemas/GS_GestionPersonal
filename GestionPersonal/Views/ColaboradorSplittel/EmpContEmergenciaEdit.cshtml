@@ -1,12 +1,21 @@
 ﻿@model GPSInformation.Models.PersonaContacto
+@{
+    ViewData["Title"] = "Editar contacto de emergencia";
 
+}
 <div>
     <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
         <div>
-            <h4 class="mg-b-0 tx-spacing--1">Información contacto de emergencia</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                    <li class="breadcrumb-item" aria-current="page"><a href="#content_contEmergen" data-rute="@Url.Action("EmpContEmergenciaList","ColaboradorSplittel", new { id = Model.IdPersona })" onclick="GetViewAccess(this)">Lista de contactos</a> </li>
+                    <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+                </ol>
+            </nav>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
         </div>
         <div class="d-none d-md-block">
-            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpContEmergenciaEdit","ColaboradorSplittel", new  { id = Model.IdPersonaContacto })" data-mode="form" onclick="GetViewAccess(this)">
+            <a href="#content_contEmergen" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpContEmergenciaEdit","ColaboradorSplittel", new  { id = Model.IdPersonaContacto })" data-mode="form" onclick="GetViewAccess(this)">
                 <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
             </a>
         </div>

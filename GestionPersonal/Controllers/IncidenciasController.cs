@@ -34,6 +34,11 @@ namespace GestionPersonal.Controllers
             _V2IncPermisoCtrl = new V2IncPermisoCtrl(_V2IncVacacionesCtrl._darkM, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
+                //if (!_V2IncVacacionesCtrl._Accesos.Find(a => a.IdSubModulo == _V2IncVacacionesCtrl._ALecturaEscrituraAdmin).TieneAcceso && )
+                //{
+                //    throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                //}
+
                 ViewData["Tab"] = Tab;
                 ViewData["isPartial"] = isPartial;
                 ViewData["IdPersona"] = id;
@@ -110,6 +115,7 @@ namespace GestionPersonal.Controllers
             _V2IncPermisoCtrl = new V2IncPermisoCtrl(_V2IncVacacionesCtrl._darkM, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
+                
                 ViewData["Tab"] = Tab;
                 ViewData["Vacaciones"] = _V2IncVacacionesCtrl.GetAdmin();
                 ViewData["Permisos"] = _V2IncPermisoCtrl.GetAdmin();

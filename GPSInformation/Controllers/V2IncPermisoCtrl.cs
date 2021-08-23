@@ -62,6 +62,7 @@ namespace GPSInformation.Controllers
         /// ids de permisos por usuario en session
         /// </summary>
         public List<AccesosUs> _Accesos { get; internal set; }
+        public string _NombreCompleto { get; internal set; }
         #endregion
 
         #region Constructores
@@ -80,7 +81,7 @@ namespace GPSInformation.Controllers
             this._darkM.LoadObject(GpsManagerObjects.Usuario);
 
             _UsrCrt = new UsuarioCtrl(_darkM, true);
-
+            _NombreCompleto = _darkM.dBConnection.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {IdPersona}");
             //obtener permisos
             _Accesos = _UsrCrt.ValidatePermis(IdUsuario, new int[] { _ALecturaEscritura, _AauthJefeInmediato, _AauthAdminGPS, _AadminPeriodos, _AincidenciasAdmin, _ALecturaEscrituraAdmin });
         }
@@ -163,7 +164,19 @@ namespace GPSInformation.Controllers
 
 
                 if (inAutorizacion.Autoriza)
-                    details.Estatus = details.Estatus + 1;
+                {
+                    if (details.Estatus == 2)
+                    {
+                        if (details.Proceso.Find(a => a.Nivel == 3).Revisada && details.Proceso.Find(a => a.Nivel == 3).Autorizada)
+                        {
+                            details.Estatus = 4;
+                        }
+                        else
+                        {
+                            details.Estatus = 3;
+                        }
+                    }
+                }
                 else
                     details.Estatus = 7;
 
@@ -216,22 +229,22 @@ namespace GPSInformation.Controllers
                 //Solicitud creada
                 if (details.Estatus == 1)
                 {
-                    asunto = $"Solicitud de permiso {details.Folio} creada";
+                    asunto = $"Solicitud {details.Folio} creada";
                 }
                 //Jefe inmediado
                 else if (details.Estatus == 2)
                 {
-                    asunto = $"Nuevo permiso {details.Folio} - Aprobación N1";
+                    asunto = $"Nuevo solicitud {details.Folio} - Aprobación N1";
                     send = true;
 
                     _darkM.View_EmpleadoJefe.GetOpenquery($"where EIdPersona = {details.IdPersona}", "").ForEach(a => _darkM.EmailServ_.AddListTO(a.JCorreo));
                     _darkM.EmailServ_.AddListTO(_darkM.View_EmpleadoJefe.GetStringValue($"select Correo from View_empleado where IdPersona = " +
-                        $"(select top 1 t01.IdIncidenciaAuthAux from IncidenciaAuthAux as t01 where t01.IdPersona = {details.IdPersona} and Activa = 1)"));
+                        $"(select top 1 t01.IdPersonaAuth from IncidenciaAuthAux as t01 where t01.IdPersona = {details.IdPersona} and Activa = 1)"));
                 }
                 //Gestión personal
                 else if (details.Estatus == 3)
                 {
-                    asunto = $"Nuevo permiso {details.Folio} - Aprobación N2";
+                    asunto = $"Nuevo solicitud {details.Folio} - Aprobación N2";
                     send = true;
 
                     _darkM.AccesosSistema.GetOpenquery($"where IdSubModulo = {_AauthAdminGPS} and TieneAcceso = 1", "").ForEach(a =>
@@ -250,7 +263,7 @@ namespace GPSInformation.Controllers
                 //Autorizada
                 else if (details.Estatus == 4)
                 {
-                    asunto = $"Solicitud de permiso {details.Folio} autorizada";
+                    asunto = $"Solicitud {details.Folio} autorizada";
                     send = true;
                     var empleado = _darkM.View_empleado.GetOpenquerys($"where IdPersona = {details.IdPersona}");
                     if (empleado != null)
@@ -261,13 +274,13 @@ namespace GPSInformation.Controllers
                 //Councluida
                 else if (details.Estatus == 5)
                 {
-                    asunto = $"Solicitud de permiso {details.Folio} concluida";
+                    asunto = $"Solicitud {details.Folio} concluida";
 
                 }
                 //Cancelada
                 else if (details.Estatus == 6)
                 {
-                    asunto = $"Solicitud de permiso {details.Folio} cancelada";
+                    asunto = $"Solicitud {details.Folio} cancelada";
                     send = true;
                     var empleado = _darkM.View_empleado.GetOpenquerys($"where IdPersona = {details.IdPersona}");
                     if (empleado != null)
@@ -278,7 +291,7 @@ namespace GPSInformation.Controllers
                 //Rechazada
                 else if (details.Estatus == 7)
                 {
-                    asunto = $"Solicitud de permiso {details.Folio} rechazada";
+                    asunto = $"Solicitud {details.Folio} rechazada";
                     send = true;
                     var empleado = _darkM.View_empleado.GetOpenquerys($"where IdPersona = {details.IdPersona}");
                     if (empleado != null)
@@ -289,7 +302,7 @@ namespace GPSInformation.Controllers
                 //Eliminada
                 else if (details.Estatus == 8)
                 {
-                    asunto = $"Solicitud de permiso {details.Folio} eliminada";
+                    asunto = $"Solicitud {details.Folio} eliminada";
                 }
                 else 
                 { 
@@ -308,6 +321,10 @@ namespace GPSInformation.Controllers
         public List<IncidenciaPermiso> GetByUsuario(int IdPersonaa)
         {
             if (IdPersonaa == 0) IdPersonaa = _IdPersona;
+            if (!_Accesos.Find(a => a.IdSubModulo == _ALecturaEscrituraAdmin).TieneAcceso && IdPersonaa != _IdPersona)
+            {
+                throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+            }
             var data = _darkM.IncidenciaPermiso.GetOpenquery($" where IdPersona = {IdPersonaa }  and Estatus != 8", "Order by Creado desc");
 
             data.ForEach(result => LLenarTodo(result));
@@ -323,8 +340,9 @@ namespace GPSInformation.Controllers
             {
                 throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
             }
-            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where t01.Estatus = 2 and (t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona}) " +
-                $" or t01.IdPersona in (select t01.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona} and t02.Activa = 1 ) )", "Order by Creado");
+            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where  t01.Estatus = 2 and (" +
+                $"t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona }) or " +
+                $"t01.IdPersona in (select t02.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona } and t02.Activa = 1 ) )", "Order by Creado");
             data.ForEach(result => LLenarTodo(result));
             return data;
         }
@@ -349,7 +367,7 @@ namespace GPSInformation.Controllers
         /// <returns></returns>
         public IncidenciaPermiso Details(int IdIncidenciaPermiso, bool LanzarExcep = false)
         {
-            var result = _darkM.IncidenciaPermiso.Get(IdIncidenciaPermiso);
+            var result = _darkM.IncidenciaPermiso.GetOpenquerys($"where IdIncidenciaPermiso = {IdIncidenciaPermiso} and Estatus != 8");
 
             LLenarTodo(result, true);
 
@@ -422,8 +440,9 @@ namespace GPSInformation.Controllers
                     {
                         throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
                     }
-                    var data = _darkM.IncidenciaPermiso.GetOpenquerys($" as t01 where t01.IdIncidenciaPermiso = {IdIncidenciaPermiso} and (t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona}) " +
-                        $"or t01.IdPersona in (select t01.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona} and t02.Activa = 1 ) )");
+                    var data = _darkM.IncidenciaPermiso.GetOpenquerys($" as t01 where t01.IdIncidenciaPermiso = {IdIncidenciaPermiso} and (" +
+                        $"t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona}) or " +
+                        $"t01.IdPersona in (select t02.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona} and t02.Activa = 1 ) )");
                     if(data is null)
                     {
                         throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };

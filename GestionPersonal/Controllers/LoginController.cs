@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GestionPersonal.Models;
 using GPSInformation;
 using GPSInformation.Models;
 using Microsoft.AspNetCore.Http;
@@ -34,8 +35,37 @@ namespace GestionPersonal.Controllers
             ViewData["Ambiente"] = darkManager.Ambiente();
             return View();
         }
+        [HttpPost]
+        public IActionResult Login([FromBody] LoginRe usuario)
+        {
+            try
+            {
+                var ResultUser = darkManager.Usuario.GetOpenquery($"where UserName = '{usuario.UserName}'","").Find(a => a.Pass == usuario.Pass && a.UserName == usuario.UserName);
+                if (ResultUser == null)
+                {
+                    return BadRequest("Usuario o contraseña incorrectas");
+                }
+                if (!ResultUser.Activo)
+                {
+                    return BadRequest("Tu cuenta ha sido desactivada");
+                }
+                darkManager.Usuario.Element = ResultUser;
+                darkManager.Usuario.Element.UltimoIngreso = DateTime.Now;
 
-        
+                darkManager.Usuario.Update();
+
+                StartSessions(ResultUser);
+                return Ok("sessión iniciada");
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                darkManager.CloseConnection();
+            }
+        }
 
 
         // POST: Login/Create
@@ -49,7 +79,7 @@ namespace GestionPersonal.Controllers
                 {
                     return View(usuario);
                 }
-               var ResultUser = darkManager.Usuario.Get().Find(a => a.Pass == usuario.Pass && a.UserName == usuario.UserName);
+               var ResultUser = darkManager.Usuario.GetOpenquery($"where UserName = '{usuario.UserName}'", "").Find(a => a.Pass == usuario.Pass && a.UserName == usuario.UserName);
                 if(ResultUser == null)
                 {
                     ModelState.AddModelError("", "Usuario o contraseña incorrectas");

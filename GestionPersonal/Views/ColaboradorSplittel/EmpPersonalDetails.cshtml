@@ -1,15 +1,25 @@
 ﻿@model GPSInformation.Models.Persona
-
-<div >
+@using Microsoft.AspNetCore.Http;
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Información personal";
+    var Accesos = (Dictionary<string, GPSInformation.Controllers.AccesosUs>)ViewBag.Accesos;
+}
+<div>
     <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
         <div>
-            <h4 class="mg-b-0 tx-spacing--1">Información Personal</h4>
+            <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
         </div>
         <div class="d-none d-md-block">
             <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpPersonalDetails","ColaboradorSplittel", new  { id = Model.IdPersona })" onclick="GetViewAccess(this)">
-                <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
+                <i class="icon ion-md-refresh mg-r-5 tx-16 lh--9"></i>
             </a>
-            <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpPersonaEdit","ColaboradorSplittel", new  { id = Model.IdPersona })" data-mode="form" onclick="GetViewAccess(this)"><i data-feather="refresh" class="wd-10 mg-r-5"></i>Editar</a>
+            @if (HttpContextAccessor.HttpContext.Session.GetInt32("user_id") == Model.IdPersona || Accesos["AEscrituraEmpleados"].TieneAcceso)
+            {
+                <a href="#" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" data-rute="@Url.Action("EmpPersonaEdit","ColaboradorSplittel", new  { id = Model.IdPersona })" data-mode="form" onclick="GetViewAccess(this)">
+                <i class="icon ion-md-create mg-r-5 tx-16 lh--9"></i></a>
+            }
         </div>
     </div>
     <hr />

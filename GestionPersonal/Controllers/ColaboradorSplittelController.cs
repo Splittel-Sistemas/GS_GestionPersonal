@@ -71,12 +71,12 @@ namespace GestionPersonal.Controllers
                 ViewData["Page"] = Page;
                 ViewData["RowsPerPage"] = RowsPerPage;
                 ViewData["FilterPatterns"] = FilterPatterns;
-
+                ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
                 return View(_V2EmpleadoCtrl._darkM.View_empleado.DataPage(Page, RowsPerPage, FilterPatterns, "order by NombreCompleto")); ;
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex);
+                return ValidateException(ex,null,true,true);
             }
             finally
             {
@@ -89,7 +89,7 @@ namespace GestionPersonal.Controllers
             _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                if (!_V2EmpleadoCtrl._Accesos["AEscrituraEmpleados"].TieneAcceso)
+                if (!_V2EmpleadoCtrl._Accesos["AlecturaEmpleados"].TieneAcceso)
                 {
                     throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
                 }
@@ -100,7 +100,7 @@ namespace GestionPersonal.Controllers
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                return ValidateException(ex);
+                return ValidateException(ex,null,true,false);
             }
             finally
             {
@@ -184,21 +184,20 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
-        public IActionResult EmpPersonaCreate(int id)
+        public IActionResult Create()
         {
             _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Create, V2EmpleadoSeccion.Personal, id, false);
+                _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Create, V2EmpleadoSeccion.Personal, 0, false);
                 ViewData["Genero"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.Genero, V2EmpleadoCatalogoDatatype.SelectList);
                 ViewData["EstadoCivil"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.EstatusCivil, V2EmpleadoCatalogoDatatype.SelectList);
-                ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
-                return PartialView();
+                return View();
             }
             catch (GPException ex)
             {
-                return ValidateException(ex);
+                return ValidateException(ex,null,true, false);
             }
             finally
             {
@@ -208,7 +207,7 @@ namespace GestionPersonal.Controllers
         [AccessView]
         [ValidateAntiForgeryToken]
         [HttpPost]
-        public IActionResult EmpPersonaCreate(Persona persona)
+        public IActionResult Create(Persona persona)
         {
             _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
@@ -217,16 +216,16 @@ namespace GestionPersonal.Controllers
                 ViewData["EstadoCivil"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.EstatusCivil, V2EmpleadoCatalogoDatatype.SelectList, persona.IdEstadoCivil);
                 if (!ModelState.IsValid)
                 {
-                    return PartialView(persona);
+                    return View(persona);
                 }
-                _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Edit, V2EmpleadoSeccion.Personal, persona.IdPersona, false);
+                _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Create, V2EmpleadoSeccion.Personal, persona.IdPersona, false);
                 int Creado = _V2EmpleadoCtrl.EmpPersonaCreate(persona);
                 
-                return RedirectToAction("EmpPersonalDetails", new { id = Creado });
+                return RedirectToAction("Edit", new { id = Creado });
             }
             catch (GPException ex)
             {
-                return ValidateException(ex, persona, false);
+                return ValidateException(ex, persona, false,false);
             }
             finally
             {
@@ -245,7 +244,9 @@ namespace GestionPersonal.Controllers
                 _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Details, V2EmpleadoSeccion.InfoMedica, id);
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
-                return PartialView(_V2EmpleadoCtrl.EmpInfoMedicaDetails(id));
+                var data = _V2EmpleadoCtrl.EmpInfoMedicaDetails(id);
+
+                return PartialView(data);
             }
             catch (GPException ex)
             {
@@ -267,7 +268,10 @@ namespace GestionPersonal.Controllers
                 ViewData["Alergia"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.Alergias, V2EmpleadoCatalogoDatatype.SelectList);
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
-                return PartialView();
+                return PartialView(new InformacionMedica
+                {
+                    IdPersona = id
+                });
             }
             catch (GPException ex)
             {
@@ -295,7 +299,7 @@ namespace GestionPersonal.Controllers
                 _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Edit, V2EmpleadoSeccion.InfoMedica, informacionMedica.IdPersona, true);
                 int Creado = _V2EmpleadoCtrl.EmpInfoMedicaCreate(informacionMedica);
 
-                return RedirectToAction("EmpInfoMedicaDetails", new { id = Creado });
+                return RedirectToAction("EmpInfoMedicaDetails", new { id = informacionMedica.IdPersona });
             }
             catch (GPException ex)
             {
@@ -369,7 +373,8 @@ namespace GestionPersonal.Controllers
                 _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Details, V2EmpleadoSeccion.InfoSplittel, id);
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
-                return PartialView(_V2EmpleadoCtrl.EmpInfoSplittelDetails(id));
+                var data = _V2EmpleadoCtrl.EmpInfoSplittelDetails(id);
+                return PartialView(data);
             }
             catch (GPException ex)
             {
@@ -393,7 +398,7 @@ namespace GestionPersonal.Controllers
                 ViewData["EstatusEmpleado"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.EstatusEmpleado, V2EmpleadoCatalogoDatatype.SelectList);
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
-                return PartialView();
+                return PartialView(new Empleado { IdPersona = id });
             }
             catch (GPException ex)
             {
@@ -423,7 +428,7 @@ namespace GestionPersonal.Controllers
                 _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Create, V2EmpleadoSeccion.InfoSplittel, Empleado.IdPersona, true);
                 int Creado = _V2EmpleadoCtrl.EmpInfoSplittelCreate(Empleado);
 
-                return RedirectToAction("EmpInfoSplittelDetails", new { id = Creado });
+                return RedirectToAction("EmpInfoSplittelDetails", new { id = Empleado.IdPersona });
             }
             catch (GPException ex)
             {
@@ -534,6 +539,25 @@ namespace GestionPersonal.Controllers
             }
         }
         [AccessView]
+        public IActionResult EmpContEmergenciaDelete(int id)
+        {
+            _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                _V2EmpleadoCtrl.ValidarAcciones(V2EmpleadoValidation.Edit, V2EmpleadoSeccion.InfoContactoEmer, id, false);
+                int IdPersona = _V2EmpleadoCtrl.EmpContEmergenciaDelete(id);
+                return RedirectToAction("EmpContEmergenciaList", new { id = IdPersona });
+            }
+            catch (GPException ex)
+            {
+                return ValidateException(ex);
+            }
+            finally
+            {
+                _V2EmpleadoCtrl.Terminar();
+            }
+        }
+        [AccessView]
         public IActionResult EmpContEmergencialCreate(int id)
         {
             _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
@@ -544,7 +568,7 @@ namespace GestionPersonal.Controllers
 
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
-                return PartialView();
+                return PartialView(new PersonaContacto { IdPersona = id });
             }
             catch (GPException ex)
             {
@@ -636,7 +660,93 @@ namespace GestionPersonal.Controllers
         }
         #endregion
 
+        #region Expediente
+        [AccessView]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EmpExpedienteAdd(ExpedienteEmpleado expedienteEmpleado)
+        {
+            _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                if (!_V2EmpleadoCtrl._Accesos["AEscrituraEmpleados"].TieneAcceso)
+                    throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                ViewData["ExpedienteTipoFile"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.ExpedienteTipoFile, V2EmpleadoCatalogoDatatype.SelectList, expedienteEmpleado.IdExpedienteArchivo);
+                _V2EmpleadoCtrl.EmpExpedienteAdd(expedienteEmpleado);
+                return RedirectToAction("EmpExpedienteList", new { IdPersona = expedienteEmpleado.IdPersona });
+            }
+            catch (GPException ex)
+            {
+                return ValidateException(ex, null, true);
+            }
+            finally
+            {
+                _V2EmpleadoCtrl.Terminar();
+            }
+        }
 
+        [AccessView]
+        public IActionResult EmpExpedienteAdd(int IdPersona)
+        {
+            _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                ViewData["ExpedienteTipoFile"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.ExpedienteTipoFile, V2EmpleadoCatalogoDatatype.SelectList);
+                ViewData["IdPersona"] = IdPersona;
+                ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
+                if (!_V2EmpleadoCtrl._Accesos["AEscrituraEmpleados"].TieneAcceso)
+                    throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                
+                return PartialView(new ExpedienteEmpleado { IdPersona = IdPersona });
+            }
+            catch (GPException ex)
+            {
+                return ValidateException(ex, null, true);
+            }
+            finally
+            {
+                _V2EmpleadoCtrl.Terminar();
+            }
+        }
+        [AccessView]
+        public IActionResult EmpExpedienteList(int IdPersona)
+        {
+            _V2EmpleadoCtrl = new V2EmpleadoCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            try
+            {
+                ViewData["IdPersona"] = IdPersona;
+                ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
+                if (!_V2EmpleadoCtrl._Accesos["AlecturaEmpleados"].TieneAcceso)
+                    throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+
+               
+                return PartialView(_V2EmpleadoCtrl.EmpExpedienteList(IdPersona));
+            }
+            catch (GPException ex)
+            {
+                return ValidateException(ex, null, true);
+            }
+            finally
+            {
+                _V2EmpleadoCtrl.Terminar();
+            }
+        }
+        public ActionResult EmpExpedienteFileDownload(int IdPersona, string fileName)
+        {
+            try
+            {
+                byte[] fileBytes = System.IO.File.ReadAllBytes($"C:\\Splittel\\GestionPersonal\\{IdPersona}\\Expediente\\{fileName}");
+                return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
+            }
+            catch (GPSInformation.Exceptions.GpExceptions ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+        }
+        #endregion
+
+        #region Generales
         /// <summary>
         /// 
         /// </summary>
@@ -645,38 +755,56 @@ namespace GestionPersonal.Controllers
         /// <param name="SinVista"> set false for return view with model</param>
         /// <returns></returns>
         [NonAction]
-        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = true)
+        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = true, bool IsPartial = true)
         {
             if (ex.Category == GPSInformation.Exceptions.TypeException.Noautorizado)
             {
                 ViewData["MessageError"] = ex.Message;
-                return PartialView("../ErrorPages/NoAccess");
+                if (!IsPartial)
+                    return View("../ErrorPages/NoAccess");
+                else
+                    return PartialView("../ErrorPages/NoAccess");
             }
             else if (ex.Category == GPSInformation.Exceptions.TypeException.NotFound)
             {
                 ViewData["MessageError"] = ex.Message;
-                return PartialView("../Home/NotFoundPage");
+                if (!IsPartial)
+                    return View("../ErrorPages/NotFoundPage");
+                else
+                    return PartialView("../Home/NotFoundPage");
             }
             else if (ex.Category == GPSInformation.Exceptions.TypeException.Info)
             {
                 if (SinVista)
                 {
                     ViewData["MessageError"] = ex.Message;
-                    return PartialView("../ErrorPages/Error");
+                    if (!IsPartial)
+                        return View("../ErrorPages/Error");
+                    else
+                        return PartialView("../ErrorPages/Error");
                 }
                 else
                 {
                     ViewData["MessageError"] = ex.Message;
                     ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
-                    return PartialView(DataModel);
+                    if (!IsPartial)
+                        return View(DataModel);
+                    else
+                        return PartialView(DataModel);
                 }
 
             }
             else
             {
                 ViewData["MessageError"] = ex.Message;
-                return PartialView("../ErrorPages/Error");
+                if (!IsPartial)
+                    return View("../ErrorPages/Error");
+                else
+                    return PartialView("../ErrorPages/Error");
             }
         }
+        #endregion
+
+
     }
 }

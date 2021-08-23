@@ -47,10 +47,10 @@ else
                 <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
             </div>
             <div class="d-none d-md-block">
-                @if ((bool)ViewBag.ShowEdit && Model.Estatus == 2)
+                @*@if ((bool)ViewBag.ShowEdit && Model.Estatus == 2)
                 {
                     <a href="@Url.Action("Edit","IncPermiso", new { id = Model.IdIncidenciaPermiso })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
-                }
+                }*@
                 @if ((bool)ViewBag.ShowCancel && Model.Estatus <= 4 && Model.Fecha <= DateTime.Parse(DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")))
                 {
                     <a href="@Url.Action("Cancelar","IncPermiso", new { id = Model.IdIncidenciaPermiso })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="x" class="wd-10 mg-r-5"></i>Cancel</a>
@@ -79,64 +79,67 @@ else
     <h4 class="bg-light">I. Solicitante</h4>
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Model.IdPersona })
     <h4 class="bg-light">II. Detalle de solicitud</h4>
-    <dl clsass="row">
-        <dt class="col-md-2 col-form-label">
+    <dl class="row m-1">
+        <dt class="col-lg-2 col-form-label">
             @Html.DisplayNameFor(model => model.Folio)
         </dt>
-        <dd class="col-md-4 col-form-label bg-light mb-1">
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => model.Folio)
         </dd>
-        <dt class="col-md-2 col-form-label">
+        <dt class="col-lg-2 col-form-label">
             @Html.DisplayNameFor(model => model.Fecha)
         </dt>
-        <dd class="col-md-4 col-form-label bg-light mb-1">
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
             @Model.Fecha.ToString("F")
         </dd>
-        <dt class="col-md-2 col-form-label">
+        <dt class="col-lg-2 col-form-label">
             @Html.DisplayNameFor(model => model.Inicio)
         </dt>
-        <dd class="col-md-4 col-form-label bg-light mb-1">
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => model.Inicio)
         </dd>
-        <dt class="col-md-2 col-form-label">
+        <dt class="col-lg-2 col-form-label">
             @Html.DisplayNameFor(model => model.Fin)
         </dt>
-        <dd class="col-md-4 col-form-label bg-light mb-1">
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => model.Fin)
         </dd>
-        <dt class="col-md-2 col-form-label">
+        <dt class="col-lg-2 col-form-label">
             @Html.DisplayNameFor(model => model.DEscripcionTipo)
         </dt>
-        <dd class="col-md-4 col-form-label bg-light mb-1">
+        <dd class="col-lg-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => model.DEscripcionTipo)
         </dd>
-        <dt class="col-md-2 col-form-label">
+        <dt class="col-lg-2 col-form-label">
         </dt>
-        <dd class="col-md-4 col-form-label">
+        <dd class="col-lg-4 col-form-label">
         </dd>
-        <dt class="col-md-2 col-form-label">
+        <dt class="col-lg-2 col-form-label">
             @Html.DisplayNameFor(model => model.DescripcionAsunto)
         </dt>
-        <dd class="col-md-10 col-form-label bg-light mb-1">
+        <dd class="col-lg-10 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => model.DescripcionAsunto)
         </dd>
         @if (Model.IdAsunto == 36)
         {
-            <dt class="col-md-2 col-form-label">
+            <dt class="col-lg-2 col-form-label">
                 @Html.DisplayNameFor(model => model.PagoPermisoDesc)
             </dt>
-            <dd class="col-md-4 col-form-label bg-light mb-1">
+            <dd class="col-lg-4 col-form-label bg-light mb-1">
                 @Html.DisplayFor(model => model.PagoPermisoDesc)
             </dd>
         }
     </dl>
-    <h4 class="bg-light">III. Seguimiento</h4>
-    <hr />
-    <ul class="steps steps-sm steps-lg steps-justified ">
+    @if (Model.Estatus >= 4)
+    {
+        <div class="alert alert-@Model.EstatusColor mt-4 mg-b-0" role="alert">
+            Estimado usuario, la solcitud se encuentra con estatus <strong>@Model.EstatusDescricion</strong>
+        </div>
+    }
+    <h4 class="bg-light mt-3">III. Seguimiento</h4>
+    <ul class="steps steps-sm steps-justified d-none d-lg-block">
         @foreach (var item in Model.Proceso)
         {
-
-
             @if (item.Revisada)
             {
                 <li class="step-item complete">
@@ -176,7 +179,7 @@ else
         }
 
     </ul>
-    @*<ul class="steps steps-vertical col-12 d-block d-sm-none">
+    <ul class="steps step-sm steps-vertical col-12 d-block d-lg-none">
             @foreach (var item in Model.Proceso)
             {
 
@@ -218,13 +221,8 @@ else
                     </li>
                 }
             }
-        </ul>*@
+        </ul>
 
 
-    @if (Model.Estatus >= 4)
-    {
-        <div class="alert alert-@Model.EstatusColor mt-4 mg-b-0" role="alert">
-            Estimado usuario, la solcitud se encuentra con estatus <strong>@Model.EstatusDescricion</strong>
-        </div>
-    }
+
 </div>

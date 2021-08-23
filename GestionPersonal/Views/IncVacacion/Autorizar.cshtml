@@ -12,7 +12,7 @@
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb breadcrumb-style1 mg-b-10">
-                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action(Model.Modee == 2 ? "SolicitudesN1" : "SolicitudesN2","Incidencias")">Solicitudes Pendientes</a> </li>
+                    <li class="breadcrumb-item" aria-current="page"><a href="@Url.Action(Model.Modee == 2 ? "SolicitudesN1" : "SolicitudesN2","Incidencias", new {Tab = "Vacaciones" })">Solicitudes Pendientes</a> </li>
                     <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
                 </ol>
             </nav>
@@ -24,46 +24,52 @@
     </div>
 }
 <div data-label="Autorizar permiso" class="df-example demo-forms" id="app_createPermiso">
-    @if (Details.Estatus >= 4)
+    @*@if (Details.Estatus >= 4)
     {
         <div class="alert alert-@Details.EstatusColor mg-b-0 mt-3 mb-3" role="alert">
             Estimado usuario, la solcitud se encuentra con estatus  <strong>@Details.EstatusDescricion</strong> @Html.Raw(Details.Estatus == 7 ? $"" : "")
         </div>
-    }
+    }*@
     <h4 class="bg-light">I. Solicitante</h4>
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Details.IdPersona })
     <h4 class="bg-light">II. Detalle de solicitud</h4>
     <dl class="dl-horizontal row">
-        <dt class="col-md-2">
+        <dt class="col-md-2 col-form-label">
             @Html.DisplayNameFor(model => Details.IdIncidenciaVacacion)
         </dt>
-        <dd class="col-md-4 border">
+        <dd class="col-md-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => Details.IdIncidenciaVacacion)
         </dd>
-        <dt class="col-md-2">
+        <dt class="col-md-2 col-form-label">
             @Html.DisplayNameFor(model => Details.Inicio)
         </dt>
-        <dd class="col-md-4 border">
+        <dd class="col-md-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => Details.Inicio)
         </dd>
-        <dt class="col-md-2">
+        <dt class="col-md-2 col-form-label">
             @Html.DisplayNameFor(model => Details.Fin)
         </dt>
-        <dd class="col-md-4 border">
+        <dd class="col-md-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => Details.Fin)
         </dd>
-        <dt class="col-md-2">
+        <dt class="col-md-2 col-form-label">
             @Html.DisplayNameFor(model => Details.NoDias)
         </dt>
-        <dd class="col-md-4 border">
+        <dd class="col-md-4 col-form-label bg-light mb-1">
             @Html.DisplayFor(model => Details.NoDias)
+        </dd>
+        <dt class="col-md-2 col-form-label">
+            @Html.DisplayNameFor(model => Details.EstatusDescricion)
+        </dt>
+        <dd class="col-md-4 col-form-label bg-light mb-1">
+            <span class="badge badge-pill badge-@Html.DisplayFor(modelItem => Details.EstatusColor)">@Html.DisplayFor(modelItem => Details.EstatusDescricion)</span>
         </dd>
         @if (Details.ArchivoScan != "")
         {
-            <dt class="col-md-2">
-                @Html.DisplayNameFor(model => Details.NoDias)
+            <dt class="col-md-2 col-form-label">
+                @Html.DisplayNameFor(model => Details.Archivo)
             </dt>
-            <dd class="col-md-4 border">
+            <dd class="col-md-4 col-form-label bg-light mb-1">
                 <a href="@Url.Action("DowloadFile","IncVacacion",new  { fileName = Details.ArchivoScan, IdPersona = Details.IdPersona })" title="click aqui para descargar">@Details.ArchivoScan</a>
             </dd>
 
@@ -85,19 +91,20 @@
     <input type="hidden" asp-for="IdAutorizante" class="form-control" />
     <input type="hidden" asp-for="NombreApro" class="form-control" />
     <div class="form-group row">
+        <label asp-for="Comentarios" class="col-md-2 col-form-label"></label>
+        <div class="col-md-10">
+            <textarea asp-for="Comentarios" class="form-control"></textarea>
+            <span asp-validation-for="Comentarios" class="text-danger"></span>
+        </div>
+
+    </div>
+    <div class="form-group row">
+        <div class="col-md-2"></div>
         <div class="checkbox col-md-offset-2 col-md-4">
             <label>
                 <input asp-for="Autoriza" /> @Html.DisplayNameFor(model => model.Autoriza)
             </label>
         </div>
-    </div>
-    <div class="form-group row">
-        <label asp-for="Comentarios" class="col-sm-2 col-form-label"></label>
-        <div class="col-sm-10">
-            <textarea asp-for="Comentarios" class="form-control"></textarea>
-            <span asp-validation-for="Comentarios" class="text-danger"></span>
-        </div>
-
     </div>
     <div class="form-group row mg-b-0">
         <div class="col-sm-12 text-right">

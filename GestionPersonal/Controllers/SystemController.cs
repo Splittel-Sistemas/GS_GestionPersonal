@@ -1,92 +1,115 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GPSInformation;
+using GPSInformation.Controllers;
+using GPSInformation.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
+using GestionPersonal.Models;
+using GPSInformation.Responses;
+using GestionPersonal.Service;
+using System.Threading.Tasks;
+using System;
+
 
 namespace GestionPersonal.Controllers
 {
     public class SystemController : Controller
     {
-        // GET: System
-        public ActionResult Index()
-        {
-            return View();
-        }
+        private DarkManager darkManager;
+        private V2NotificacionCtrl v2NotificacionCtrl;
+        private readonly IViewRenderService _viewRenderService;
 
-        // GET: System/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
 
-        // GET: System/Create
-        public ActionResult Create()
+        public SystemController(IConfiguration configuration, IViewRenderService viewRenderService)
         {
-            return View();
+            this._viewRenderService = viewRenderService;
+            darkManager = new DarkManager(configuration);
         }
-
-        // POST: System/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        [AccessView]
+        public IActionResult Notification(string Mode, string ViewMode)
         {
+            v2NotificacionCtrl = new V2NotificacionCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
+                var incidencia = v2NotificacionCtrl.Notificaciones(Mode);
+                ViewData["ViewMode"] = ViewMode;
+                return PartialView(incidencia);
             }
-            catch
+            catch (GPSInformation.Exceptions.GPException ex)
             {
-                return View();
+                return ValidateException(ex);
+            }
+            finally
+            {
+                v2NotificacionCtrl.Terminar();
             }
         }
-
-        // GET: System/Edit/5
-        public ActionResult Edit(int id)
+        public IActionResult CheckAsReaded(int IdPersona, int IdNotificacion, string URL_next)
         {
-            return View();
-        }
-
-        // POST: System/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
+            v2NotificacionCtrl = new V2NotificacionCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
             try
             {
-                // TODO: Add update logic here
+                v2NotificacionCtrl.CheckAsReaded(IdPersona, IdNotificacion);
 
-                return RedirectToAction(nameof(Index));
+                return Redirect(URL_next);
             }
-            catch
+            catch (GPSInformation.Exceptions.GPException ex)
             {
-                return View();
+                return ValidateException(ex);
+            }
+            finally
+            {
+                v2NotificacionCtrl.Terminar();
             }
         }
-
-        // GET: System/Delete/5
-        public ActionResult Delete(int id)
+        [NonAction]
+        private IActionResult ValidateException(GPSInformation.Exceptions.GPException ex, object DataModel = null, bool SinVista = false, bool isPartial = false)
         {
-            return View();
-        }
-
-        // POST: System/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
+            if (ex.Category == GPSInformation.Exceptions.TypeException.Noautorizado)
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
+                ViewData["MessageError"] = ex.Message;
+                if (isPartial)
+                    return PartialView("../ErrorPages/NoAccess");
+                else
+                    return View("../ErrorPages/NoAccess");
             }
-            catch
+            else if (ex.Category == GPSInformation.Exceptions.TypeException.NotFound)
             {
-                return View();
+                ViewData["MessageError"] = ex.Message;
+                if (isPartial)
+                    return PartialView("../Home/NotFoundPage");
+                else
+                    return View("../Home/NotFoundPage");
+            }
+            else if (ex.Category == GPSInformation.Exceptions.TypeException.Info)
+            {
+                if (SinVista)
+                {
+                    ViewData["MessageError"] = ex.Message;
+                    if (isPartial)
+                        return PartialView("../ErrorPages/Error");
+                    else
+                        return View("../ErrorPages/Error");
+                }
+                else
+                {
+                    ViewData["MessageError"] = ex.Message;
+                    ModelState.AddModelError(string.IsNullOrEmpty(ex.IdAux) ? "" : ex.IdAux, ex.Message);
+                    if (isPartial)
+                        return PartialView(DataModel);
+                    else
+                        return View(DataModel);
+                }
+
+            }
+            else
+            {
+                ViewData["MessageError"] = ex.Message;
+                if (isPartial)
+                    return PartialView("../ErrorPages/Error");
+                else
+                    return View("../ErrorPages/Error");
             }
         }
     }

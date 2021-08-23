@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<GPSInformation.Views.View_empleado>
 
 @{
-    ViewData["Title"] = "Lista de empleados";
+    ViewData["Title"] = "Lista de Colaboradores";
+    var Accesos = (Dictionary<string, GPSInformation.Controllers.AccesosUs>)ViewBag.Accesos;
 }
 <div class="d-flex align-items-center justify-content-between mg-b-30">
     <h4 class="tx-15 mg-b-0">@ViewData["Title"]</h4>

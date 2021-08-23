@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace GPSInformation.Controllers
 {
@@ -67,6 +69,8 @@ namespace GPSInformation.Controllers
             this._darkM.LoadObject(GpsManagerObjects.PersonaContacto);
             this._darkM.LoadObject(GpsManagerObjects.Empleado);
             this._darkM.LoadObject(GpsManagerObjects.SystSelect);
+            this._darkM.LoadObject(GpsManagerObjects.ExpedienteArchivo);
+            this._darkM.LoadObject(GpsManagerObjects.ExpedienteEmpleado);
 
             _UsrCrt = new UsuarioCtrl(_darkM, true);
 
@@ -81,8 +85,12 @@ namespace GPSInformation.Controllers
             _Accesos["AEscrituraProspectos"] = new AccesosUs { IdSubModulo = 22, TieneAcceso = _UsrCrt.ValidAction(IdUsuario, 22) };
             _Accesos["ALecturaPrenomina"] = new AccesosUs { IdSubModulo = 23, TieneAcceso = _UsrCrt.ValidAction(IdUsuario, 23) };
             _Accesos["AEscrituraPrenomina"] = new AccesosUs { IdSubModulo = 25, TieneAcceso = _UsrCrt.ValidAction(IdUsuario, 25) };
+            _Accesos["AEscrituraPRequisisiones"] = new AccesosUs { IdSubModulo = 25, TieneAcceso = _UsrCrt.ValidAction(IdUsuario, 26) };
+            _Accesos["AAutorizarRequisisiones"] = new AccesosUs { IdSubModulo = 25, TieneAcceso = _UsrCrt.ValidAction(IdUsuario, 28) };
+            _Accesos["ACrearIncidencias"] = new AccesosUs { IdSubModulo = 25, TieneAcceso = _UsrCrt.ValidAction(IdUsuario, 1054) };
         }
         #endregion
+
         #region Empleado informacion personal
         /// <summary>
         /// 
@@ -112,6 +120,7 @@ namespace GPSInformation.Controllers
         {
             ValidarAcciones(V2EmpleadoValidation.Create, V2EmpleadoSeccion.Personal, persona.IdPersona, persona);
             ValidCorreo(persona.Email, "Email");
+            persona.Empleado = 1;
             _darkM.Persona.Element = persona;
             _darkM.Persona.Add();
             int lastId = _darkM.Persona.GetLastId();
@@ -213,10 +222,10 @@ namespace GPSInformation.Controllers
 
             if (data != null)
             {
-                data.Cat_EstatusEmpleado = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.Genero, V2EmpleadoCatalogoDatatype.Details, data.IdEstatus);
-                data.Cat_Puestos = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.EstatusCivil, V2EmpleadoCatalogoDatatype.Details, data.IdPuesto);
-                data.Cat_Sociedades = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.EstatusCivil, V2EmpleadoCatalogoDatatype.Details, data.IdSociedad);
-                data.Cat_TipoNomina = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.EstatusCivil, V2EmpleadoCatalogoDatatype.Details, data.TipoNomina);
+                data.Cat_EstatusEmpleado = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.EstatusEmpleado, V2EmpleadoCatalogoDatatype.Details, data.IdEstatus);
+                data.Cat_Puestos = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.Puesto, V2EmpleadoCatalogoDatatype.Details, data.IdPuesto);
+                data.Cat_Sociedades = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.Sociedad, V2EmpleadoCatalogoDatatype.Details, data.IdSociedad);
+                data.Cat_TipoNomina = (SystSelect)GetCatalogo(V2EmpleadoCatalogo.TipoNomina, V2EmpleadoCatalogoDatatype.Details, data.TipoNomina);
             }
 
             return data;
@@ -259,7 +268,7 @@ namespace GPSInformation.Controllers
                 }
             }
             #endregion
-
+            persona.Egreso = DateTime.Now;
             _darkM.Empleado.Element = persona;
             _darkM.Empleado.Add();
             lastId = _darkM.Empleado.GetIntValue($"select IdEmpleado from Empleado where IdPersona = {persona.IdPersona}");
@@ -274,10 +283,10 @@ namespace GPSInformation.Controllers
         public int EmpInfoSplittelEdit(Empleado persona)
         {
             ValidarAcciones(V2EmpleadoValidation.Edit, V2EmpleadoSeccion.InfoSplittel, persona.IdPersona, persona);
-            var lastId = _darkM.Empleado.GetIntValue($"select IdInformacionMedica from InformacionMedica where IdPersona = {persona.IdPersona}");
+            var lastId = _darkM.Empleado.GetIntValue($"select IdEmpleado from Empleado where IdPersona = {persona.IdPersona}");
 
             if (lastId == 0)
-                throw new GPException { Description = $"Estimado usuario el empleado aun cuenta con su respectiva información de Empleado", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+                throw new GPException { Description = $"Estimado usuario el empleado aun no cuenta con su respectiva información de Empleado", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
 
             ValidCorreo(persona.Email, "Email");
 
@@ -306,7 +315,8 @@ namespace GPSInformation.Controllers
                 }
             }
             #endregion
-
+            persona.Egreso = DateTime.Now;
+            persona.IdEmpleado = lastId;
             _darkM.Empleado.Element = persona;
             _darkM.Empleado.Update();
             SPValidator(persona.IdPersona, "EmpInfoSplittelEdit");
@@ -321,7 +331,7 @@ namespace GPSInformation.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public PersonaContacto EmpContEmergenciaDetails(int id)
+        public PersonaContacto EmpContEmergenciaDetails(int id, bool ShowExceNotFound = false)
         {
             //ValidarAcciones(V2EmpleadoValidation.Details, V2EmpleadoSeccion.InfoContactoEmer, IdPersona);
 
@@ -329,6 +339,10 @@ namespace GPSInformation.Controllers
             if (data.IdPersona != _IdPersona && !_Accesos["AEscrituraEmpleados"].TieneAcceso)
             {
                 throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+            }
+            if(ShowExceNotFound && data is null)
+            {
+                throw new GPException { Description = $"Estimado usuario no se encontró el contacto de emergencia seleccionado", ErrorCode = 0, Category = TypeException.NotFound, IdAux = "" };
             }
 
             if (data != null)
@@ -376,6 +390,82 @@ namespace GPSInformation.Controllers
 
             return persona.IdPersonaContacto; 
         }
+        public int EmpContEmergenciaDelete(int IdPersonaConacto)
+        {
+            var details = EmpContEmergenciaDetails(IdPersonaConacto, true);
+
+            _darkM.PersonaContacto.Element = details;
+            _darkM.PersonaContacto.Delete();
+            SPValidator(details.IdPersona, "EmpContEmergenciaDelete");
+            return details.IdPersona;
+        }
+        #endregion
+
+        #region expediente
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="IdPersona"></param>
+        /// <returns></returns>
+        public List<ExpedienteEmpleado> EmpExpedienteList(int IdPersona)
+        {
+            if (!_Accesos["AlecturaEmpleados"].TieneAcceso)
+            {
+                throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+            }
+            var data = _darkM.ExpedienteEmpleado.GetOpenquery($"where IdPersona = {IdPersona} and Actual = 1", "");
+            data.ForEach(file =>
+            {
+                file.TipDocument = _darkM.ExpedienteArchivo.Get(file.IdExpedienteArchivo).Nombre;
+            });
+            return data;
+        }
+
+        public void EmpExpedienteAdd(ExpedienteEmpleado expedienteEmpleado)
+        {
+            if (!_Accesos["AEscrituraEmpleados"].TieneAcceso)
+                throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+            
+
+            if(expedienteEmpleado.Archivo is null)
+                throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Info, IdAux = "Archivo" };
+            if (expedienteEmpleado.Archivo != null && expedienteEmpleado.Archivo.Length == 0)
+                throw new GPException { Description = $"Estimado usuario el archivo seleccionado esta dañado", ErrorCode = 0, Category = TypeException.Info, IdAux = "Archivo" };
+
+            string FileTipe = _darkM.ExpedienteArchivo.GetStringValue($"select Nombre from ExpedienteArchivo where IdExpedienteArchivo = {expedienteEmpleado.IdExpedienteArchivo}");
+            if(FileTipe == "")
+                throw new GPException { Description = $"Por favor selecciona un Tipo de documento", ErrorCode = 0, Category = TypeException.Info, IdAux = "IdExpedienteArchivo" };
+
+            _darkM.ExpedienteEmpleado.GetOpenquery($"where IdPersona = {expedienteEmpleado.IdPersona} and IdExpedienteArchivo = {expedienteEmpleado.IdExpedienteArchivo}", "").ForEach(file =>
+            {
+                file.Actual = false;
+                _darkM.ExpedienteEmpleado.Element = file;
+                _darkM.ExpedienteEmpleado.Update();
+            });
+
+            int lastID = _darkM.ExpedienteArchivo.GetLastId();
+            expedienteEmpleado.Ruta = $"{(lastID+1)}_{FileTipe.Replace(" ","_")}_arct_.{expedienteEmpleado.Archivo.FileName.Split('.')[1]}";
+            
+            string Directorio = $"C:\\Splittel\\GestionPersonal\\{expedienteEmpleado.IdPersona}\\Expediente";
+            if (!System.IO.Directory.Exists(Directorio))
+            {
+                System.IO.Directory.CreateDirectory(Directorio);
+            }
+
+            Directorio = $"{Directorio}\\{expedienteEmpleado.Ruta}";
+            using (FileStream fs = System.IO.File.Create(Directorio))
+            {
+                expedienteEmpleado.Archivo.CopyTo(fs);
+                fs.Flush();
+            }
+            expedienteEmpleado.TipoFile = expedienteEmpleado.Archivo.ContentType;
+            expedienteEmpleado.Actual = true;
+
+            _darkM.ExpedienteEmpleado.Element = expedienteEmpleado;
+            _darkM.ExpedienteEmpleado.Add();
+        }
+
+
         #endregion
 
         #region MetodosGenerales
@@ -461,7 +551,7 @@ namespace GPSInformation.Controllers
             {
                 if (DataType == V2EmpleadoCatalogoDatatype.Details)
                 {
-                    data = _darkM.SystSelect.GetUnicSatatment($"select IdPuesto as Value, Descripcion as Label  from Sociedad where IdSociedad = {selected}");
+                    data = _darkM.SystSelect.GetUnicSatatment($"select IdPuesto as Value, Nombre as Label  from View_puestos where IdPuesto = {selected}");
                 }
                 if (DataType == V2EmpleadoCatalogoDatatype.List || DataType == V2EmpleadoCatalogoDatatype.SelectList)
                 {
@@ -502,6 +592,13 @@ namespace GPSInformation.Controllers
                 {
                     data = _darkM.SystSelect.GetSpecialStat("select IdPersona as Value, NombreCompleto as Label from View_empleado where IdEstatus != 20 order by NombreCompleto");
 
+                }
+            }
+            if (v2EmpleadoCatalogo == V2EmpleadoCatalogo.ExpedienteTipoFile)
+            {
+                if (DataType == V2EmpleadoCatalogoDatatype.List || DataType == V2EmpleadoCatalogoDatatype.SelectList)
+                {
+                    data = _darkM.SystSelect.GetSpecialStat("select IdExpedienteArchivo as Value, Nombre as Label from ExpedienteArchivo order by Nombre");
                 }
             }
             if (DataType == V2EmpleadoCatalogoDatatype.SelectList) return selected == 0 ? new SelectList((System.Collections.IEnumerable)data, "Value", "Label") : new SelectList((System.Collections.IEnumerable)data, "Value", "Label", selected);
@@ -545,7 +642,36 @@ namespace GPSInformation.Controllers
         /// <param name="Data"></param>
         public void ValidarAcciones(V2EmpleadoValidation mode, V2EmpleadoSeccion seccion, int IdPersona, object Data = null, bool validModel = true)
         {
-            if (mode == V2EmpleadoValidation.Create || mode == V2EmpleadoValidation.Edit)
+            if(mode == V2EmpleadoValidation.Create)
+            {
+                if(seccion == V2EmpleadoSeccion.Personal)
+                {
+                    if (!_Accesos["AEscrituraEmpleados"].TieneAcceso)
+                    {
+                        throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                    }
+                }
+                else
+                {
+                    if (IdPersona != _IdPersona)
+                    {
+                        if (!_Accesos["AEscrituraEmpleados"].TieneAcceso)
+                        {
+                            throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                        
+                        }
+                    }
+                    if (IdPersona == _IdPersona && seccion == V2EmpleadoSeccion.InfoSplittel)
+                    {
+                        if (!_Accesos["AEscrituraEmpleados"].TieneAcceso)
+                        {
+                            throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
+                        }
+                    }
+
+                }
+            }
+            if ( mode == V2EmpleadoValidation.Edit)
             {
                 if (Data is null && validModel)
                 {
@@ -647,7 +773,8 @@ namespace GPSInformation.Controllers
         /// <summary>
         /// ok
         /// </summary>
-        JefeAuxiliarEmpleado = 10
+        JefeAuxiliarEmpleado = 10,
+        ExpedienteTipoFile = 11
     }
     public enum V2EmpleadoCatalogoDatatype
     {

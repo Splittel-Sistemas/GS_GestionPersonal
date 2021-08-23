@@ -325,7 +325,42 @@ namespace GestionPersonal.Controllers
             {
                 var incidencia = _V2IncidenciaCtrl.Details(IdPermiso, true);
 
-                if(incidencia.CreadoPor != "Admin")
+                #region Notifiacion
+                //-------------------------------------------------------
+                //--estatus de acuerdo a la incidencias nueva version
+                //------------------------------------------------------ -
+                //--1 - Solicitud creada
+                //--2 - Jefe inmediado
+                //--3 - Gestión personal
+                //--4 - Autorizada
+                //--5 - Councluida
+                //--6 - Cancelada
+                //--7 - Rechazada
+                //--8 - Eliminada
+                //--9 - Expirada
+
+                var Notificaciones = new V2NotificacionCtrl(_V2IncidenciaCtrl._darkM, _V2IncidenciaCtrl._IdUsuario, _V2IncidenciaCtrl._IdPersona);
+                if (incidencia.Estatus == 6)
+                {
+                    Notificaciones.AddToPermiso(
+                        $"Solicitud <strong>{incidencia.Folio}</strong> cancelada",
+                        $"El colaborador@ <strong>{_V2IncidenciaCtrl._NombreCompleto}</strong> ha cancelado la solicitud: <strong>{incidencia.Folio}</strong>",
+                        Url.Action("Details", "IncVacacion", new { id = incidencia.IdIncidenciaPermiso }),
+                        "Link",
+                        36);
+                }
+                if (incidencia.Estatus == 3 && incidencia.CreadoPor == "E")
+                {
+                    Notificaciones.AddToPermiso(
+                        $"Nueva solicitud <strong>{incidencia.Folio}</strong>",
+                        $"El colaborador@ <strong>{_V2IncidenciaCtrl._NombreCompleto}</strong> ha creado una solicitud con folio: <strong>{incidencia.Folio}</strong>",
+                        Url.Action("Autorizar", "IncVacacion", new { id = incidencia.EncriptId, Mode = GPSInformation.Tools.EncryptData.Encrypt(incidencia.Estatus + "") }),
+                        "Link",
+                        36); ;
+                }
+                #endregion
+
+                if (incidencia.CreadoPor != "Admin")
                 {
                     if (incidencia.Estatus == 2 || incidencia.Estatus == 3)
                         incidencia.Link = $"{((HttpContext.Request.IsHttps ? "https:" : "http: "))}//{HttpContext.Request.Host}{Url.Action("Autorizar", "IncPermiso", new { id = incidencia.EncriptId, Mode = GPSInformation.Tools.EncryptData.Encrypt(incidencia.Estatus + "") })}";

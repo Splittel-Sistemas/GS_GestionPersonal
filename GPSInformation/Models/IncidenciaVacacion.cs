@@ -57,11 +57,11 @@ namespace GPSInformation.Models
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Editado { get; set; }
 
-        [Display(Name = "Archivo")]
+        [Display(Name = "Formato de vacaciones Firmado")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string ArchivoScan { get; set; }
         
-        [Display(Name = "Archivo")]
+        [Display(Name = "Formato de vacaciones Firmado")]
         [ColumnDB(IsMapped = false, IsKey = false)]
         public IFormFile Archivo { get; set; }
 
