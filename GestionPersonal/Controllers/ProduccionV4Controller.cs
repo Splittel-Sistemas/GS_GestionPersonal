@@ -446,7 +446,7 @@ namespace GestionPersonal.Controllers
                                 var data = new GrupoCambios
                                 {
                                     IdGrupo = IdGrupo,
-                                    IdPersona = IdPersona,
+                                    IdPersona = IdPersona, 
                                     Comentarios = comentarios,
                                     Creado = DateTime.Parse(fecha).AddDays(dias * -1),
                                     Fecha = DateTime.Parse(fecha).AddDays(dias * -1),

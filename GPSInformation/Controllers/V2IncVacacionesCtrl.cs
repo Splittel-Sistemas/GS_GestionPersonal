@@ -83,6 +83,7 @@ namespace GPSInformation.Controllers
             this._darkM.LoadObject(GpsManagerObjects.Usuario);
             this._darkM.LoadObject(GpsManagerObjects.IncidenciaAuthAux);
             this._darkM.LoadObject(GpsManagerObjects.DiaFeriado);
+            this._darkM.LoadObject(GpsManagerObjects.VacionesPeriodo);
 
             _UsrCrt = new UsuarioCtrl(_darkM, true);
             _NombreCompleto = _darkM.dBConnection.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {IdPersona}");
@@ -92,6 +93,10 @@ namespace GPSInformation.Controllers
         #endregion
 
         #region Metodos
+        public void ProcessPeriodos()
+        {
+
+        }
         /// <summary>
         /// 
         /// </summary>

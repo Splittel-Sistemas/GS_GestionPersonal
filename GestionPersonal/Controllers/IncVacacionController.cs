@@ -10,6 +10,8 @@ using GPSInformation.Responses;
 using GestionPersonal.Service;
 using System.Threading.Tasks;
 using System;
+using System.IO;
+using OfficeOpenXml;
 
 namespace GestionPersonal.Controllers
 {
@@ -24,6 +26,58 @@ namespace GestionPersonal.Controllers
         {
             this._viewRenderService = viewRenderService;
             darkManager = new DarkManager(configuration);
+        }
+
+        [AccessView]
+        public IActionResult ProcessPeriodos()
+        {
+            _V2IncVacacionesCtrl = new V2IncVacacionesCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
+            _V2IncVacacionesCtrl._darkM.StartTransaction();
+            try
+            {
+
+                var file = new FileInfo(@"C:\Users\Luis Martinez\Desktop\VACACIONES SPLITTEL 2021.2.xlsx");
+                using (var package = new ExcelPackage(file))
+                {
+                    for (int i = 1; i <= package.Workbook.Worksheets.Count; i++)
+                    {
+                        var excelWorksheet = package.Workbook.Worksheets[i];
+                        var vacacion = new VacionesPeriodo();
+
+                        int rows = excelWorksheet.Dimension.Rows; // 20
+                        for (int row = 3; row <= rows; row++)
+                        {
+
+                            var NumeroNomina = excelWorksheet.Cells[row, 1].Value;
+                            if(NumeroNomina != null)
+                            {
+                                for (int col = 5; col <= 23; col++)
+                                {
+                                    int IdPersona = _V2IncVacacionesCtrl._darkM.dBConnection.GetIntegerValue($"select IdPersona from View_empleado where NumeroNomina = '{NumeroNomina.ToString().Trim()}'");
+                                    if (IdPersona == 0)
+                                    {
+                                        throw new GPSInformation.Exceptions.GPException
+                                        {
+                                            Description = $"no se encontro el empleado con Nomina: {NumeroNomina.ToString().Trim()} de la hoja: {package.Workbook.Worksheets[i].Name}"
+                                        };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                _V2IncVacacionesCtrl._darkM.Commit();
+                return Ok("Se han procesado los periodos");
+            }
+            catch (GPSInformation.Exceptions.GPException ex)
+            {
+                _V2IncVacacionesCtrl._darkM.RolBack();
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                _V2IncVacacionesCtrl.Terminar();
+            }
         }
         [AccessView]
         public IActionResult Notification(int id)
