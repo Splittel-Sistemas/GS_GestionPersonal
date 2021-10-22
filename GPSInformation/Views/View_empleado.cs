@@ -15,6 +15,9 @@ namespace GPSInformation.Views
         public string NombreCompleto { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
+        public string NombreCompleto2 { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
         public string Correo { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]

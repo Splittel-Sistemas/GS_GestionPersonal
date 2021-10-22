@@ -59,9 +59,14 @@ controllerName == "Evaluacion" && controllerAction == "EmailDetails")
     else
     {
         <partial name="_NavBar" />
-        @if (controllerName == "Sala" && controllerAction == "Reservar" || controllerName == "Usuario" && controllerAction == "DetailsEmail")
+        @if (controllerName == "Sala" && controllerAction == "Reservar" 
+            || controllerName == "Usuario" && controllerAction == "DetailsEmail" 
+            || controllerName == "IncPermiso" && controllerAction == "CompleteProcess" 
+            || controllerName == "IncVacacion" && controllerAction == "CompleteProcess")
         {
-            @if (controllerName == "Sala" && controllerAction == "Reservar")
+            @if (controllerName == "Sala" && controllerAction == "Reservar" 
+                || controllerName == "IncPermiso" && controllerAction == "CompleteProcess" 
+                || controllerName == "IncVacacion" && controllerAction == "CompleteProcess")
             {
 
                 @RenderBody()
@@ -100,7 +105,6 @@ controllerName == "Evaluacion" && controllerAction == "EmailDetails")
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-body pd-20 pd-sm-30" id="ModalFormViewMedium_contente" data-renderContent="Empleado">
-
                 </div><!-- modal-body -->
             </div><!-- modal-content -->
         </div><!-- modal-dialog -->

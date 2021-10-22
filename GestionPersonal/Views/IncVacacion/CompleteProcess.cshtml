@@ -1,0 +1,53 @@
+﻿@model GPSInformation.Models.IncidenciaVacacion
+@if (ViewBag.status == "Creada")
+{
+<div class="content content-fixed content-auth-alt mt-5">
+    <div class="container ht-100p tx-center mt-5">
+        <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">Gestión de personal</h1>
+            <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://img.icons8.com/color/96/000000/ok--v2.png" class="img-fluid" alt=""></div>
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">@Model.Folio</h1>
+            <h5 class="tx-16 tx-sm-18 tx-lg-20 tx-normal mg-b-20">Se ha creado exitosamente tu solicitud de vacaciones </h5>
+            <p class="tx-color-03 mg-b-30">Fecha de la solicitud: @Model.Creado.ToString("F")</p>
+            <div class="mg-b-40">
+                <a href="@Model.Link" class="btn btn-white bd-2 pd-x-30">Ver detalles</a>
+                <a href="@ViewBag.link2" class="btn btn-white bd-2 pd-x-30">@ViewBag.link2Name</a>
+            </div>
+        </div>
+    </div><!-- container -->
+</div><!-- content --> }
+            else if (ViewBag.status == "Cancelada")
+            {
+<div class="content content-fixed content-auth-alt mt-5">
+    <div class="container ht-100p tx-center mt-5">
+        <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">Gestión de personal</h1>
+            <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://img.icons8.com/fluency/50/000000/info.png" class="img-fluid" alt=""></div>
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">@Model.Folio</h1>
+            <h5 class="tx-16 tx-sm-18 tx-lg-20 tx-normal mg-b-20">Se ha cancelado exitosamente tu solicitud de vacaciones </h5>
+            <p class="tx-color-03 mg-b-30">Fecha de la solicitud: @Model.Editado.ToString("F")</p>
+            <div class="mg-b-40">
+                <a href="@Model.Link" class="btn btn-white bd-2 pd-x-30">Ver detalles</a>
+                <a href="@ViewBag.link2" class="btn btn-white bd-2 pd-x-30">@ViewBag.link2Name</a>
+            </div>
+        </div>
+    </div><!-- container -->
+</div><!-- content -->}
+
+else if (ViewBag.status == "Autorizada")
+{
+<div class="content content-fixed content-auth-alt mt-5">
+    <div class="container ht-100p tx-center mt-5">
+        <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">Gestión de personal</h1>
+            <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://img.icons8.com/color/96/000000/ok--v2.png" class="img-fluid" alt=""></div>
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">@Model.Folio</h1>
+            <h5 class="tx-16 tx-sm-18 tx-lg-20 tx-normal mg-b-20">Gracias por procesar esta solicitud de vacaciones</h5>
+            <div class="mg-b-40">
+                <a href="@ViewBag.link" class="btn btn-white bd-2 pd-x-30">Mas detalles de autorización</a>
+                <a href="@ViewBag.link2" class="btn btn-white bd-2 pd-x-30">@ViewBag.link2Name</a>
+            </div>
+        </div>
+    </div><!-- container -->
+</div><!-- content -->}
+

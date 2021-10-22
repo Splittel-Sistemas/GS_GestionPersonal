@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GPSInformation.Models
 {
-    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false)]
+    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creado", Updated_at = "Actualizado")]
     public class VacionesPeriodo
     {
         [Display(Name = "ID")]
@@ -29,14 +29,23 @@ namespace GPSInformation.Models
         public int DiasAprobadors { get; set; }
 
         [Required]
-        [Display(Name = "DiasUsados")]
+        [Display(Name = "Usado")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public double DiasUsados { get; set; }
-        
+
+        [Required]
+        [Display(Name = "Disponible")]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public double DiasDisp { get; set; }
+
         [Required]
         [Display(Name = "Completo")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public bool Completo { get; set; }
+        
+        [Display(Name = "comentarios")]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string comentarios { get; set; }
 
         [Required]
         [Display(Name = "Creado")]

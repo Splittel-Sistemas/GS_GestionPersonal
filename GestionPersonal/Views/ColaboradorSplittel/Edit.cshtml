@@ -46,7 +46,7 @@
             </nav>
         </div><!-- col -->
         <div class="col-lg-9 col-xl-10">
-            <div data-label="Informacion" class="df-example demo-forms"  id="content_seccionsempleado" data-renderContent="Empleado"></div>
+            <div data-label="Informacion" class="df-example demo-forms"  id="content_seccionsempleado" data-renderContent="Empleado" data-ruteRender></div>
         </div><!-- col -->
     </div><!-- row -->
 </div>
@@ -76,13 +76,10 @@
                     var seccion = App_editEmpleado.listSeccions.find(a => a.seccion == seccionName)
                     if (seccion != null && seccion != undefined) {
                         App_editEmpleado.contentActive = seccionName;
-                        console.log("Evaluando: " + seccionName)
                         if (seccion.viewHtml != "" && forceRefresh == false) {
-                            console.log("obteniendo vista html 2: " + seccionName)
                             document.getElementById("content_seccionsempleado").innerHTML = seccion.viewHtml
                         }
                         if (seccion.viewHtml != "" && forceRefresh == true || seccion.viewHtml == "") {
-                            console.log("obteniendo vista html : " + seccionName)
                             document.getElementById("content_seccionsempleado").innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
                             await axios.get(seccion.ruta, null, null).then(response => {
                                 document.getElementById("content_seccionsempleado").innerHTML = response.data
@@ -115,8 +112,6 @@
                 if (form != null && form != undefined) {
                     form.addEventListener("submit", function (event) {
                         event.preventDefault();
-                        console.log("event prevent")
-
                         GlobalSendForm(true, false, "IncAutAdd", "content_seccionsempleado", function () {
                             $('.select2').select2({
                                 placeholder: 'Choose one',

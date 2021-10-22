@@ -100,8 +100,8 @@ namespace GestionPersonal.Controllers
                 {
                     throw new GpExceptions("Solo puedes agregar un máximo de '"+ Result.DiasAprobadors + "' dias");
                 }
-
-                Result.DiasUsados = dias;
+                Result.DiasDisp = dias;
+                Result.DiasUsados = Result.DiasAprobadors - Result.DiasDisp;
                 darkManager.VacionesPeriodo.Element = Result;
                 if (!darkManager.VacionesPeriodo.Update())
                 {

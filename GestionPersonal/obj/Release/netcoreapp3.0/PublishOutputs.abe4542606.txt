@@ -3453,6 +3453,7 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\PubTmp\Out\wwwroot\images\banner2.svg
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\PubTmp\Out\wwwroot\images\banner3.svg
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\PubTmp\Out\wwwroot\images\PerfilDefault.jpg
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\PubTmp\Out\wwwroot\js\FormacionCapacitacion.js
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\PubTmp\Out\wwwroot\js\getorgchart1.js
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\PubTmp\Out\wwwroot\js\ProduccionV4.js
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\PubTmp\Out\wwwroot\js\site.js

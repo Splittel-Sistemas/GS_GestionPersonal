@@ -108,6 +108,10 @@ namespace GPSInformation.Controllers
         public IEnumerable<EvaluacioSeccion> GetPreguntas(int idEvaluacion)
         {
             var Evaluacion_re = darkManager.Evaluacion.Get(idEvaluacion);
+            if (Evaluacion_re.Eliminada)
+            {
+                throw new Exceptions.GpExceptions("Evaluación no encontrada!");
+            }
             var Secciones_re = darkManager.EvaluacioSeccion.Get(Evaluacion_re.IdEvaluacionTemplate + "", "IdEvaluacionTemplate");
             Secciones_re.ForEach(a =>
             {
@@ -119,7 +123,7 @@ namespace GPSInformation.Controllers
         public List<Evaluacion> GetEvaluacions(int IdPersona)
         {
             List<Evaluacion> evaluacions = new List<Evaluacion>();
-            var EvaEmp_re = darkManager.EvaluacionEmpleado.Get("" + IdPersona, "IdPersona");
+            var EvaEmp_re = darkManager.EvaluacionEmpleado.GetOpenquery($"where IdPersona = {IdPersona} ", "");
             EvaEmp_re.ForEach(a => {
                 var Evaluacion_re = darkManager.Evaluacion.Get(a.IdEvaluacion);
                 Evaluacion_re.PersonaName = "";
@@ -143,10 +147,11 @@ namespace GPSInformation.Controllers
 
         public Evaluacion GetEvaluacion(int IdPersona, int IdEvaluacion)
         {
-            var EvaEmp_re = darkManager.EvaluacionEmpleado.Get(
-                "IdPersona", "" + IdPersona,
-                "IdEvaluacion", "" + IdEvaluacion);
-            if(EvaEmp_re == null)
+            //var EvaEmp_re = darkManager.EvaluacionEmpleado.Get(
+            //    "IdPersona", "" + IdPersona,
+            //    "IdEvaluacion", "" + IdEvaluacion);
+            var EvaEmp_re = darkManager.EvaluacionEmpleado.GetOpenquerys($"where IdPersona = {IdPersona} and IdEvaluacion = {IdEvaluacion} and Eliminada = 0");
+            if (EvaEmp_re == null)
             {
                 throw new Exceptions.GpExceptions(string.Format("La evaluacion E{0:0000} no fue encontrada", IdEvaluacion));
             }
@@ -166,9 +171,30 @@ namespace GPSInformation.Controllers
             return Evaluacion_re;
         }
 
-        public ModelPagination<Evaluacion> Get(int Page, int RowsPerPage)
+        public ModelPagination<Evaluacion> Get(int Page, int RowsPerPage, string FilterPatterns)
         {
-            var List_re = darkManager.Evaluacion.DataPage(Page, RowsPerPage, "", "order by Creada Desc");
+
+            if (!string.IsNullOrEmpty(FilterPatterns))
+            {
+                //var isDate = 
+                DateTime datePattern;
+                bool isDate = DateTime.TryParse(FilterPatterns, out datePattern);
+
+                FilterPatterns = $"where Nombre like '%{FilterPatterns}%' or " +
+                    $"IdEvaluacion in(" +
+                    $"        select t01.IdEvaluacion from View_EvalInstructor as t01 where t01.NombreCompleto like '%{FilterPatterns}%' " +
+                    $") or " +
+                    $"PonenteNameExt like '%{FilterPatterns}%'";
+
+                FilterPatterns += isDate ? $" or InicioFecha = '{datePattern.ToString("yyyy-MM-dd")}' " : "";
+                FilterPatterns += isDate ? $" or Creada = '{datePattern.ToString("yyyy-MM-dd")}' " : "";
+            }
+            else
+            {
+                FilterPatterns = " where eliminada = 0";
+            }
+
+            var List_re = darkManager.Evaluacion.DataPage(Page, RowsPerPage, FilterPatterns, "order by Creada Desc");
 
             foreach (var Evaluacion_re in List_re.Data)
             {
@@ -200,6 +226,10 @@ namespace GPSInformation.Controllers
         public Evaluacion Get(int idEvaluacion)
         {
             var Evaluacion_re = darkManager.Evaluacion.Get(idEvaluacion);
+            if (Evaluacion_re.Eliminada)
+            {
+                throw new Exceptions.GpExceptions("Evaluación no encontrada!");
+            }
             Evaluacion_re.PersonaName = "";
             Evaluacion_re.ModeloName = darkManager.EvaluacionTemplate.Get(Evaluacion_re.IdEvaluacionTemplate).Nombre;
             Evaluacion_re.ModalidadName = darkManager.CatalogoOpcionesValores.Get(Evaluacion_re.IdModalidad).Descripcion;
@@ -623,6 +653,23 @@ namespace GPSInformation.Controllers
 
 
             
+        }
+
+        public  void Delete(int IdEvaluacion)
+        {
+            var Evaluacion_re = darkManager.Evaluacion.Get(IdEvaluacion);
+            if (Evaluacion_re.Eliminada)
+            {
+                throw new Exceptions.GpExceptions("Evaluación no encontrada!");
+            }
+
+            Evaluacion_re.Eliminada = true;
+
+            darkManager.Evaluacion.Element = Evaluacion_re;
+
+            darkManager.Evaluacion.Update();
+
+
         }
 
         public void Terminar(bool closeDark = true)

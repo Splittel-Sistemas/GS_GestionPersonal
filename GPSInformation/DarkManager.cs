@@ -126,15 +126,18 @@ namespace GPSInformation
         /// </summary>
         public virtual DarkAttributes<CapEvaPrgRes> CapEvaPrgRes { get; internal set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public virtual DarkAttributes<CapSessEva> CapSessEva { get; internal set; }
+        public virtual DarkAttributes<CapTemplStatusStand> CapTemplStatusStand { get; internal set; }
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //public virtual DarkAttributes<CapSessEva> CapSessEva { get; internal set; }
 
         /// <summary>
         /// 
         /// </summary>
         public virtual DarkAttributes<CapProg> CapProg { get; internal set; }
+        
 
         /// <summary>
         /// 
@@ -155,6 +158,7 @@ namespace GPSInformation
         /// 
         /// </summary>
         public virtual DarkAttributes<CapProgEmpSes> CapProgEmpSes { get; internal set; }
+        public virtual DarkAttributes<CapTemplShedule> CapTemplShedule { get; internal set; }
         private string CorreosBCC { get; set; }
         private bool ModeProduction { get; set; }
 
@@ -503,9 +507,9 @@ namespace GPSInformation
             {
                 CapEvaPrgRes = new DarkAttributes<CapEvaPrgRes>(dBConnection);
             }
-            else if (gpsManagerObjects == GpsManagerObjects.CapSessEva)
+            else if (gpsManagerObjects == GpsManagerObjects.CapTemplShedule)
             {
-                CapSessEva = new DarkAttributes<CapSessEva>(dBConnection);
+                CapTemplShedule = new DarkAttributes<CapTemplShedule>(dBConnection);
             }
             else if (gpsManagerObjects == GpsManagerObjects.CapProg)
             {
@@ -526,6 +530,10 @@ namespace GPSInformation
             else if (gpsManagerObjects == GpsManagerObjects.CapProgEmpSes)
             {
                 CapProgEmpSes = new DarkAttributes<CapProgEmpSes>(dBConnection);
+            }
+            else if (gpsManagerObjects == GpsManagerObjects.CapTemplStatusStand)
+            {
+                CapTemplStatusStand = new DarkAttributes<CapTemplStatusStand>(dBConnection);
             }
         }
         public void OpenConnection()
@@ -675,11 +683,13 @@ namespace GPSInformation
         CapEva = 71,
         CapEvaPrg = 72,
         CapEvaPrgRes = 73,
-        CapSessEva = 74,
+        //CapSessEva = 74,
         CapProg = 75,
         CapProgPonts = 76,
         CapProgSess = 77,
         CapProgEmp = 78,
         CapProgEmpSes = 79,
+        CapTemplShedule = 80,
+        CapTemplStatusStand = 81,
     }
 }

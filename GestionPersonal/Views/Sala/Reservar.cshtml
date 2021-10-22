@@ -56,32 +56,36 @@
 
                     <h5 class="tx-18 tx-sm-20 mg-b-20 mg-sm-b-30">Crear nueva reservación</h5>
 
-                    <form id="formCalendar" method="post" action="app-calendar.html">
+                    <form id="reser_sal" method="post" action="app-calendar.html">
                         <div class="form-group" id="Mesnaje_result">
 
                         </div><!-- form-group -->
                         <div class="form-group">
                             <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Titulo</label>
-                            <input type="text" class="form-control" id="Motivo" placeholder="Agregar titulo">
+                            <input type="hidden" class="form-control"  name="IdSalaReservacion" value="0" placeholder="Agregar titulo">
+                            <input type="hidden" class="form-control"  name="IdPersona" value="0" placeholder="Agregar titulo">
+                            @*<input type="hidden" class="form-control"  name="Activa" checked placeholder="Agregar titulo">*@
+
+                            <input type="text" class="form-control" id="Motivo" name="Motivo" placeholder="Agregar titulo">
                         </div><!-- form-group -->
                         <div class="form-group mg-t-30">
                             <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Fecha</label>
-                            <input type="date" class="form-control" id="FechaInicio" placeholder="Fecha">
+                            <input type="date" class="form-control" id="FechaInicio" name="FechaInicio" placeholder="Fecha">
                         </div><!-- form-group -->
                         <div class="form-group">
                             <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Hora de Inicio y fin </label>
                             <div class="row row-xs">
                                 <div class="col-6">
-                                    <input type="time" id="HoraIncio" value="" class="form-control" placeholder="Select date">
+                                    <input type="time" id="HoraIncio" name="HoraIncio" value="" class="form-control" placeholder="Select date">
                                 </div><!-- col-7 -->
                                 <div class="col-6">
-                                    <input id="HolaFin" type="time" value="" class="form-control" placeholder="Select date">
+                                    <input id="HolaFin" name="HolaFin" type="time" value="" class="form-control" placeholder="Select date">
                                 </div><!-- col-5 -->
                             </div><!-- row -->
                         </div><!-- form-group -->
                         <div class="form-group mg-t-30">
                             <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Sala</label>
-                            <select class="form-control" id="IdSala">
+                            <select class="form-control" id="IdSala" name="IdSala">
                                 <option v-for="option in Salas" v-if="Salas.length" v-bind:value="option.idSala">
                                     {{ option.nombre }}
                                 </option>
@@ -89,12 +93,12 @@
                         </div><!-- form-group -->
                         <div class="form-group mg-t-30">
                             <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Comentarios</label>
-                            <textarea class="form-control" id="Comentarios"></textarea>
+                            <textarea class="form-control" id="Comentarios" name="Comentarios"></textarea>
                         </div><!-- form-group -->
                     </form>
                 </div><!-- modal-body -->
                 <div class="modal-footer">
-                    <a href="" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+                    <a href="" class="btn btn-secondary" data-dismiss="modal" id="modalCreateEvent_dissmiss">Cancelar</a>
                     <button type="button" class="btn btn-primary mg-r-5" v-on:click="AddReservacion()">Agregar</button>
                 </div><!-- modal-footer -->
             </div><!-- modal-content -->
@@ -155,26 +159,26 @@
                             </div><!-- form-group -->
                             <div class="form-group">
                                 <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Titulo</label>
-                                <input type="text" class="form-control" id="Motivo1" placeholder="Agregar titulo">
+                                <input type="text" class="form-control" id="Motivo1" name="Motivo" placeholder="Agregar titulo">
                             </div><!-- form-group -->
                             <div class="form-group mg-t-30">
                                 <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Fecha</label>
-                                <input type="date" class="form-control" id="FechaInicio1" placeholder="Fecha">
+                                <input type="date" class="form-control" id="FechaInicio1" name="FechaInicio" placeholder="Fecha">
                             </div><!-- form-group -->
                             <div class="form-group">
                                 <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Hora de Inicio y fin </label>
                                 <div class="row row-xs">
                                     <div class="col-6">
-                                        <input type="time" id="HoraIncio1" value="" class="form-control" placeholder="Select date">
+                                        <input type="time" id="HoraIncio1" value="" name="HoraIncio" class="form-control" placeholder="Select date">
                                     </div><!-- col-7 -->
                                     <div class="col-6">
-                                        <input id="HolaFin1" type="time" value="" class="form-control" placeholder="Select date">
+                                        <input id="HolaFin1" type="time" name="HolaFin" value="" class="form-control" placeholder="Select date">
                                     </div><!-- col-5 -->
                                 </div><!-- row -->
                             </div><!-- form-group -->
                             <div class="form-group mg-t-30">
                                 <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Sala</label>
-                                <select class="form-control" id="IdSala1">
+                                <select class="form-control" id="IdSala1" name="IdSala">
                                     <option v-for="option in Salas" v-if="Salas.length" v-bind:value="option.idSala">
                                         {{ option.nombre }}
                                     </option>
@@ -182,7 +186,7 @@
                             </div><!-- form-group -->
                             <div class="form-group mg-t-30">
                                 <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Comentarios</label>
-                                <textarea class="form-control" id="Comentarios"></textarea>
+                                <textarea class="form-control" id="Comentarios" name="Comentarios"></textarea>
                             </div><!-- form-group -->
                             <div class="form-group row mg-b-0">
                                 <div class="col-sm-12 text-right">
@@ -223,17 +227,19 @@
             methods: {
                 EditReservacionSave: async function () {
                     document.getElementById("Mesnaje_result1").innerHTML = ''
-                    var elemento = {
-                        IdSalaReservacion: document.getElementById("IdSalaReservacion1").value,
-                        IdPersona: document.getElementById("IdPersona1").value,
-                        IdSala: document.getElementById("IdSala1").value,
-                        Motivo: document.getElementById("Motivo1").value,
-                        FechaInicio: document.getElementById("FechaInicio1").value,
-                        HoraIncio: document.getElementById("HoraIncio1").value,
-                        HolaFin: document.getElementById("HolaFin1").value,
-                        Comentarios: document.getElementById("Comentarios1").value,
-                    }
-                    await axios.post('@Url.Action("EditReservacion", "Sala")', elemento, null).then(response => {
+                    //var elemento = {
+                    //    IdSalaReservacion: parseInt(document.getElementById("IdSalaReservacion1").value),
+                    //    IdPersona: parseInt(document.getElementById("IdPersona1").value),
+                    //    IdSala: parseInt(document.getElementById("IdSala1").value),
+                    //    Motivo: document.getElementById("Motivo1").value,
+                    //    FechaInicio: document.getElementById("FechaInicio1").value,
+                    //    HoraIncio: document.getElementById("HoraIncio1").value,
+                    //    HolaFin: document.getElementById("HolaFin1").value,
+                    //    Comentarios: document.getElementById("Comentarios1").value,
+                    //}
+                    let form = document.getElementById("edit_reser_form");
+                    let forDate = new FormData(form)
+                    await axios.post('@Url.Action("EditReservacion", "Sala")', forDate, null).then(response => {
                         ShowMessageErrorShort("Reservación actualizada", "success")
                         this.GetDetailsReservac(document.getElementById("IdSalaReservacion1").value);
                         document.getElementById("btn_refrescar").click();
@@ -265,17 +271,24 @@
                 },
                 AddReservacion: async function () {
                     document.getElementById("Mesnaje_result").innerHTML = ''
-                    var elemento = {
-                        IdSala: document.getElementById("IdSala").value,
-                        Motivo: document.getElementById("Motivo").value,
-                        FechaInicio: document.getElementById("FechaInicio").value,
-                        HoraIncio: document.getElementById("HoraIncio").value,
-                        HolaFin: document.getElementById("HolaFin").value,
-                        Comentarios: document.getElementById("Comentarios").value,
-                    }
-                    await axios.post('@Url.Action("CreateReservacion","Sala")', elemento, null).then(response => {
+                    //var elemento = {
+                    //    IdPersona: 0,
+                    //    IdSalaReservacion: 0,
+                    //    Activa: true,
+                    //    IdSala: parseInt(document.getElementById("IdSala").value),
+                    //    Motivo: document.getElementById("Motivo").value,
+                    //    FechaInicio: document.getElementById("FechaInicio").value,
+                    //    HoraIncio: document.getElementById("HoraIncio").value,
+                    //    HolaFin: document.getElementById("HolaFin").value,
+                    //    Comentarios: document.getElementById("Comentarios").value,
+                    //}
+                    let form = document.getElementById("reser_sal");
+                    let forDate = new FormData(form)
+                    
+                    await axios.post('@Url.Action("CreateReservacion","Sala")', forDate, null).then(response => {
                         ShowMessageErrorShort("Reservación registrada", "success")
-
+                        document.getElementById("modalCreateEvent_dissmiss").click()
+                        document.getElementById("btn_refrescar").click();
                         //this.GetReservaciones();
                     }).catch(error => {
                         if (error.response) {

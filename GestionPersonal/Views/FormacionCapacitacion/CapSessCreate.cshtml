@@ -1,0 +1,36 @@
+﻿@model GPSInformation.Models.CapSess
+
+<div class="card ht-100p">
+    <div class="card-header d-flex align-items-center justify-content-between">
+        <h6 class="mg-b-0">Nueva sessión</h6>
+        @*<div class="d-flex align-items-center tx-18">
+            <a href="#" class="link-03 lh-0" data-btn_render data-render_content="sec_deta_templ" data-render_rute="@Url.Action("CapTemplDetails","FormacionCapacitacion", new { id=ViewBag.IdCapTempl })" onclick="gl_viewConent(this)" id="sec_deta_templ_btn"><i class="icon ion-md-refresh"></i></a>
+        </div>*@
+    </div>
+    <div class="card-body" id="">
+        <form asp-action="CapSessCreate" id="form_sess_add">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input type="hidden" asp-for="IdCapTempl" class="form-control" />
+                <label asp-for="Nombre" class="control-label"></label>
+                <input asp-for="Nombre" class="form-control" required />
+                <span asp-validation-for="Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Duracion" class="control-label"></label>
+                <input asp-for="Duracion" class="form-control" />
+                <span asp-validation-for="Duracion" class="text-danger"></span>
+            </div>
+            <div class="form-group row mg-b-0 mt-4">
+                <div class="col-sm-12 text-right">
+                    <button type="reset" class="btn btn-sm btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-sm btn-primary" title="guardar información">Registrar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div><!-- card -->
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

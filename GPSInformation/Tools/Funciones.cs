@@ -50,19 +50,7 @@ namespace GPSInformation.Tools
                 };
             }
         }
-        public static DateTime ValObjDate(object dato)
-        {
-            return dato is null ? DateTime.Now : (DateTime)dato;
-        }
-        public static string ValObjString(object dato)
-        {
-            return dato is null ? "" : dato.ToString();
-        }
-        public static int ValObjInteger(object dato)
-        {
-            return dato is null ? 0 : Int32.Parse(dato.ToString());
-        }
-        public static DateTime GetFirtsDatWeek(DateTime dateTime)
+                public static DateTime GetFirtsDatWeek(DateTime dateTime)
         {
             while (dateTime.DayOfWeek != DayOfWeek.Monday)
                 dateTime = dateTime.AddDays(-1);
@@ -146,7 +134,24 @@ namespace GPSInformation.Tools
                 return literal = null;
             }
         }
+        public static DateTime ValObjDate(object dato)
+        {
+            return dato is null ? DateTime.Now : (DateTime)dato;
+        }
+        public static string ValObjString(object dato, bool otro = false)
+        {
+            string result = dato is null ? "" : dato.ToString();
+            return string.IsNullOrEmpty(result) && otro ? "--" : result;
+        }
+        public static int ValObjInteger(object dato)
+        {
+            return dato is null ? 0 : Int32.Parse(dato.ToString());
+        }
 
+        public static double ValObjDouble(object dato)
+        {
+            return dato is null ? 0 : Double.Parse(dato.ToString());
+        }
         /* funciones para convertir los numeros a literales */
 
         private static string getUnidades(String numero)
@@ -254,6 +259,14 @@ namespace GPSInformation.Tools
             return antiguedad.TotalDays / 365;
         }
 
+        public static int GetAntiguedadInt(DateTime fechaInicio)
+        {
+            TimeSpan antiguedad = DateTime.Now - fechaInicio;
+            int years = antiguedad.Days / 365;
+            //return (decimal)Math.Round(years);
+            return years;
+        }
+
         public static List<Registro> GetRegistrosInc()
         {
             List<Registro>  Nomenclatura = new List<Registro>();
@@ -278,8 +291,11 @@ namespace GPSInformation.Tools
 
             return Nomenclatura;
         }
-
-        public static int MonthDifference(this DateTime lValue, DateTime rValue)
+        public static int MonthDifference2(DateTime fechaDesde, DateTime fechaHasta)
+        {
+            return Math.Abs((fechaDesde.Month - fechaHasta.Month) + 12 * (fechaDesde.Year - fechaHasta.Year));
+        }
+        public static int MonthDifference(DateTime lValue, DateTime rValue)
         {
             return (lValue.Month - rValue.Month) + 12 * (lValue.Year - rValue.Year);
         }

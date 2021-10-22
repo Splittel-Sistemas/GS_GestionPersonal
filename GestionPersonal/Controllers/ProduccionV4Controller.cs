@@ -367,7 +367,7 @@ namespace GestionPersonal.Controllers
         }
         [HttpPost]
         [AccessJson]
-        public IActionResult CreateCambio([FromBody] GrupoCambios createCambio)
+        public IActionResult CreateCambio( GrupoCambios createCambio)
         {
             try
             {

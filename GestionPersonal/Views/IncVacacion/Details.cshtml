@@ -2,6 +2,17 @@
 @{
     ViewData["Title"] = "Detalle de solicitud: " + Model.Folio;
 }
+
+<style>
+    .col-form-label {
+        padding-top: 0rem;
+        padding-bottom: 0rem;
+        margin-bottom: 0;
+        font-size: inherit;
+        line-height: 1.5;
+    }
+</style>
+
 @if ((bool)ViewBag.isPartial == true)
 {
     <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
@@ -15,20 +26,20 @@
             <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
         </div>
         <div class="d-none d-md-block">
-            <a  class="btn btn-sm pd-x-15 btn-white btn-uppercaser" onclick="GetViewAccess(this)" href="#" data-rute="@Url.Action("Details","IncVacacion", new  { id = Model.IdIncidenciaVacacion, isPartial = true })" data-mode="form" >
+            <a  class="btn btn-sm pd-x-15 btn-white btn-uppercaser" id="btn_refres_vacaciondet" onclick="GetViewAccess(this)" href="#" data-rute="@Url.Action("Details","IncVacacion", new  { id = Model.IdIncidenciaVacacion, isPartial = true })" >
                 <i data-feather="refresh" class="wd-10 mg-r-5"></i>Refrescar
             </a>
-            @*@if ((bool)ViewBag.ShowEdit && Model.Estatus == 2)
+            @if ((bool)ViewBag.ShowCancel)
             {
-                <a onclick="GetViewAccess(this)" href="#" data-rute="@Url.Action("Edit","IncVacacion", new { id = Model.IdIncidenciaVacacion })" data-mode="form" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
-            }*@
-            @if ((bool)ViewBag.ShowCancel && Model.Estatus <= 4 && Model.CreadoPor == "E")
-            {
-                <a onclick="ValidViewActionAccess(this,'Cancelar esta solicitud')" href="#" data-rute="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion, isPartial = true  })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="x" class="wd-10 mg-r-5"></i>Cancel</a>
+                <a onclick="ValidViewActionAccess(this,'Cancelar esta solicitud')" href="#" data-rute="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion, isPartial = true  })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser">
+                    <i class="icon ion-md-close mg-r-5 tx-16 lh--9"></i>Cancel
+                </a>
             }
-            @if ((bool)ViewBag.ShowDelete)
+            @if ((bool)ViewBag.ShowSolCancel)
             {
-                <a onclick="ValidViewActionAccess(this,'Eliminar esta solicitud')" href="#" data-rute="@Url.Action("Delete","IncVacacion", new { id = Model.IdIncidenciaVacacion, isPartial = true  })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="trash" class="wd-10 mg-r-5"></i>Eliminar</a>
+                <a href="#modal_det_vacaciones" data-toggle="modal" class="btn btn-sm pd-x-15 btn-white btn-uppercaser">
+                    <i class="icon ion-md-close mg-r-5 tx-16 lh--9"></i>Solicitar cancelación
+                </a>
             }
         </div>
     </div>
@@ -46,17 +57,17 @@ else
                 <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
             </div>
             <div class="d-none d-md-block">
-                @*@if ((bool)ViewBag.ShowEdit && Model.Estatus == 2)
+                @if ((bool)ViewBag.ShowCancel)
                 {
-                    <a href="@Url.Action("Edit","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="edit" class="wd-10 mg-r-5"></i>Editar</a>
-                }*@
-                @if ((bool)ViewBag.ShowCancel && Model.Estatus <= 4)
-                {
-                    <a href="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="x" class="wd-10 mg-r-5"></i>Cancel</a>
+                    <a href="@Url.Action("Cancelar","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser">
+                        <i class="icon ion-md-close mg-r-5 tx-16 lh--9"></i>Cancelar
+                    </a>
                 }
-                @if ((bool)ViewBag.ShowDelete)
+                @if ((bool)ViewBag.ShowSolCancel)
                 {
-                    <a href="@Url.Action("Delete","IncVacacion", new { id = Model.IdIncidenciaVacacion })" class="btn btn-sm pd-x-15 btn-white btn-uppercaser"><i data-feather="trash" class="wd-10 mg-r-5"></i>Eliminar</a>
+                    <a href="#modal_det_vacaciones" data-toggle="modal" class="btn btn-sm pd-x-15 btn-white btn-uppercaser">
+                        <i class="icon ion-md-close mg-r-5 tx-16 lh--9"></i>Solicitar cancelación
+                    </a>
                 }
             </div>
         </div>
@@ -104,12 +115,13 @@ else
             @Html.DisplayNameFor(model => model.EstatusDescricion)
         </dt>
         <dd class="col-md-4 col-form-label bg-light mb-1">
-            @Html.DisplayFor(model => model.EstatusDescricion)
+            <span class="badge badge-@Model.EstatusColor">@Html.DisplayFor(model => model.EstatusDescricion)</span>
+
         </dd>
         @if (Model.ArchivoScan != "")
         {
             <dt class="col-md-2 col-form-label">
-                @Html.DisplayNameFor(model => model.NoDias)
+                Formato
             </dt>
             <dd class="col-md-4 col-form-label bg-light mb-1">
                 <a href="@Url.Action("DowloadFile","IncVacacion",new  { fileName = Model.ArchivoScan, IdPersona = Model.IdPersona })" title="click aqui para descargar">@Model.ArchivoScan</a>
@@ -117,18 +129,11 @@ else
 
         }
     </dl>
-    @if (Model.Estatus >= 4)
-    {
-        <div class="alert alert-@Model.EstatusColor mt-4 mg-b-0" role="alert">
-            Estimado usuario, la solcitud se encuentra con estatus <strong>@Model.EstatusDescricion</strong>
-        </div>
-    }
+
     <h4 class="bg-light">III. Seguimiento</h4>
-    <ul class="steps steps-sm steps-justified ">
-        @foreach (var item in Model.Proceso)
+    <ul class="steps steps-sm steps-justified">
+        @foreach (var item in Model.Proceso.Where(a => a.Tipo == 1))
         {
-
-
             @if (item.Revisada)
             {
                 <li class="step-item complete">
@@ -139,6 +144,7 @@ else
                             <span class="step-desc">@item.NombreEmpleado</span>
                             <span class="step-desc @Html.Raw(item.Autorizada ? "text-success" : "text-danger")">@Html.Raw(item.Autorizada ? "Aceptada" : "Rechazada")</span>
                             <span class="step-desc">@string.Format("{0:F}", item.Fecha)</span>
+                            <span class="step-desc">@item.Comentarios</span>
                         </div>
                     </a>
                 </li>
@@ -166,8 +172,64 @@ else
                 </li>
             }
         }
-
     </ul>
-
+    @if (Model.Proceso.Where(a => a.Tipo == 2).Count() == 1)
+    {
+        <h4 class="bg-light mt-4">IIII. Solicitud de cancelación</h4>
+        <dl class="row">
+            <dt class="col-md-2 col-form-label">
+                Comentarios del solicitante
+            </dt>
+            <dd class="col-md-10 col-form-label bg-light mb-1">
+                @Html.DisplayFor(model => Model.Proceso.Find(a => a.Tipo == 2).Comentarios2)
+            </dd>
+            <dt class="col-md-2 col-form-label">
+                Aprobador
+            </dt>
+            <dd class="col-md-2 col-form-label bg-light mb-1">
+                @Html.DisplayFor(model => Model.Proceso.Find(a => a.Tipo == 2).NombreEmpleado)
+            </dd>
+            <dt class="col-md-2 col-form-label">
+                Revisada
+            </dt>
+            <dd class="col-md-2 col-form-label bg-light mb-1">
+                @Html.DisplayFor(model => Model.Proceso.Find(a => a.Tipo == 2).Revisada)
+            </dd>
+            <dt class="col-md-2 col-form-label">
+                Autorizada
+            </dt>
+            <dd class="col-md-2 col-form-label bg-light mb-1">
+                @Html.DisplayFor(model => Model.Proceso.Find(a => a.Tipo == 2).Autorizada)
+            </dd>
+            <dt class="col-md-2 col-form-label">
+                Comentarios Gestión de Personal
+            </dt>
+            <dd class="col-md-10 col-form-label bg-light mb-1">
+                @Html.DisplayFor(model => Model.Proceso.Find(a => a.Tipo == 2).Comentarios)
+            </dd>
+        </dl>
+    }
+    <div class="modal fade" id="modal_det_vacaciones" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body pd-20 pd-sm-30" id="modal_det_vacaciones_content">
+                    <form asp-controller="IncVacacion" asp-action="CancelSolCreate" asp-route-isPartial="@Html.Raw((bool)ViewBag.isPartial)" enctype="multipart/form-data" onsubmit="@Html.Raw((bool)ViewBag.isPartial ? "return Gl_form(event)" : "return Gl_form1(event)")">
+                        <h3>Solicitar cancelación</h3>
+                        <div class="form-group">
+                            <label>Comentarios</label>
+                            <input type="hidden" name="IdIncidenciaVacacion" value="@Model.IdIncidenciaVacacion" />
+                            <textarea name="comentarios" class="form-control"></textarea>
+                        </div>
+                        <div class="form-group row mg-b-0">
+                            <div class="col-sm-12 text-right">
+                                <a href="#" data-dismiss="modal" class="btn btn-sm btn-secondary">Cancelar</a>
+                                <button type="submit" class="btn btn-sm btn-primary">Guardar solicitud</button>
+                            </div>
+                        </div>
+                    </form>
+                </div><!-- modal-body -->
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
 </div>
 

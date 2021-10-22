@@ -92,7 +92,11 @@ namespace GPSInformation.Models
         [Display(Name = "Actualizada")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Actualizada { get; set; }
-        
+
+        [Display(Name = "Eliminada")]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool Eliminada { get; set; }
+
         [Required]
         [Display(Name = "Duración(hrs) del curso o evaluación")]
         [Range(1, int.MaxValue, ErrorMessage = "Por favor introduce la duración en hrs del curso")]

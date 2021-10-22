@@ -247,20 +247,20 @@ namespace GPSInformation.Controllers
             #region validar numero de nomina
             if (persona.NumeroNomina == 0)
             {
-                var maxOb = _darkM.Empleado.GetMax("NumeroNomina", "TipoNomina", persona.TipoNomina + "");
-                int max = maxOb is System.DBNull ? 0 : (int)maxOb;
-                persona.NumeroNomina = max + 1;
+                var maxOb = _darkM.Empleado.GetIntValue($"select max(NumeroNomina) from Empleado where TipoNomina = {persona.TipoNomina}");
+                //int max = maxOb is System.DBNull ? 0 : (int)maxOb;
+                persona.NumeroNomina = maxOb + 1;
             }
             else
             {
-                var emple = _darkM.Empleado.Get("NumeroNomina", persona.NumeroNomina + "", "TipoNomina", persona.TipoNomina + "");
+                var emple = _darkM.Empleado.GetOpenquerys($" where NumeroNomina = {persona.NumeroNomina} and TipoNomina = {persona.TipoNomina}");
+                //var emple = _darkM.Empleado.Get("NumeroNomina", persona.NumeroNomina + "", "TipoNomina", persona.TipoNomina + "");
                 if (emple != null)
                 {
-                    int max = (int)_darkM.Empleado.GetMax("NumeroNomina", "NumeroNomina", persona.TipoNomina + "");
+                    int max = _darkM.Empleado.GetIntValue($"select max(NumeroNomina) from Empleado where TipoNomina = {persona.TipoNomina}");
                     throw new GPException
                     {
-                        Description = string.Format("El número de nomina '{0}' ya esta siendo utilizado por otro empleado, número disponible: '{0}'",
-                        persona.TipoNomina, max + 1),
+                        Description = $"El número de nomina '{persona.NumeroNomina}' ya esta siendo utilizado por el empleado '{(_darkM.Empleado.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {emple.IdPersona}"))}', número disponible: '{(max + 1)}'",
                         ErrorCode = 0,
                         Category = TypeException.Info,
                         IdAux = "NumeroNomina"
@@ -293,21 +293,19 @@ namespace GPSInformation.Controllers
             #region validar numero de nomina
             if (persona.NumeroNomina == 0)
             {
-                var maxOb = _darkM.Empleado.GetMax("NumeroNomina", "TipoNomina", persona.TipoNomina + "");
-                int max = maxOb is System.DBNull ? 0 : (int)maxOb;
-                persona.NumeroNomina = max + 1;
+                var maxOb = _darkM.Empleado.GetIntValue($"select max(NumeroNomina) from Empleado where TipoNomina = {persona.TipoNomina}");
+                //int max = maxOb is System.DBNull ? 0 : (int)maxOb;
+                persona.NumeroNomina = maxOb + 1;
             }
             else
             {
-                var emple = _darkM.Empleado.Get("NumeroNomina", persona.NumeroNomina + "", "TipoNomina", persona.TipoNomina + "");
+                var emple = _darkM.Empleado.GetOpenquerys($" where NumeroNomina = {persona.NumeroNomina} and TipoNomina = {persona.TipoNomina}");
                 if (emple != null && emple.IdEmpleado != persona.IdEmpleado)
                 {
-                    var maxOb = _darkM.Empleado.GetMax("NumeroNomina", "TipoNomina", persona.TipoNomina + "");
-                    int max = maxOb is System.DBNull ? 0 : (int)maxOb;
+                    var maxOb = _darkM.Empleado.GetIntValue($"select max(NumeroNomina) from Empleado where TipoNomina = {persona.TipoNomina}");
                     throw new GPException
                     {
-                        Description = string.Format("El número de nomina '{0}' ya esta siendo utilizado por otro empleado, número disponible: '{1}'",
-                        persona.NumeroNomina, max + 1),
+                        Description = $"El número de nomina '{persona.NumeroNomina}' ya esta siendo utilizado por el empleado '{(_darkM.Empleado.GetStringValue($"select NombreCompleto from View_empleado where IdPersona = {emple.IdPersona}"))}', número disponible: '{(maxOb + 1)}'",
                         ErrorCode = 0,
                         Category = TypeException.Info,
                         IdAux = "NumeroNomina"

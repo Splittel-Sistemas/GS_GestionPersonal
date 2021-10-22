@@ -121,7 +121,7 @@ namespace GPSInformation.Models
                 else if (Estatus == 2) return "Jefe inmediado";
                 else if (Estatus == 3) return "Gestión personal";
                 else if (Estatus == 4) return "Autorizada";
-                else if (Estatus == 5) return "Councluida";
+                else if (Estatus == 5) return "Concluida";
                 else if (Estatus == 6) return "Cancelada";
                 else if (Estatus == 7) return "Rechazada";
                 else if (Estatus == 8) return "Eliminada";

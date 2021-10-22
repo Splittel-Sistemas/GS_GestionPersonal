@@ -1209,19 +1209,29 @@
                     }).finally()
                 },
                 CreateCambio: async function () {
-                    var data = {
-                        IdGrupoCambios: 0,
-                        IdPersona: '@Model.IdPersona',
-                        IdGrupo: parseInt(document.getElementById("inp_grupoCG").value),
-                        Fecha: new Date("@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")"),
-                        Comentarios: document.getElementById("inp_commentsCG").value,
-                        Creado: new Date(),
-                        Modificado: new Date(),
-                        FechaInicio: new Date("@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")"),
+                    //var data = {
+                    //    IdGrupoCambios: 0,
+                    //    IdPersona: ,
+                    //    IdGrupo: parseInt(document.getElementById("inp_grupoCG").value),
+                    //    Fecha: ,
+                    //    Comentarios: ,
+                    //    Creado: new Date(),
+                    //    Modificado: new Date(),
+                    //    FechaInicio: ,
 
-                    }
+                    //}
+                    let formdata = new FormData();
+                    formdata.append('IdGrupoCambios',0);
+                    formdata.append('IdPersona','@Model.IdPersona');
+                    formdata.append('IdGrupo', parseInt(document.getElementById("inp_grupoCG").value));
+                    formdata.append('Fecha','@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")');
+                    formdata.append('Comentarios', document.getElementById("inp_commentsCG").value);
+                    formdata.append('Creado','2021-01-01');
+                    formdata.append('Modificado', '2021-01-01');
+                    formdata.append('GrupoName','Grupo');
+                    formdata.append('FechaInicio','@Model.Incio.ToString("yyyy-MM-ddTHH:mm:ss")');
                     document.getElementById("sms_form5").innerText = ""
-                    await axios.post('@Url.Action("CreateCambio", "produccionv4")', data, null).then(response => {
+                    await axios.post('@Url.Action("CreateCambio", "produccionv4")', formdata, null).then(response => {
                         console.log(response.data)
                         document.getElementById("btn_refrescar").click();
                     }).catch(error => {

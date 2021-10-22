@@ -1,0 +1,108 @@
+﻿@{
+    ViewData["Title"] = "Diseñar nuevo template";
+}
+@section MenuTop{
+
+}
+@section Style{
+    <link href="~/template/assets/css/dashforge.mail.css" rel="stylesheet" />
+    <link href="https://craftpip.github.io/jquery-confirm/css/jquery-confirm.css" rel="stylesheet" />
+    <style>
+        .mail-group {
+            left: 0px !important;
+        }
+
+        .mail-wrapper {
+            left: 240px !important;
+        }
+
+        .mail-content {
+            left: 320px !important;
+        }
+
+        .list-group-item.active {
+            z-index: 2;
+            color: #fff;
+            background-color: #0168fa14 !important;
+            border-color: #0168fa;
+        }
+
+        .mail-content-body {
+            background-color: #f5f6fa !important;
+        }
+        .schedule-item {
+          display: block;
+          padding: 0 10px;
+          color: #1b2e4b;
+          transition: all 0.2s ease-in-out; }
+          @@media (prefers-reduced-motion: reduce) {
+            .schedule-item {
+              transition: none;
+            }
+          }
+          .schedule-item:hover, .schedule-item:focus {
+            color: #0168fa;
+          }
+          .schedule-item h6 {
+            margin-bottom: 3px;
+          }
+          .schedule-item span {
+            font-size: 12px;
+            color: #8392a5;
+            display: block;
+          }
+          .schedule-item + .schedule-item {
+            margin-top: 20px;
+
+          }
+        .active-tema {
+            background-color: #ffc10726;
+            padding: 10px;
+        }
+        .form-control{
+            font-size: 14px;
+        }
+        @@keyframes ripple {
+          0%, 35% {
+            transform: scale(0);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.5);
+            opacity: 0.8;
+          }
+          100% {
+            opacity: 0;
+            transform: scale(4);
+          }
+        }
+
+        .btn-ripple::after {
+          animation: ripple 1.2s ease-out infinite;
+          animation-delay: 1s;
+        }
+        .form-control-ds {
+            font-size: 0.875rem;
+            border: 0px;
+            background-color: #ffc10705;
+        }
+
+    </style>
+}
+<div id="app">
+    <router-view></router-view>
+</div>
+<div style="display:none">
+    @Html.AntiForgeryToken()
+
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://craftpip.github.io/jquery-confirm/js/jquery-confirm.js"></script>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script src="~/js/FormacionCapacitacion.js"></script>
+}

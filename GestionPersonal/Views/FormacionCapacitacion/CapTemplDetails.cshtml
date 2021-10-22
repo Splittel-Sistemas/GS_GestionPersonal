@@ -1,0 +1,60 @@
+﻿@model GPSInformation.Models.CapTempl
+
+<div>
+    <dl class="row" style="font-size: 13px;">
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.Objetivo)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.Objetivo)
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.CalRepet)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.CalRepet)
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.Duracion)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.Duracion)
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.Estatus)
+        </dt>
+        <dd class="col-12">
+            @Html.Raw(Model.LabelStatus(true))
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.NoSesions)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.NoSesions)
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.Creada)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.Creada)
+        </dd>
+        <dt class="col-12">
+            @Html.DisplayNameFor(model => model.Editada)
+        </dt>
+        <dd class="col-12">
+            @Html.DisplayFor(model => model.Editada)
+        </dd>
+    </dl>
+</div>

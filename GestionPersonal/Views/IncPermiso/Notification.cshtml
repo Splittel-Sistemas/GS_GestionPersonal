@@ -87,7 +87,7 @@
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <!-- LOGO -->
         <tr>
-            <td bgcolor="#ec6d64" align="center">
+            <td bgcolor="#BF202F" align="center">
                 <!--[if (gte mso 9)|(IE)]>
                 <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
                 <tr>
@@ -111,7 +111,7 @@
         </tr>
         <!-- HERO -->
         <tr>
-            <td bgcolor="#ec6d64" align="center" style="padding: 0px 10px 0px 10px;">
+            <td bgcolor="#BF202F" align="center" style="padding: 0px 10px 0px 10px;">
                 <!--[if (gte mso 9)|(IE)]>
                 <table align="center" border="0" cellspacing="0" cellpadding="0" width="600">
                 <tr>
@@ -171,7 +171,7 @@
                                     <br />
                                     @if (Model.Estatus == 7)
                                     {
-                                        <strong><span style="font-size: 14px; width: 100%; color: #ec6d64;">Detalle de rechazo de solicitud</span></strong>
+                                        <strong><span style="font-size: 14px; width: 100%; color: #BF202F;">Detalle de rechazo de solicitud</span></strong>
                                         <br />
                                         <strong>
                                             @Html.DisplayNameFor(model => Model.Proceso.Find(a => a.Revisada && !a.Autorizada).Fecha)
@@ -197,7 +197,7 @@
                                     <br />
                                 }
                                 <br />
-                                <strong><span style="font-size: 14px; width: 100%; color: #ec6d64;">Detalle de solicitud</span></strong>
+                                <strong><span style="font-size: 14px; width: 100%; color: #BF202F;">Detalle de solicitud</span></strong>
                                 <br />
                                 <br />
                                 <strong>
@@ -249,7 +249,7 @@
                                 @if (Model.Estatus == 3)
                                 {
                                     <strong>
-                                        Comentarios de aprobación por jefe inmediato: <span style="color: #ec6d64;">@Html.DisplayFor(model => Model.Proceso.Find(a => a.Nivel == 2).NombreEmpleado)</span>
+                                        Comentarios de aprobación por jefe inmediato: <span style="color: #BF202F;">@Html.DisplayFor(model => Model.Proceso.Find(a => a.Nivel == 2).NombreEmpleado)</span>
                                     </strong>
                                     <br />
                                     @Html.DisplayFor(model => Model.Proceso.Find(a => a.Nivel == 2).Comentarios)
@@ -268,8 +268,8 @@
                                     <td bgcolor="#ffffff" align="center" style="padding: 20px 30px 60px 30px;">
                                         <table border="0" cellspacing="0" cellpadding="0">
                                             <tr>
-                                                <td align="center" style="border-radius: 3px;" bgcolor="#ec6d64">
-                                                    <a href="@Model.Link" target="_top" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #ec6d64; display: inline-block;">
+                                                <td align="center" style="border-radius: 3px;" bgcolor="#BF202F">
+                                                    <a href="@Model.Link" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #BF202F; display: inline-block;">
                                                     Revisar!
                                                     </a>
                                                 </td>

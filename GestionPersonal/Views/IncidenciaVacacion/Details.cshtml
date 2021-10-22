@@ -30,8 +30,9 @@ else
         @{
             bool active = true;
             string status = "";
+            List<GPSInformation.Models.IncidenciaProcess> Pasos = ViewBag.Actividades;
         }
-        @foreach (GPSInformation.Models.IncidenciaProcess item in ViewBag.Actividades)
+        @foreach (GPSInformation.Models.IncidenciaProcess item in Pasos.Where(a => a.Tipo == 1))
         {
             if (item.Revisada && item.Autorizada)
             {

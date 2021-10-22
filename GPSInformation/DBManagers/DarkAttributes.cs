@@ -79,6 +79,12 @@ namespace GPSInformation.DBManagers
                 return ActionsObjectCode(DbManagerTypes.Delete, tableDefinifiton);
             }
         }
+
+        public bool Delete(string Where)
+        {
+            TableDB tableDefinifiton = GetClassAttribute();
+            return ActionsObjectCode(DbManagerTypes.Delete, tableDefinifiton, Where);
+        }
         public string GetStringValue(string Sentence)
         {
             var retunrDa = dBConnection.GetStringValue(Sentence);
@@ -140,7 +146,8 @@ namespace GPSInformation.DBManagers
         /// <returns></returns>
         public object GetMax(string colMax, string nameCol, string Value)
         {
-            return dBConnection.GetValue(string.Format("select max({1}) from {0} where {2} = '{3}'", Nametable, colMax, nameCol, Value));
+            var retunrDa = dBConnection.GetValue(string.Format("select max({1}) from {0} where {2} = '{3}'", Nametable, colMax, nameCol, Value));
+            return DBNull.Value.Equals(retunrDa) ? 0 : retunrDa;
         }
 
         /// <summary>
@@ -434,7 +441,12 @@ namespace GPSInformation.DBManagers
                             var value = Data.GetValue(Data.GetOrdinal(NombrePropiedad)) is System.DBNull ? 0 : Data.GetValue(Data.GetOrdinal(NombrePropiedad));
                             propertyInfo.SetValue(exFormAsObj, Convert.ChangeType(value, propertyInfo.PropertyType), null);
                         }
-                        
+                        if (prop.PropertyType.Equals(typeof(decimal)))
+                        {
+                            var value = Data.GetValue(Data.GetOrdinal(NombrePropiedad)) is System.DBNull ? false : Data.GetValue(Data.GetOrdinal(NombrePropiedad));
+                            propertyInfo.SetValue(exFormAsObj, Convert.ChangeType(value, TypeCode.Decimal), null);
+                        }
+
                     }
                 }
                 Response.Add((T)exFormAsObj);
@@ -472,7 +484,7 @@ namespace GPSInformation.DBManagers
             }
         }
 
-        private bool ActionsObjectCode(DbManagerTypes dbManagerTypes, TableDB tableDefinifiton)
+        private bool ActionsObjectCode(DbManagerTypes dbManagerTypes, TableDB tableDefinifiton, string Where = "")
         {
             //TableDB tableDefinifiton = GetClassAttribute();
             bool result = false;
@@ -579,7 +591,7 @@ namespace GPSInformation.DBManagers
             }
             else if (dbManagerTypes == DbManagerTypes.Update)
             {
-                string Statement = string.Format("UPDATE {0} SET {1} WHERE {2} ", Nametable, sentencia.Substring(0, sentencia.Length - 1), sentenciaVariables);
+                string Statement = string.Format("UPDATE {0} SET {1} WHERE {2} ", Nametable, sentencia.Substring(0, sentencia.Length - 1), (string.IsNullOrEmpty(Where) ? sentenciaVariables : Where));
                 List<ProcedureModel> procedureModels = new List<ProcedureModel>();
                 foreach (var prop in typeof(T).GetProperties())
                 {
@@ -607,7 +619,7 @@ namespace GPSInformation.DBManagers
             }
             else if (dbManagerTypes == DbManagerTypes.Delete)
             {
-                string Statement = string.Format("DELETE FROM  {0} WHERE {1} ", Nametable, sentenciaVariables);
+                string Statement = string.Format("DELETE FROM  {0} WHERE {1} ", Nametable, (string.IsNullOrEmpty(Where) ? sentenciaVariables : Where));
                 List<ProcedureModel> procedureModels = new List<ProcedureModel>();
                 foreach (var prop in typeof(T).GetProperties())
                 {

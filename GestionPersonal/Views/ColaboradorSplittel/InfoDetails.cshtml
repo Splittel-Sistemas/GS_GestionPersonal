@@ -1,0 +1,19 @@
+﻿@{
+    var Accesos = (Dictionary<string, GPSInformation.Controllers.AccesosUs>)ViewBag.Accesos;
+            }
+<div class="content content-fixed content-auth-alt mt-5">
+    <div class="container ht-100p tx-center mt-5">
+        <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">Gestión de personal</h1>
+            <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://img.icons8.com/fluency/50/000000/info.png" class="img-fluid" alt=""></div>
+            <h1 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">Sin información en esta sección </h1>
+            <div class="mg-b-40">
+                @if (Accesos["AEscrituraEmpleados"].TieneAcceso)
+            {
+                <a href="#" class="btn btn-white bd-2 pd-x-30" data-rute="@ViewBag.link" data-mode="form" onclick="GetViewAccess(this)">Crear</a>
+            }
+                
+            </div>
+        </div>
+    </div><!-- container -->
+</div><!-- content -->

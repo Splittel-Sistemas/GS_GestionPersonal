@@ -297,7 +297,7 @@ namespace GestionPersonal.Controllers
         [HttpPost]
         //[ValidateAntiForgeryToken]
         [AccessDataSession(IdAction = new int[] { 33 })]
-        public ActionResult CreateReservacion([FromBody]SalaReservacion SalaReservacion)
+        public ActionResult CreateReservacion(SalaReservacion SalaReservacion)
         {
             darkManager.StartTransaction();
             try
@@ -306,6 +306,7 @@ namespace GestionPersonal.Controllers
                 {
                     return BadRequest("Algunos campos son invalidos");
                 }
+                SalaReservacion.Comentarios = string.IsNullOrEmpty(SalaReservacion.Comentarios) ? "N/A" : SalaReservacion.Comentarios;
                 darkManager.SalaReservacion.Element = SalaReservacion;
                 darkManager.SalaReservacion.Element.IdPersona = (int)HttpContext.Session.GetInt32("user_id");
                 darkManager.SalaReservacion.Element.Activa = true;
@@ -333,7 +334,7 @@ namespace GestionPersonal.Controllers
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
                 darkManager.RolBack();
-                return BadRequest(ex.Message);
+                return BadRequest("Error de sistema!");
             }
             finally
             {
@@ -345,7 +346,7 @@ namespace GestionPersonal.Controllers
         [HttpPost]
         //[ValidateAntiForgeryToken]
         [AccessDataSession(IdAction = new int[] { 33 })]
-        public ActionResult EditReservacion([FromBody] SalaReservacion SalaReservacion)
+        public ActionResult EditReservacion( SalaReservacion SalaReservacion)
         {
             darkManager.StartTransaction();
             try
@@ -354,6 +355,7 @@ namespace GestionPersonal.Controllers
                 {
                     return BadRequest("Algunos campos son invalidos");
                 }
+                SalaReservacion.Comentarios = string.IsNullOrEmpty(SalaReservacion.Comentarios) ? "N/A" : SalaReservacion.Comentarios;
                 darkManager.SalaReservacion.Element = SalaReservacion;
                 darkManager.SalaReservacion.Element.IdPersona = (int)HttpContext.Session.GetInt32("user_id");
                 darkManager.SalaReservacion.Element.Activa = true;
@@ -381,7 +383,7 @@ namespace GestionPersonal.Controllers
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
                 darkManager.RolBack();
-                return BadRequest(ex.Message);
+                return BadRequest("Error de sistema!");
             }
             finally
             {
@@ -514,6 +516,12 @@ namespace GestionPersonal.Controllers
             }
         }
         #endregion
+
+
+
+
+
+
 
 
     }

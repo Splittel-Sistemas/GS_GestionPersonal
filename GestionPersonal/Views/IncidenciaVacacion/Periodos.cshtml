@@ -67,7 +67,7 @@
 else
 {
 
-    <h2>Periodos</h2>
+    <h2>Periodos de vacaciones</h2>
     <hr />
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = ViewBag.IdPersona })
     <hr />
@@ -75,17 +75,23 @@ else
         <table class="table table-sm">
             <thead>
                 <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.NumeroPeriodo)
+                    <th width="90">
+                        #
                     </th>
-                    <th>
+                    <th width="120">
                         @Html.DisplayNameFor(model => model.DiasAprobadors)
                     </th>
-                    <th>
+                    <th width="120">
                         @Html.DisplayNameFor(model => model.DiasUsados)
                     </th>
-                    <th>
+                    <th width="420">
+                        @Html.DisplayNameFor(model => model.DiasDisp)
+                    </th>
+                    <th width="90">
                         @Html.DisplayNameFor(model => model.Completo)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.comentarios)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Actualizado)
@@ -96,31 +102,37 @@ else
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.NumeroPeriodo)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.DiasAprobadors)
-                        </td>
-                        <td>
-                            <div class="input-group input-group-sm">
-                                <input type="number" class="form-control form-control-sm" id="inp_Usado_@item.IdVacionesPeriodo" value="@Html.DisplayFor(modelItem => item.DiasUsados)" placeholder="No. de dias gastados" aria-label="Recipient's username" aria-describedby="button-addon2">
-                                <div class="input-group-append">
-                                    <button class="btn btn-sm btn-outline-light" v-on:click="Save('@item.IdVacionesPeriodo')" title="Actualizar dias gastados" type="button" id="button-addon2">Cambiar</button>
-                                </div>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NumeroPeriodo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DiasAprobadors)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DiasUsados)
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input type="number" class="form-control form-control-sm" id="inp_Usado_@item.IdVacionesPeriodo" value="@Html.DisplayFor(modelItem => item.DiasDisp)" placeholder="No. de dias gastados" aria-label="Recipient's username" aria-describedby="button-addon2">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-outline-light" v-on:click="Save('@item.IdVacionesPeriodo')" title="Actualizar dias gastados" type="button" id="button-addon2">Cambiar</button>
                             </div>
-                            <span id="span_Usado_@item.IdVacionesPeriodo" class="text-danger"></span>
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Completo)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Actualizado)
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
+                        </div>
+                        <span id="span_Usado_@item.IdVacionesPeriodo" class="text-danger"></span>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Completo)
+                    </td>
+                    <td>
+                        <pre style="font-size: 11px;">@Html.DisplayFor(modelItem => item.comentarios)</pre>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Actualizado)
+                    </td>
+                    <td>
+                    </td>
+                </tr>
                 }
             </tbody>
         </table>
@@ -149,6 +161,7 @@ else
                         console.log(response.data)
                         //this.Access = response.data;
                         ShowMessageErrorShort(response.data, "success")
+                        window.location.reload()
                     }).catch(error => {
                         if (error.response) {
                             if (error.response.status === 400) {

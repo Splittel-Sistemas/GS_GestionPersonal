@@ -58,7 +58,7 @@ else
             <div class="col-sm-4">
                 @*<input type="hidden" asp-for="IdPersona" class="form-control" />*@
                 <input type="hidden" asp-for="IdPersona" class="form-control" />
-                <input type="date" asp-for="Fecha" class="form-control" />
+                <input type="date" asp-for="Fecha" id="app_permiso_create_fecha" class="form-control" onchange="ValidPgoForm()" />
                 <span asp-validation-for="Fecha" class="text-danger"></span>
             </div>
         </div>
@@ -77,7 +77,7 @@ else
         <div class="form-group row">
             <label asp-for="IdAsunto" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
-                <select asp-for="IdAsunto" asp-items="ViewBag.TiposPermisos" onchange="ValidateFormIncPerm()" class="form-control select2">
+                <select asp-for="IdAsunto" asp-items="ViewBag.TiposPermisos" onchange="ValidateFormIncPerm(); ValidPgoForm()" class="form-control ">
                     <option value="0">Selecciona una opción</option>
                 </select>
                 <span asp-validation-for="IdAsunto" class="text-danger"></span>
@@ -94,7 +94,7 @@ else
         <div class="form-group row" id="PermisoPago">
             <label asp-for="IdPagoPermiso" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
-                <select asp-for="IdPagoPermiso" asp-items="ViewBag.PagoPermisoPersonal" class="form-control select2">
+                <select asp-for="IdPagoPermiso" id="IdPagoPermiso" asp-items="ViewBag.PagoPermisoPersonal" class="form-control">
                     <option value="0">Selecciona una opción</option>
                 </select>
                 <span asp-validation-for="IdPagoPermiso" class="text-danger"></span>
@@ -136,6 +136,25 @@ else
                         console.log("none")
                     } else {
                         tipoPago.style.display = "none"
+                    }
+                },
+                ValidPgoForm: async function () {
+                    let tipoAsunto = document.getElementById("IdAsunto");
+                    if (tipoAsunto.value === 36 || tipoAsunto.value === "36") {
+                        let opcionesPago = document.getElementById("IdPagoPermiso").options
+                        await axios.get('@Url.Action("ValidOpcionesPersonal", "IncPermiso")/?Fecha=' + document.getElementById("app_permiso_create_fecha").value, null, null).then(response => {
+                            for (var i = 0; i < opcionesPago.length; i++) {
+                                opcionesPago[i].style.display = 'none'
+                            }
+                            document.querySelector("#IdPagoPermiso option[value='0']").style.display = ''
+                            for (var k in response.data) {
+                                document.querySelector("#IdPagoPermiso option[value='" + response.data[k].idCatalogoOpcionesValores + "']").style.display = ''
+                            }
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                        }).finally(() => {
+
+                        })
                     }
                 }
             }

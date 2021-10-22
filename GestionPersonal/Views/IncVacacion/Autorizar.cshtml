@@ -5,7 +5,7 @@
 @{
     var Details = (GPSInformation.Models.IncidenciaVacacion)ViewBag.Details;
     var sstepSelected = Details.Proceso.Find(a => a.Nivel == Model.Modee);
-    ViewData["Title"] = "Autorizar solicitud: " + Details.Folio;
+    ViewData["Title"] = Model.Modee == 10 ? "Autorizar solicitud de cancelación para: " + Details.Folio :  "Autorizar solicitud: " + Details.Folio;
 }
 @section MenuTop{
     <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
@@ -23,13 +23,13 @@
         </div>
     </div>
 }
-<div data-label="Autorizar permiso" class="df-example demo-forms" id="app_createPermiso">
+<div data-label="@ViewData["Title"]" class="df-example demo-forms" id="app_createPermiso">
     @*@if (Details.Estatus >= 4)
-    {
-        <div class="alert alert-@Details.EstatusColor mg-b-0 mt-3 mb-3" role="alert">
-            Estimado usuario, la solcitud se encuentra con estatus  <strong>@Details.EstatusDescricion</strong> @Html.Raw(Details.Estatus == 7 ? $"" : "")
-        </div>
-    }*@
+        {
+            <div class="alert alert-@Details.EstatusColor mg-b-0 mt-3 mb-3" role="alert">
+                Estimado usuario, la solcitud se encuentra con estatus  <strong>@Details.EstatusDescricion</strong> @Html.Raw(Details.Estatus == 7 ? $"" : "")
+            </div>
+        }*@
     <h4 class="bg-light">I. Solicitante</h4>
     @await Component.InvokeAsync("ValidPuestoEnOrganigrama", new { id = Details.IdPersona })
     <h4 class="bg-light">II. Detalle de solicitud</h4>
@@ -75,44 +75,56 @@
 
         }
     </dl>
-    <h4 class="bg-light">III. Autorización</h4>
+    <h4 class="bg-light">III. Autorización @Html.Raw(Model.Modee == 10 ? "de cancelación" : " de solicitud")</h4>
     @if (Details.Estatus == Model.Modee)
     {
-<form asp-action="Autorizar">
-    @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
-    {
-        <div class="alert alert-danger  mg-b-0 mt-3 mb-3" role="alert">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            @Html.ValidationSummary(true, "Errores: ")
-        </div>
-    }
-    <input type="hidden" asp-for="IdIncidencia" class="form-control" />
-    <input type="hidden" asp-for="Modee" class="form-control" />
-    <input type="hidden" asp-for="IdAutorizante" class="form-control" />
-    <input type="hidden" asp-for="NombreApro" class="form-control" />
-    <div class="form-group row">
-        <label asp-for="Comentarios" class="col-md-2 col-form-label"></label>
-        <div class="col-md-10">
-            <textarea asp-for="Comentarios" class="form-control"></textarea>
-            <span asp-validation-for="Comentarios" class="text-danger"></span>
-        </div>
+        @if (Model.Modee == 10)
+        {
+            <div class="form-group row">
+                <label class="col-md-2 col-form-label">Comentarios del solicitante</label>
+                <div class="col-md-10">
+                    <textarea class="form-control" disabled>@sstepSelected.Comentarios2</textarea>
+                </div>
 
-    </div>
-    <div class="form-group row">
-        <div class="col-md-2"></div>
-        <div class="checkbox col-md-offset-2 col-md-4">
-            <label>
-                <input asp-for="Autoriza" /> @Html.DisplayNameFor(model => model.Autoriza)
-            </label>
-        </div>
-    </div>
-    <div class="form-group row mg-b-0">
-        <div class="col-sm-12 text-right">
-            <a href="@Url.Action( Model.Modee == 2 ? "SolicitudesN1" : "SolicitudesN2","IncVacacion")" class="btn btn-sm btn-secondary">Regresar a solicitudes</a>
-            <button type="submit" class="btn btn-sm btn-primary">Guardar cambios</button>
-        </div>
-    </div>
-</form>
+            </div>
+        }
+        <form asp-action="Autorizar">
+            @if (ViewData.ModelState[""] != null && ViewData.ModelState[""].Errors.Count > 0)
+            {
+                <div class="alert alert-danger  mg-b-0 mt-3 mb-3" role="alert">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    @Html.ValidationSummary(true, "Errores: ")
+                </div>
+            }
+            <input type="hidden" asp-for="IdIncidencia" class="form-control" />
+            <input type="hidden" asp-for="Modee" class="form-control" />
+            <input type="hidden" asp-for="IdAutorizante" class="form-control" />
+            <input type="hidden" asp-for="NombreApro" class="form-control" />
+
+            <div class="form-group row">
+                <label asp-for="Comentarios" class="col-md-2 col-form-label"></label>
+                <div class="col-md-10">
+                    <textarea asp-for="Comentarios" class="form-control" onkeyup="onKeyUpIncComment()"></textarea>
+                    <span asp-validation-for="Comentarios" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <div class="col-md-2"></div>
+                <div class="checkbox col-md-offset-2 col-md-4">
+                    <label>
+                        <input asp-for="Autoriza" id="autotiza_incPermios" /> @Html.DisplayNameFor(model => model.Autoriza)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group row mg-b-0">
+                <div class="col-sm-12 text-right">
+                    <a href="@Url.Action( Model.Modee == 2 ? "SolicitudesN1" : "SolicitudesN2","IncVacacion")" class="btn btn-sm btn-secondary">Regresar a solicitudes</a>
+                    <button type="submit" style="display:none" class="btn btn-sm btn-primary" id="btn_submit_incPermios">Guardar cambios</button>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="incPermisoval()">Guardar cambios</button>
+                </div>
+            </div>
+        </form>
     }
     else
     {
@@ -128,29 +140,38 @@
         }
         else
         {
-            if (Model.Modee == 2 || Model.Modee == 3)
+            if (Model.Modee == 2 || Model.Modee == 3|| Model.Modee == 10)
             {
                 if (sstepSelected.Revisada)
                 {
-<div class="alert alert-warning mg-b-0 mt-4" role="alert">
-    @if (HttpContextAccessor.HttpContext.Session.GetInt32("user_id") == sstepSelected.IdPersona)
-    {
-        if (DateTime.Now.AddSeconds(-30) < sstepSelected.Fecha)
-        {
-            <span>Estimado usuario gracias por procesar esta solicitud</span>
-        }
-        else
-        {
-            <span>Estimado usuario ya has procesado esta solicitud</span>
-        }
-    }
-    else
-    {
-        <span>Estimado usuario, ya fue procesada esta solicitud</span>
-    }
+                    <div class="alert alert-warning mg-b-0 mt-4" role="alert">
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32("user_id") == sstepSelected.IdPersona)
+                        {
+                            if (DateTime.Now.AddSeconds(-30) < sstepSelected.Fecha)
+                            {
+                                <span>Estimado usuario gracias por procesar esta solicitud</span>
+                            }
+                            else
+                            {
+                                <span>Estimado usuario ya has procesado esta solicitud</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>Estimado usuario, ya fue procesada esta solicitud</span>
+                        }
 
-</div>
+                    </div>
                     <dl class="dl-horizontal row  border pt-4 pb-4   @Html.Raw(sstepSelected.Revisada  ? "border-warning" : "" )">
+                        @if (Model.Modee == 10)
+                        {
+                            <dt class="col-md-2">
+                                Comentarios por parte del solicitante
+                            </dt>
+                            <dd class="col-md-4 border">
+                                @Html.DisplayFor(model => sstepSelected.Comentarios2)
+                            </dd>
+                        }
                         <dt class="col-md-2">
                             @Html.DisplayNameFor(model => sstepSelected.Fecha)
                         </dt>
@@ -186,4 +207,37 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+<script>
+    var incPermisoval = function () {
+        let mensaje = document.getElementById("autotiza_incPermios").checked
+        if (document.getElementById("Comentarios").value.trim().length != 0) {
+            Swal.fire({
+                title: '¿Estás seguro de: "' + (mensaje == true ? "AUTORIZAR": "RECHAZAR") + '" esta solicitud con folio: @Html.DisplayFor(model => Details.Folio)?',
+                text: "!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si adelante!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    document.getElementById("btn_submit_incPermios").click()
+                }
+            })
+        } else {
+            document.getElementById("Comentarios").value = ""
+            document.querySelector("span[data-valmsg-for='Comentarios']").innerText = "Por favor escribe algún comentario"
+        }
+    }
+    var onKeyUpIncComment = function () {
+        if (document.getElementById("Comentarios").value.trim().length != 0) {
+            document.querySelector("span[data-valmsg-for='Comentarios']").innerText = ""
+        }
+        else {
+            document.getElementById("Comentarios").value = ""
+            document.querySelector("span[data-valmsg-for='Comentarios']").innerText = "Por favor escribe algún comentario"
+        }
+
+    }
+</script>
 }

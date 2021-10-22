@@ -1,6 +1,6 @@
 ﻿@model GPSInformation.Models.SalaReservacion
 
-<form asp-action="EditSalaReservacion">
+<form asp-action="EditSalaReservacion" id="edit_reser_form">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group" id="Mesnaje_result1">
 
@@ -19,10 +19,10 @@
         <label class="tx-uppercase tx-sans tx-11 tx-medium tx-spacing-1 tx-color-03">Hora de Inicio y fin </label>
         <div class="row row-xs">
             <div class="col-6">
-                <input type="time"  value="@Model.HoraIncio.ToString()" id="HoraIncio1"  class="form-control" placeholder="Select date">
+                <input type="time"  value="@Model.HoraIncio.ToString()" asp-for="HoraIncio" id="HoraIncio1"  class="form-control" placeholder="Select date">
             </div><!-- col-7 -->
             <div class="col-6">
-                <input id="HolaFin1" value="@Model.HolaFin.ToString()"  type="time"  class="form-control" placeholder="Select date">
+                <input id="HolaFin1" value="@Model.HolaFin.ToString()" asp-for="HolaFin" type="time"  class="form-control" placeholder="Select date">
             </div><!-- col-5 -->
         </div><!-- row -->
     </div><!-- form-group -->
@@ -38,7 +38,7 @@
     <div class="form-group row mg-b-0">
         <div class="col-sm-12 text-right">
             <a href="" class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
-            <button type="button" class="btn btn-primary mg-r-5" onclick="App_calendar.EditReservacionSave()">Agregar</button>
+            <button type="button" class="btn btn-primary mg-r-5" onclick="App_calendar.EditReservacionSave()">Guardar</button>
         </div>
     </div>
 </form>

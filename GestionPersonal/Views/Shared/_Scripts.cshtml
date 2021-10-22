@@ -166,7 +166,6 @@
         var Altura = document.getElementById("Altura")
         var Peso = document.getElementById("Peso")
         var IMC = document.getElementById("IMC")
-        console.log("calculando IMC")
         if (Altura != null && Peso != null && IMC != null ) {
             if (Altura.value != "" && Peso.value != "") {
                 var IMC_ = parseFloat(Peso.value) / (parseFloat(Altura.value) * parseFloat(Altura.value))
@@ -176,13 +175,11 @@
 
     }
     var ValidateFormIncPerm = function () {
-        console.log("validando inc perm form")
         let tipoAsunto = document.getElementById("IdAsunto");
         let tipoPago = document.getElementById("PermisoPago");
         if (tipoAsunto != undefined && tipoPago != undefined) {
             if (tipoAsunto.value === 36 || tipoAsunto.value === "36") {
                 tipoPago.style.display = ""
-                console.log("none")
             } else {
                 tipoPago.style.display = "none"
             }
@@ -191,6 +188,25 @@
 
 
     }
+    var ValidPgoForm = async function () {
+                    let tipoAsunto = document.getElementById("IdAsunto");
+                    if (tipoAsunto.value === 36 || tipoAsunto.value === "36") {
+                        let opcionesPago = document.getElementById("IdPagoPermiso").options
+                        await axios.get('@Url.Action("ValidOpcionesPersonal", "IncPermiso")/?Fecha=' + document.getElementById("app_permiso_create_fecha").value, null, null).then(response => {
+                            for (var i = 0; i < opcionesPago.length; i++) {
+                                opcionesPago[i].style.display = 'none'
+                            }
+                            document.querySelector("#IdPagoPermiso option[value='0']").style.display = ''
+                            for (var k in response.data) {
+                                document.querySelector("#IdPagoPermiso option[value='" + response.data[k].idCatalogoOpcionesValores + "']").style.display = ''
+                            }
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                        }).finally(() => {
+
+                        })
+                    }
+                }
     var getRenderViewCon = async function (element) {
 
         if (element.dataset["rendercontent"] == undefined) {
@@ -200,11 +216,79 @@
             return element
         }
     }
+
+    var GL_session_confirm = async function (mensaje , callbackConfirm) {
+        gl_validSess(async () => {
+            Swal.fire({
+                title: mensaje,
+                text: "",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Si adelante!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    if (callbackConfirm != null && callbackConfirm != undefined) {
+                        callbackConfirm();
+                    }
+                }
+            })
+        });
+    }
+
+    var gl_viewConent = async function (element) {
+        gl_validSess(async () => {
+            if (element.dataset["btn_render"] != undefined) {
+                //if (element.dataset["render_content"] != undefined) {
+                //    if (element.dataset["render_rute"] != undefined) {
+                //        var contenedor = document.getElementById(element.dataset["render_content"])
+                //        if (contenedor != undefined) {
+                //            contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                //            await axios.get(element.dataset["render_rute"], null, null).then(response => {
+                //                contenedor.innerHTML = response.data;
+                //            }).catch(error => {
+                //                GlobalValidAxios(error);
+                //                contenedor.innerHTML = "<span class='tx-danger'>Error, por favor intenta nuevamente</span>"
+                //            }).finally(() => {
+
+                //            })
+                //        }
+                //    }
+                //}
+                gl_view_content(element.dataset["render_rute"], element.dataset["render_content"])
+            }
+        });
+    }
+
+    var gl_view_content = async function (rute, content) {
+        gl_validSess(async () => {
+            if (content != undefined) {
+                if (rute != undefined) {
+                    var contenedor = document.getElementById(content)
+                    if (contenedor != undefined) {
+                        contenedor.innerHTML = '<div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div><div class="placeholder-paragraph">  <div class="line"></div>  <div class="line"></div></div>'
+                        await axios.get(rute, null, null).then(response => {
+                            contenedor.innerHTML = response.data;
+                        }).catch(error => {
+                            GlobalValidAxios(error);
+                            contenedor.innerHTML = "<span class='tx-danger'>Error, por favor intenta nuevamente</span>"
+                        }).finally(() => {
+
+                        })
+                    }
+                }
+            }
+        });
+    }
+
+
+
     var ValidViewActionAccess = async function (element, mensaje) {
         gl_validSess(async () => {
             Swal.fire({
                 title: 'Estas seguro de: " ' + mensaje + '"?',
-                text: "!",
+                text: "",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -213,7 +297,6 @@
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     //data - renderContent="Empleado"
-                    console.log(element)
                     let rendermode = element.dataset["rendercontent"]
                     if (rendermode == undefined || rendermode == "") {
                         let ContetExis = false;
@@ -257,10 +340,10 @@
             })
         });
     }
+
     var GetViewAccess = async function (element, ShowLoader = true) {
         gl_validSess(async () => {
             //data - renderContent="Empleado"
-            console.log(element)
             let rendermode = element.dataset["rendermode"]
             if (rendermode == undefined || rendermode == "") {
                 let ContetExis = false;
@@ -279,7 +362,7 @@
                         }
                         await axios.get(ruta, null, null).then(response => {
                             contenedor.innerHTML = response.data
-
+                            contenedor.dataset["ruterender"] = ruta
                             var mode = element.dataset["mode"];
                             if (mode != undefined && mode == "form") {
                                 ExcecForm(contenedor)
@@ -320,13 +403,58 @@
             }
         });
     }
+    var Gl_form = async function (e) {
+        e.preventDefault();
+        gl_validSess(async () => {
+            let data = new FormData(e.srcElement);
+            let enctype = e.srcElement.enctype
+            let method = e.srcElement.method
+            let action = e.srcElement.action
+            await axios({
+                method: method,
+                url: action,
+                data: data,
+                headers: { 'Content-Type': enctype }
+            }).then(response => {
+                $("#modal_det_vacaciones").modal("hide");
+                document.getElementById("btn_refres_vacaciondet").click()
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        });
+        return false
+    }
+    var Gl_form1 = async function (e) {
+        e.preventDefault();
+        gl_validSess(async () => {
+            let data = new FormData(e.srcElement);
+            let enctype = e.srcElement.enctype
+            let method = e.srcElement.method
+            let action = e.srcElement.action
+            await axios({
+                method: method,
+                url: action,
+                data: data,
+                headers: { 'Content-Type': enctype }
+            }).then(response => {
+                window.location.reload()
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        });
+        return false
+    }
     var closeModal = function (model) {
         $(model).modal("hide");
     }
     var ExcecForm = async function (contenedor) {
-        
+
         //gl_validSess(async () => {
-            console.log(contenedor)
+            console.log('Validando form')
             var forms = document.getElementsByClassName("ExcecForm");
             for (var i = 0; i < forms.length; i++) {
                 forms[i].onsubmit = async (e) => {
@@ -353,6 +481,7 @@
                                 headers: { 'Content-Type': enctype }
                             }).then(response2 => {
                                 contenedor.innerHTML = response2.data
+                                $("#ModalFormProcessing").modal("hide");
                             }).catch(error2 => {
                                 $("#ModalFormProcessing").modal("hide");
                                 GlobalValidAxios(error2);
@@ -388,17 +517,20 @@
             //this.Registrando = false
             element.innerHTML = 'Iniciar'
             element.disabled = false
-            console.log("finally")
         })
+    }
+    var gl_openModal = function (modalId) {
+        $("#" + modalId).modal({
+            backdrop: "static", //remove ability to close modal with click
+            keyboard: false, //remove option to close with keyboard
+            show: true //Display loader!
+        });
     }
     var gl_validSess = async function (callback) {
         await axios.get('@Url.Action("CheckSession", "Home")', null, null).then(response => {
-            console.log("then")
-           
             callback();
         }).catch(error => {
             if (error.response) {
-                console.log("catch")
                 if (error.response.status === 401) {
                     /*alert(error.response.data)*/
                     $("#modalFormSartSession").modal({
@@ -414,8 +546,57 @@
             }
         }).finally(() => {
             //this.Registrando = false
-            console.log("finally")
+            //console.log("finally")
         })
+    }
+    var btn_loading = function (idelement, title, type = 'show') {
+        var element = document.getElementById(idelement)
+        if (element !== undefined) {
+            if (type === 'show') {
+                element.disabled = true;
+                element.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="loading_' + idelement + '"></span> Procesando...'
+            } else {
+                element.disabled = false;
+                element.innerHTML =  title
+            }
+
+
+
+            
+        }
+    }
+    var ShowCanvasToggle = function (ref) {
+        console.log("Hola soy el perro del chuy")
+        $(ref).addClass('show');
+    }
+    var canvas_menu_toogle = function() {
+        // The code below is for demo purposes only.
+        // For you to not be confused, please refer to
+        // Off-Canvas starter template in Collections
+
+        $('.off-canvas-menu').on('click', function (e) {
+            e.preventDefault();
+            var target = $(this).attr('href');
+            $(target).addClass('show');
+        });
+
+
+        $('.off-canvas .close').on('click', function (e) {
+            e.preventDefault();
+            $(this).closest('.off-canvas').removeClass('show');
+        })
+
+        $(document).on('click touchstart', function (e) {
+            e.stopPropagation();
+
+            // closing of sidebar menu when clicking outside of it
+            if (!$(e.target).closest('.off-canvas-menu').length) {
+                var offCanvas = $(e.target).closest('.off-canvas').length;
+                if (!offCanvas) {
+                    $('.off-canvas.show').removeClass('show');
+                }
+            }
+        });
     }
     $(document).ready(function () {
         //$('.select2').select2({

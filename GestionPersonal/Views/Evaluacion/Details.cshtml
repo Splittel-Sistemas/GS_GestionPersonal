@@ -29,7 +29,7 @@
             <h4 class="mg-b-0 tx-spacing--1">@ViewData["Title"]</h4>
         </div>
         <div class="d-none d-md-block">
-            <a href="#EmpleadosNoagregados" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" title="clic para ver empleados no agregados a esta evaluación" data-toggle="modal" onclick="app_det_eval.EmpleadosNoagregados()"><i data-feather="list" class="wd-10 mg-r-5"></i>Empleados sin participar</a>
+            @*<a href="#EmpleadosNoagregados" class="btn btn-sm pd-x-15 btn-white btn-uppercaser" title="clic para ver empleados no agregados a esta evaluación" data-toggle="modal" onclick="app_det_eval.EmpleadosNoagregados()"><i data-feather="list" class="wd-10 mg-r-5"></i>Empleados sin participar</a>*@
         </div>
     </div>
 }
@@ -107,15 +107,19 @@
                     <h6 class="tx-uppercase tx-semibold mg-b-0">@seccion.Nombre</h6>
                 </div><!-- card-header -->
                 <div class="card-body pd-25 row">
-                    <div class="col-lg-8">
-                        <nav class="nav nav-classic tx-13">
-                            @foreach (var pregunta in seccion.Preguntas)
+                    
+                    <div class="col-sm-12 row align-items-center">
+                        @foreach (var pregunta in seccion.Preguntas)
+                        {
+
+                            @if (pregunta.Tipo == 1)
                             {
-                                @if (pregunta.Tipo == 1)
-                                {
-                                    <a href="#" class="nav-link">
-                                        @Preguntas .- <span>@Html.Raw(pregunta.Pregunta)</span>
-                                        <span class="badge text-black-50">
+                                <div class="col-8">
+                                    <div class="d-flex" style="">
+                                        <div class="pd-10  flex-grow-1">
+                                            @Preguntas .- <span>@Html.Raw(pregunta.Pregunta)</span>
+                                        </div>
+                                        <div class="pd-10 ">
                                             @{
                                                 double Calificacion = 0;
                                                 int countas = 0;
@@ -156,32 +160,48 @@
 
 
                                             }
-
                                             <strong>@total.ToString("0.00")</strong>
-                                        </span>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a href="#" class="nav-link">
-                                        @Preguntas .- <span>@Html.Raw(pregunta.Pregunta)</span>
-                                    </a>
-                                    <br />
-                                    <ul>
-                                        @foreach (var a in respuestas.Where(a => a.IdEvaluacionSeccionPregnts == pregunta.IdEvaluacionSeccionPregnts && a.Respuesta != "").ToList())
-                                        {
-                                            <li>
-                                                <span title="Comentario por : @view_Empleados.Find( ass => ass.IdPersona == a.IdPersona).EmpleadoDatos.NombreCompleto">@Html.Raw(string.IsNullOrEmpty(a.Respuesta) ? "Sin respuesta" : a.Respuesta)</span>
-                                            </li>
-                                        }
-                                    </ul>
-                                }
-                                Preguntas++;
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="d-flex bd-highlight">
+                                        <div class="p-1">1</div>
+                                        <div class="p-1 w-100">
+                                            <div class="progress ht-20">
+                                                <div class="progress-bar " style="width: @Html.Raw($"{(int)Math.Round(total*10)}%")" role="progressbar" aria-valuenow="@Html.Raw((int)Math.Round(total*10))" aria-valuemin="0" aria-valuemax="100">@total.ToString("0.00")</div>
+                                            </div>
+                                        </div>
+                                        <div class="p-1">10</div>
+                                    </div>
+                                    
+
+                                </div>
                             }
-                        </nav>
-                    </div>
-                    <div class="col-lg-4">
-                        <canvas id="@Html.Raw(seccion.IdEvaluacioSeccion+"_Seccion")"></canvas>
+                            else
+                            {
+                                <div class="col-8">
+                                    <div class="d-flex  bg-light" style="" >
+                                        <div class="pd-10  flex-grow-1">
+                                            <p>@Preguntas .- <span>@Html.Raw(pregunta.Pregunta)</span></p>
+                                            <ul>
+                                                @foreach (var a in respuestas.Where(a => a.IdEvaluacionSeccionPregnts == pregunta.IdEvaluacionSeccionPregnts && a.Respuesta != "").ToList())
+                                                {
+                                                    <li>
+                                                        <span title="Comentario por : @view_Empleados.Find( ass => ass.IdPersona == a.IdPersona).EmpleadoDatos.NombreCompleto">@Html.Raw(string.IsNullOrEmpty(a.Respuesta) ? "Sin respuesta" : a.Respuesta)</span>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                        <div class="pd-10 ">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4"></div>
+                            }
+                            Preguntas++;
+                        }
                     </div>
                 </div>
             </div>
@@ -201,10 +221,11 @@
         <table class="table table-bordered hable-hover" id="table_del_part">
             <thead>
                 <tr>
+                    <th>Nomina</th>
                     <th>Empleado</th>
-                    <th>Correo</th>
-                    <th>Antiguedad</th>
+                    <th>Puesto</th>
                     <th>Departamento</th>
+                    <th>Correo</th>
                     <th>Contestó</th>
                     <th align="center">
                         <div class="dropdown">
@@ -228,10 +249,11 @@
                     if (emp != null && emp.EmpleadoDatos != null)
                     {
                         <tr id="row_emp_@emp.IdPersona">
-                            <td class="tx-uppercase">@emp.EmpleadoDatos.NombreCompleto</td>
-                            <td>@emp.EmpleadoDatos.Correo</td>
-                            <td>@emp.EmpleadoDatos.Antiguedad.ToString("0.0 año(s)")</td>
+                            <td class="">@emp.EmpleadoDatos.NumeroNomina</td>
+                            <td class="">@emp.EmpleadoDatos.NombreCompleto2</td>
+                            <td>@emp.EmpleadoDatos.PuestoNombre</td>
                             <td>@emp.EmpleadoDatos.NombreDepartamento</td>
+                            <td>@emp.EmpleadoDatos.Correo</td>
                             <td>
                                 @if (@emp.Respondio)
                                 {
@@ -265,7 +287,7 @@
                             <div class="form-group">
                                 <label>selecciona uno o mas participantes</label>
                                 <input type="hidden" name="IdEvaluacion" value="@Model.IdEvaluacion" />
-                                <select name="Participantes" id="inpt_newPart" multiple="multiple" asp-items="ViewBag.Empleados" class="form-control select2">
+                                <select name="Participantes" id="inpt_newPart" multiple="multiple" asp-items="ViewBag.Empleados" class="form-control select2" required>
                                     <option value="0">Selecciona una opción</option>
                                 </select>
                             </div>
@@ -293,7 +315,7 @@
                             <div class="form-group">
                                 <label>selecciona uno o mas departamentos</label>
                                 <input type="hidden" name="IdEvaluacion" value="@Model.IdEvaluacion" />
-                                <select name="Departamentos" id="sleectDepartamtnso" multiple="multiple" asp-items="ViewBag.Departamentos" class="form-control select2">
+                                <select name="Departamentos" id="sleectDepartamtnso" multiple="multiple" asp-items="ViewBag.Departamentos" class="form-control select2" required>
                                     <option value="0">Selecciona una opción</option>
                                 </select>
                             </div>
@@ -351,10 +373,11 @@
                         sSearch: '',
                         lengthMenu: '_MENU_ items/page',
                     },
-                    columnDefs: [
-                        { orderable: false, targets: 0 }
-                    ],
-                    "order": [[0, "desc"]]
+                    ordering: false,
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'excel', 'pdf'
+                    ]
                 });
                 
             },
@@ -518,7 +541,7 @@
         });
     </script>
 
-    @{
+    @*@{
         Preguntas = 1;
         int Max = 0;
     }
@@ -560,16 +583,17 @@
 
                     }
                 }
-                double total = Calificacion / countas;
-                Valores.Add(total.ToString("0.00"));
+                    double total = Calificacion / countas;
+                    Valores.Add(total.ToString("0.00"));
+                    Indices.Add($"'Pregunta: #{Preguntas}'");
 
             }
-            Indices.Add(Preguntas + "");
+
             Preguntas++;
         }
         <script>
 
-            var ctxLabel = [@string.Join(",", Indices)];
+            var ctxLabel = [@Html.Raw(string.Join(",", Indices))];
             var ctxData1 = [@string.Join(",", Valores)];
     var ctx1 = document.getElementById('@Html.Raw(seccion.IdEvaluacioSeccion+"_Seccion")').getContext('2d');
     new Chart(ctx1, {
@@ -589,22 +613,25 @@
             legend: {
                 display: false,
                 labels: {
-                    display: false
+                    display: true
                 }
             },
             scales: {
                 yAxes: [{
+                    stacked: true,
                     gridLines: {
-                        display: false
+                        display: true
                     },
                     ticks: {
-                        display: false,
+                        display: true,
                         beginAtZero: true,
                         fontSize: 10,
-                        fontColor: '#182b49'
+                        fontColor: '#182b49',
+                        mirror: true
                     }
                 }],
                 xAxes: [{
+                    stacked: true,
                     gridLines: {
                         display: true,
                         color: '#eceef4'
@@ -621,7 +648,7 @@
         }
     });
         </script>
-    }
+    }*@
 
 
 }

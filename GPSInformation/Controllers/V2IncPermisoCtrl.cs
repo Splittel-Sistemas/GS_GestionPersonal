@@ -123,8 +123,8 @@ namespace GPSInformation.Controllers
             }
             if (!details.ActiveCancelar)
                 throw new GPException { Description = $"Estimado usuario no es posible procesar la incidencia solicitada, estatus actual: {details.EstatusDescricion}", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
-            if (details.Fecha >= DateTime.Now)
-                throw new GPException { Description = $"Estimado usuario ya no puedes cancelar esta solicitud, las cancelaciones deberam de hacerce un dia antes", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
+            //if (details.Fecha >= DateTime.Now)
+            //    throw new GPException { Description = $"Estimado usuario ya no puedes cancelar esta solicitud, las cancelaciones deberam de hacerce un dia antes", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
             details.Estatus = 6;
             _darkM.IncidenciaPermiso.Element = details;
 
@@ -175,6 +175,10 @@ namespace GPSInformation.Controllers
                         {
                             details.Estatus = 3;
                         }
+                    }
+                    else if (details.Estatus == 3)
+                    {
+                        details.Estatus = 4;
                     }
                 }
                 else
@@ -340,9 +344,9 @@ namespace GPSInformation.Controllers
             {
                 throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
             }
-            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where  t01.Estatus = 2 and (" +
+            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where  t01.Estatus != 8 and (" +
                 $"t01.IdPersona in (select t02.EIdPersona from View_EmpleadoJefe as t02 where t02.JIdpersona = {_IdPersona }) or " +
-                $"t01.IdPersona in (select t02.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona } and t02.Activa = 1 ) )", "Order by Creado");
+                $"t01.IdPersona in (select t02.IdPersona from IncidenciaAuthAux as t02 where t02.IdPersonaAuth = {_IdPersona } and t02.Activa = 1 ) )", "Order by Creado desc");
             data.ForEach(result => LLenarTodo(result));
             return data;
         }
@@ -356,7 +360,7 @@ namespace GPSInformation.Controllers
             {
                 throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
             }
-            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where t01.Estatus = 3 ", "Order by Creado");
+            var data = _darkM.IncidenciaPermiso.GetOpenquery($" as t01 where t01.Estatus in(3,10) ", "Order by Creado desc");
             data.ForEach(result => LLenarTodo(result));
             return data;
         }
@@ -502,6 +506,10 @@ namespace GPSInformation.Controllers
             {
                 throw new GPException { Description = $"Por favor selecciona un tipo de permiso", ErrorCode = 0, Category = TypeException.Info, IdAux = "IdPagoPermiso" };
             }
+
+            if(string.IsNullOrEmpty(IncidenciaPermiso.DescripcionAsunto))
+                throw new GPException { Description = $"Por favor introduce algun comentario", ErrorCode = 0, Category = TypeException.Info, IdAux = "DescripcionAsunto" };
+
             IncidenciaPermiso.Estatus = IncidenciaPermiso.CreadoPor == "Admin" ? 4: 2;
             //IncidenciaPermiso.Creado = DateTime.Now;
             //IncidenciaPermiso.Editado = DateTime.Now;
@@ -559,6 +567,10 @@ namespace GPSInformation.Controllers
             _darkM.IncidenciaPermiso.Update();
 
             SPValidator(IncidenciaPermiso.IdIncidenciaPermiso, "Update");
+        }
+        public List<CatalogoOpcionesValores> ValidOpcionesPersonal(DateTime Fecha)
+        {
+            return _darkM.CatalogoOpcionesValores.GetSpecialStat($"EXEC SP_IncidenciaPermiso_options @Fecha = '{Fecha.ToString("yyyy-MM-dd")}', @IdPersona = {_IdPersona}");
         }
         private void SPValidator(int IdIncidenciaPermiso, string Mode)
         {
@@ -621,7 +633,7 @@ namespace GPSInformation.Controllers
             procesoStep.IdIncidenciaVacacion = 0;
             procesoStep.IdPersona = 0;
             procesoStep.Fecha = null;
-            procesoStep.Titulo = "permiso concluido/tomado";
+            procesoStep.Titulo = "Incidencia concluido/tomado";
             procesoStep.Comentarios = "";
             procesoStep.Nivel = 5;
             procesoStep.Revisada = false;
@@ -654,6 +666,7 @@ namespace GPSInformation.Controllers
         Details = 3,
         Delete = 4,
         Aprove = 5,
-        Cancel = 6
+        Cancel = 6,
+        AproveCancelation = 7
     }
 }

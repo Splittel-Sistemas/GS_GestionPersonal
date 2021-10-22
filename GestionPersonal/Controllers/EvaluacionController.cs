@@ -30,11 +30,14 @@ namespace GestionPersonal.Controllers
 
         // GET: EvaluacionController
         [AccessMultipleView(IdAction = new int[] { 37 })]
-        public ActionResult Index(int Page, int RowsPerPage)
+        public ActionResult Index(int Page, int RowsPerPage, string FilterPatterns)
         {
             try
             {
-                return View(EvaluacionCtrl.Get(Page, RowsPerPage));
+                ViewData["Page"] = Page;
+                ViewData["RowsPerPage"] = RowsPerPage;
+                ViewData["FilterPatterns"] = FilterPatterns;
+                return View(EvaluacionCtrl.Get(Page, RowsPerPage, FilterPatterns));
             }
             catch (GPSInformation.Exceptions.GpExceptions ex)
             {
@@ -454,6 +457,31 @@ namespace GestionPersonal.Controllers
             }
         }
 
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        [AccessDataSession(IdAction = new int[] { 37 })]
+        public IActionResult DeleteEvaluacion(int id)
+        {
+            try
+            {
+                if (id == 0)
+                {
+                    return BadRequest("Evalaución no encontrada");
+                }
+                EvaluacionCtrl.Delete(id);
+
+                return Ok("PArticipantes eliminados");
+            }
+            catch (GpExceptions ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            finally
+            {
+                EvaluacionCtrl.Terminar();
+                EvaluacionCtrl = null;
+            }
+        }
 
 
         [HttpGet]

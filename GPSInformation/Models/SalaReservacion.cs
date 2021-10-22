@@ -48,7 +48,7 @@ namespace GPSInformation.Models
         public int IdPersona { get; set; }
 
         [Display(Name = "Activa")]
-        [Required]
+        //[Required]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public bool Activa { get; set; }
 

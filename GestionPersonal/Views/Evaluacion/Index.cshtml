@@ -26,7 +26,7 @@
                     <label>Filtro</label>
                     <input type="hidden" name="Page" asp-for="PageSelected" />
                     <div class="search-form">
-                        <input type="search" class="form-control" placeholder="buscar">
+                        <input type="search" asp-for="FilterPatterns" class="form-control" placeholder="buscar">
                         <button class="btn" type="button"><i data-feather="search"></i></button>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
             }
         </ul>
     </nav>
-    <table class="table table-condensed table-sm">
+    <table class="table table-condensed table-sm" id="table_evaluaciones_list">
         <thead>
             <tr>
                 <th>
@@ -116,7 +116,7 @@
         <tbody>
             @foreach (var item in Model.Data)
             {
-                <tr>
+                <tr id="row_@Html.DisplayFor(modelItem => item.IdEvaluacion)">
                     <td>
                         @Html.DisplayFor(modelItem => item.IdEvaluacion)
                     </td>
@@ -163,7 +163,8 @@
                         </td>*@
                     <td>
                         @Html.ActionLink("Editar", "Edit", new { id = item.IdEvaluacion }) |
-                        @Html.ActionLink("Dashboard", "Details", new { id = item.IdEvaluacion }, new { title = "Administrar evaluación", target = "_blank" })
+                        @Html.ActionLink("Dashboard", "Details", new { id = item.IdEvaluacion }, new { title = "Administrar evaluación", target = "_blank" }) |
+                        <a href="#" onclick="DeleteEvaluacion(@item.IdEvaluacion,'@Html.DisplayFor(modelItem => item.IdEvaluacion)');">Eliminar</a>
                     </td>
                 </tr>
             }
@@ -206,11 +207,11 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
+<script>
         $(function () {
             'use strict'
 
-            $('.table').DataTable({
+            $('#table_evaluaciones_list').DataTable({
                 language: {
                     searchPlaceholder: 'Search...',
                     sSearch: '',
@@ -219,10 +220,26 @@
                 searching: false,
                 paging: false,
                 info: false,
-                columnDefs: [{ orderable: false, targets: 0 }],
+                columnDefs: [],
+                "order": [[0, "desc"]],
+                dom: 'Bfrtip',
+                buttons: [
+                        'excel', 'pdf'
+                ]
             });
 
         });
-    </script>
+        var DeleteEvaluacion = async function (idEvaluacion, folio) {
+            GL_session_confirm("¿Deseas eliminar la evaluación con folio: '" + folio + "' de la lista?",async () => {
+                await axios.post('@Url.Action("DeleteEvaluacion", "Evaluacion")/'+ idEvaluacion, null, null).then(response => {
+                    let elementr_re = document.getElementById("row_"+folio)
+                    if (elementr_re != null && elementr_re != undefined)
+                        elementr_re.remove()
+                }).catch(error => {
+                    GlobalValidAxios(error)
+                }).finally()
+            });
+        }
+</script>
 }
 

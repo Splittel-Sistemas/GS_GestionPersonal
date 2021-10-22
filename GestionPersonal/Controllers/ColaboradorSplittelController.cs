@@ -58,7 +58,7 @@ namespace GestionPersonal.Controllers
                 {
                     throw new GPException { Description = $"Estimado usuario no tienes permisos para esta sección", ErrorCode = 0, Category = TypeException.Noautorizado, IdAux = "" };
                 }
-
+                FilterPatterns = !string.IsNullOrEmpty(FilterPatterns) ? FilterPatterns.Contains('%') ? FilterPatterns : $"%{FilterPatterns}%" : "";
                 if (!string.IsNullOrEmpty(FilterPatterns))
                     FilterPatterns = $"where NumeroNomina like '{FilterPatterns}' " +
                         $"or NombreCompleto like '{FilterPatterns}' " +
@@ -245,7 +245,11 @@ namespace GestionPersonal.Controllers
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
                 var data = _V2EmpleadoCtrl.EmpInfoMedicaDetails(id);
-
+                if (data == null)
+                {
+                    ViewData["link"] = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("EmpInfoMedicaCreate", "ColaboradorSplittel", new { id = id })}";
+                    return PartialView("InfoDetails");
+                }
                 return PartialView(data);
             }
             catch (GPException ex)
@@ -374,6 +378,11 @@ namespace GestionPersonal.Controllers
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
                 var data = _V2EmpleadoCtrl.EmpInfoSplittelDetails(id);
+                if(data == null)
+                {
+                    ViewData["link"] = $"{((HttpContext.Request.IsHttps ? "https:" : "http:"))}//{HttpContext.Request.Host}{Url.Action("EmpInfoSplittelCreate", "ColaboradorSplittel", new { id = id })}";
+                    return PartialView("InfoDetails");
+                }
                 return PartialView(data);
             }
             catch (GPException ex)
@@ -398,7 +407,7 @@ namespace GestionPersonal.Controllers
                 ViewData["EstatusEmpleado"] = (SelectList)_V2EmpleadoCtrl.GetCatalogo(V2EmpleadoCatalogo.EstatusEmpleado, V2EmpleadoCatalogoDatatype.SelectList);
                 ViewData["IdPersona"] = id;
                 ViewData["Accesos"] = _V2EmpleadoCtrl._Accesos;
-                return PartialView(new Empleado { IdPersona = id });
+                return PartialView(new Empleado { IdPersona = id, Ingreso =  DateTime.Now });
             }
             catch (GPException ex)
             {

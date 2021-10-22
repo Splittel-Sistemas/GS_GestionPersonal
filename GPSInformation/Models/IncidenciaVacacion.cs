@@ -19,11 +19,13 @@ namespace GPSInformation.Models
         [ColumnDB(IsMapped = true, IsKey = false)]
         public int IdPersona { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = false)]
         [Required]
         [Display(Name = "Salida")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Inicio { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}", ApplyFormatInEditMode = false)]
         [Required]
         [Display(Name = "Último día")]
         [ColumnDB(IsMapped = true, IsKey = false)]
@@ -37,6 +39,18 @@ namespace GPSInformation.Models
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string CreadoPor { get; set; }
 
+        /// <summary>
+        /// Detalle de estatus
+        /// 1 Solicitud creada
+        /// 2 Jefe inmediado
+        /// 3 Gestión personal
+        /// 4 Autorizada
+        /// 5 Councluida
+        /// 6 Cancelada
+        /// 7 Rechazada
+        /// 8 Eliminada
+        /// 9 Expirada
+        /// </summary>
         [Display(Name = "Estatus")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public int Estatus { get; set; }
@@ -109,11 +123,12 @@ namespace GPSInformation.Models
                 else if (Estatus == 2) return "Jefe inmediado";
                 else if (Estatus == 3) return "Gestión personal";
                 else if (Estatus == 4) return "Autorizada";
-                else if (Estatus == 5) return "Councluida";
+                else if (Estatus == 5) return "Concluida";
                 else if (Estatus == 6) return "Cancelada";
                 else if (Estatus == 7) return "Rechazada";
                 else if (Estatus == 8) return "Eliminada";
                 else if (Estatus == 9) return "Expirada";
+                else if (Estatus == 10) return "Solicitud de cancelación";
                 else return "--";
             }
         }
@@ -132,6 +147,7 @@ namespace GPSInformation.Models
                 else if (Estatus == 7) return "danger";
                 else if (Estatus == 8) return "info";
                 else if (Estatus == 9) return "info";
+                else if (Estatus == 10) return "info";
                 else return "--";
             }
         }
@@ -170,6 +186,12 @@ namespace GPSInformation.Models
         [Display(Name = "Comentarios")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string Comentarios { get; set; }
+        
+        
+        
+        [Display(Name = "Comentarios2")]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Comentarios2 { get; set; }
 
         [Display(Name = "Fue revisada")]
         [ColumnDB(IsMapped = true, IsKey = false)]
@@ -190,5 +212,17 @@ namespace GPSInformation.Models
         [Display(Name = "Nombre del Empleado")]
         [ColumnDB(IsMapped = true, IsKey = false)]
         public string NombreEmpleado { get; set; }
+        
+        
+        [Display(Name = "Tipo de proceso")]
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int Tipo { get; set; }
+
+        [Display(Name = "Tipo de proceso")]
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string TipoDescr { get {
+                return Tipo == 1 ? "Proceso de autorización" : "Solicitud de cancelación";
+            } 
+        }
     }
 }

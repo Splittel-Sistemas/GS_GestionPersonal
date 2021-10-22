@@ -143,9 +143,9 @@ namespace GPSInformation.Controllers
         {
             //extraer datos del reporte
             var reporte = Details(IdReporte);
-
+            string reporteSentencia = reporte.Sentencia;
             //validar parametros
-            if(reporte.ParametrosD.Count > 0)
+            if (reporte.ParametrosD.Count > 0)
             {
                 if( Parametros is null  || Parametros != null && Parametros.Count <= 0 || Parametros != null && Parametros.Count(a => string.IsNullOrEmpty(a.Valor)) > 0)
                     throw new GPException { Description = $"Estimado usuario por favor llena los parametros requeridos", ErrorCode = 0, Category = TypeException.Info, IdAux = "" };
@@ -176,6 +176,7 @@ namespace GPSInformation.Controllers
                     else
                     {
                         reporte.Sentencia = reporte.Sentencia.Replace(par.Variable, variable.Valor);
+                        
                     }
                 });
             }
@@ -221,6 +222,7 @@ namespace GPSInformation.Controllers
             dataInfo.Close();
 
             reporte.Columnas = JsonConvert.SerializeObject(columns);
+            reporte.Sentencia = reporteSentencia;
             _darkM.Reporte.Element = reporte;
             _darkM.Reporte.Update();
 
