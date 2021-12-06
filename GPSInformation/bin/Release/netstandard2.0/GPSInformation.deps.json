@@ -13,7 +13,8 @@
           "Microsoft.AspNetCore.Mvc": "2.2.0",
           "NETStandard.Library": "2.0.3",
           "Newtonsoft.Json": "13.0.1",
-          "System.Data.SqlClient": "4.8.2"
+          "System.Data.SqlClient": "4.8.2",
+          "TimePeriodLibrary.NET": "2.1.1"
         },
         "runtime": {
           "GPSInformation.dll": {}
@@ -1859,6 +1860,17 @@
             "fileVersion": "4.6.24705.1"
           }
         }
+      },
+      "TimePeriodLibrary.NET/2.1.1": {
+        "dependencies": {
+          "NETStandard.Library": "2.0.3"
+        },
+        "runtime": {
+          "lib/netstandard1.6/Itenso.TimePeriod.dll": {
+            "assemblyVersion": "2.1.1.0",
+            "fileVersion": "2.1.1.0"
+          }
+        }
       }
     }
   },
@@ -3001,6 +3013,13 @@
       "sha512": "sha512-jw9oHHEIVW53mHY9PgrQa98Xo2IZ0ZjrpdOTmtvk+Rvg4tq7dydmxdNqUvJ5YwjDqhn75mBXWttWjiKhWP53LQ==",
       "path": "system.xml.xpath.xdocument/4.3.0",
       "hashPath": "system.xml.xpath.xdocument.4.3.0.nupkg.sha512"
+    },
+    "TimePeriodLibrary.NET/2.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iiy1HaR8Sy+41I2DYPrl5llmlij5qzRv0X2tD3hGN0NoEX3La+0UIahMptbzsYsOokbIoNjuPrHdQcCgiTT45A==",
+      "path": "timeperiodlibrary.net/2.1.1",
+      "hashPath": "timeperiodlibrary.net.2.1.1.nupkg.sha512"
     }
   }
 }

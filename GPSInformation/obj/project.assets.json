@@ -2379,6 +2379,18 @@
         "runtime": {
           "lib/netstandard1.3/System.Xml.XPath.XDocument.dll": {}
         }
+      },
+      "TimePeriodLibrary.NET/2.1.1": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1"
+        },
+        "compile": {
+          "lib/netstandard1.6/Itenso.TimePeriod.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.6/Itenso.TimePeriod.dll": {}
+        }
       }
     }
   },
@@ -7437,6 +7449,22 @@
         "system.xml.xpath.xdocument.4.3.0.nupkg.sha512",
         "system.xml.xpath.xdocument.nuspec"
       ]
+    },
+    "TimePeriodLibrary.NET/2.1.1": {
+      "sha512": "iiy1HaR8Sy+41I2DYPrl5llmlij5qzRv0X2tD3hGN0NoEX3La+0UIahMptbzsYsOokbIoNjuPrHdQcCgiTT45A==",
+      "type": "package",
+      "path": "timeperiodlibrary.net/2.1.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/Itenso.TimePeriod.dll",
+        "lib/net40/Itenso.TimePeriod.dll",
+        "lib/net45/Itenso.TimePeriod.dll",
+        "lib/net46/Itenso.TimePeriod.dll",
+        "lib/netstandard1.6/Itenso.TimePeriod.dll",
+        "timeperiodlibrary.net.2.1.1.nupkg.sha512",
+        "timeperiodlibrary.net.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -7445,7 +7473,8 @@
       "Microsoft.AspNetCore.Mvc >= 2.2.0",
       "NETStandard.Library >= 2.0.3",
       "Newtonsoft.Json >= 13.0.1",
-      "System.Data.SqlClient >= 4.8.2"
+      "System.Data.SqlClient >= 4.8.2",
+      "TimePeriodLibrary.NET >= 2.1.1"
     ]
   },
   "packageFolders": {
@@ -7518,6 +7547,10 @@
           "System.Data.SqlClient": {
             "target": "Package",
             "version": "[4.8.2, )"
+          },
+          "TimePeriodLibrary.NET": {
+            "target": "Package",
+            "version": "[2.1.1, )"
           }
         },
         "imports": [

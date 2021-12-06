@@ -1,4 +1,6 @@
-﻿using GPSInformation.Exceptions;
+﻿using GPSInformation.DBManagers;
+using GPSInformation.Exceptions;
+using GPSInformation.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,6 +19,11 @@ namespace GPSInformation
         public int ErrorCode;
         public bool IsTracsactionActive = false;
         private SqlTransaction tran;
+
+        private List<GPS_system_dbMessages> gPS_System_Dbs = new List<GPS_system_dbMessages>();
+        public  DarkAttributes<GPS_system_dbMessages> GPS_system_dbMessages { get; internal set; }
+        public int _IdPersona { get;  set; }
+        public string _PersonaName { get;  set; }
         #endregion
 
         #region Constructores
@@ -271,12 +278,27 @@ namespace GPSInformation
             {
                 throw new GpExceptions("Sin parametros SP");
             }
+            string NewSqlSentence = $"exec {ProcedureName} ";
             try
             {
+
+                
                 DataModel.ForEach(param => {
-                    SqlParameter sqlParameter = new SqlParameter("@" + param.Namefield, param.value);
-                    sqlParameter.Direction = ParameterDirection.Input;
-                    Command.Parameters.Add(sqlParameter);
+                    if (param.value != null)
+                    {
+                        SqlParameter sqlParameter = new SqlParameter("@" + param.Namefield, param.value);
+                        sqlParameter.Direction = ParameterDirection.Input;
+                        Command.Parameters.Add(sqlParameter);
+                    }
+                    else
+                    {
+                        SqlParameter sqlParameter = new SqlParameter("@" + param.Namefield, DBNull.Value);
+                        sqlParameter.Direction = ParameterDirection.Input;
+                        Command.Parameters.Add(sqlParameter);
+                    }
+                        
+
+                    NewSqlSentence += $"{("@" + param.Namefield)} = '{param.value}', ";
                 });
 
                 var MessageCode = Command.Parameters.Add("@MessageCode", SqlDbType.Int);
@@ -287,14 +309,58 @@ namespace GPSInformation
 
                 ErrorCode = (int)Command.Parameters["@MessageCode"].Value;
                 mensaje = (string)Command.Parameters["@MessageValue"].Value;
+
+                if(ErrorCode != 0)
+                {
+                    gPS_System_Dbs.Add(new GPS_system_dbMessages
+                    {
+                        IdPersona = _IdPersona,
+                        PersonaName = _PersonaName,
+                        Tipo = "SP",
+                        Detonante = ProcedureName,
+                        Mensaje = mensaje,
+                        Detalle = NewSqlSentence
+                    });
+                    
+                }
+
+
             }
             catch (SqlException ex)
             {
+                gPS_System_Dbs.Add(new GPS_system_dbMessages
+                {
+                    IdPersona = _IdPersona,
+                    PersonaName = _PersonaName,
+                    Tipo = "SP",
+                    Detonante = ProcedureName,
+                    Mensaje = ex.Message,
+                    Detalle = NewSqlSentence
+                });
                 throw new GpExceptions(string.Format("SqlException - {0}", ex.Message));
             }
-            
-
         }
+
+
+        public void ProcessGPSMessages()
+        {
+            if(gPS_System_Dbs.Count > 0)
+            {
+                if (!IsOpenConnection())
+                {
+                    OpenConnection();
+                }
+                gPS_System_Dbs.ForEach(a =>
+                {
+                    GPS_system_dbMessages.Element = a;
+                    GPS_system_dbMessages.Add();
+                });
+
+                CloseDataBaseAccess();
+            }
+        }
+
+
         public DataTable GetData(string sqlStatement)
         {
             try
@@ -577,6 +643,9 @@ namespace GPSInformation
                 SqlConnection = new SqlConnection(ConnectionString);
                 SqlConnection.Open();
                 CheckConnection();
+
+
+                GPS_system_dbMessages = new DarkAttributes<GPS_system_dbMessages>(this);
             }
             catch (SqlException ex)
             {

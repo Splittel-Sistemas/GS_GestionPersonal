@@ -5,10 +5,45 @@
     this.isCancelAction = isCancelAction
 }
 
+Vue.directive('click-outside', {
+    bind: function (el, binding, vnode) {
+        this.event = function (event) {
+            if (!(el === event.target || el.contains(event.target))) {
+                vnode.context[binding.expression](event);
+            }
+        };
+        document.body.addEventListener('click', this.event)
+    },
+    unbind: function (el) {
+        document.body.removeEventListener('click', this.event)
+    },
+});
 const EvaList = {
     template: `
         <div>
-            <div class="row">
+            <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                            <li class="breadcrumb-item active" aria-current="page">Evaluaciones</li>
+                        </ol>
+                    </nav>
+                    <h4 class="mg-b-0 tx-spacing--1">Evaluaciones</h4>
+                </div>
+            </div>
+            <div class="content content-fixed content-auth-alt mt-5 row" v-if="evaList.length === 0">
+                <div class="container ht-100p tx-center mt-5">
+                    <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+                        <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://image.freepik.com/vector-gratis/empleador-que-reune-al-solicitante-empleo-evaluacion-previa-al-empleo-evaluacion-empleados-formulario-e-informe-evaluacion-ilustracion-concepto-revision-desempeno_335657-2058.jpg" class="img-fluid" alt=""></div>
+                        <h2 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">Sin evaluaciones</h2>
+                        <h5 class="tx-16 tx-sm-18 tx-lg-20 tx-normal mg-b-20">No se encontrarón evaluaciones, por favor crea una para continuar</h5>
+                        <div class="mg-b-40">
+                            <button class="btn btn-white bd-2 pd-x-30" v-on:click="onBeforeCapEvaAdd()">Crear mi primer evaluación</button>
+                        </div>
+                    </div>
+                </div><!-- container -->
+            </div><!-- content -->
+            <div class="row"  v-if="evaList.length > 0">
                 <div class="col-3">
                     <div class="card">
                         <div class="card-body row">
@@ -21,8 +56,8 @@ const EvaList = {
                                         :title="'click aqui para editar el tema: ' + eva_.nombre"
                                         :class="'schedule-item bd-l bd-2 ' + ( $route.params.idCapEva+'' === eva_.idCapEva+'' ? 'bd-warning active-tema' : 'bd-primary' )"
                                     >
-                                    <h6> {{ eva_.nombre }}</h6>
-                                    <span>{{ eva_.decripcion }}</span>
+                                        <h6> {{ eva_.nombre }}</h6>
+                                        <span>{{ eva_.decripcion }}</span>
                                     </router-link>
                                 </div><!-- schedule-group -->
                             </div><!-- col -->
@@ -30,31 +65,41 @@ const EvaList = {
                     </div><!-- card -->
                 </div><!-- col -->
                 <div class="col-9">
-                    <router-view></router-view>
+                    <transition name="fade" mode="out-in">
+                        <router-view></router-view>
+                    </transition>
                 </div><!-- col -->
             </div><!-- row -->
             <div class="modal fade" id="modal_register_eva" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content tx-14">
-                        <div class="modal-header">
-                            <h6 class="modal-title" id="exampleModalLabel"></h6>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="modal-dialog modal-dialog-centered mx-wd-sm-650" role="document">
+                    <div class="modal-content bd-0 bg-transparent">
+                        <div class="modal-body pd-0">
+                            <a href="" role="button" class="close pos-absolute t-15 r-15 z-index-10" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <h4>Crear nueva evaluación</h4>
-                            <p class="tx-color-03">Introduce los siguientes datos para diseñar una nueva evaluación</p>
-                            <div class="form-group">
-                                <label>Nombre</label>
-                                <input type="text" class="form-control" placeholder="Nombre" v-model="capEva.nombre">
-                            </div>
-                            <button class="btn btn-dark btn-sm btn-block" :disabled="capEva.nombre === ''" v-on:click="onCapEvaAdd()" id="btn_add_eva">Crear</button>
-                        </div>
-                    </div>
-                </div><!-- modal-content -->
+                            </a>
+                            <div class="row no-gutters">
+                                <div class="col-3 col-sm-5 col-md-6 col-lg-5 bg-primary rounded-left">
+                                    <div class="wd-100p ht-100p">
+                                        <img src="https://image.freepik.com/vector-gratis/excelentes-empleados-superando-objetivos-ventas-prometiendo-futuro-prospero_1150-43218.jpg" class="wd-100p img-fit-cover img-object-top rounded-left" alt="" style="object-fit: fill !important;">
+                                    </div>
+                                </div><!-- col -->
+                                <div class="col-9 col-sm-7 col-md-6 col-lg-7 bg-white rounded-right">
+                                    <div class="ht-100p d-flex flex-column justify-content-center pd-20 pd-sm-30 pd-md-40">
+                                          <span class="tx-color-04"><i data-feather="bar-chart-2" class="wd-40 ht-40 stroke-wd-3 mg-b-20"></i></span>
+                                          <h3 class="tx-16 tx-sm-20 tx-md-24 mg-b-15 mg-md-b-20">Nueva evaluación</h3>
+                                          <p class="tx-14 tx-md-16 tx-color-02">Introduce los siguientes datos para diseñar una nueva evaluación</p>
+                                          <div class="form-group">
+                                            <label>Nombre</label>
+                                            <input type="text" class="form-control" placeholder="Nombre" v-model="capEva.nombre">
+                                        </div>
+                                        <button class="btn btn-dark btn-sm btn-block" :disabled="capEva.nombre === ''" v-on:click="onCapEvaAdd()" id="btn_add_eva">Continuar</button>
+                                    </div>
+                                </div><!-- col -->
+                            </div><!-- row -->
+                        </div><!-- modal-body -->
+                    </div><!-- modal-content -->
+                </div><!-- modal-dialog -->
             </div><!-- modal -->
-            
         </div>
     `,
     data: function () {
@@ -79,7 +124,7 @@ const EvaList = {
     },
     methods: {
         onCapEvaAdd: async function () {
-            
+
             btn_loading('btn_add_eva', 'Guardando...')
             let formData = new FormData();
             formData.append("Nombre", this.capEva.nombre)
@@ -90,9 +135,10 @@ const EvaList = {
                 this.evaList.push(response.data)
                 this.capEva.nombre = ''
                 router.push({ name: 'evaluacion-details', params: { idCapEva: response.data.idCapEva } })
+
             }).catch(error => {
                 btn_loading('btn_add_eva', 'Guardar', 'hide')
-                
+
                 GlobalValidAxios(error);
             }).finally(() => {
 
@@ -125,9 +171,43 @@ const EvaList = {
 const EvaDetails = {
     template: `
         <div>
+            <div class="row"  v-if="$route.params.idCapRegistryVersion === undefined || $route.params.idCapRegistryVersion === null">
+                <h2 class="col-lg-12">Selecciona una versión</h2>
+				<!--begin::Col-->
+				<div class="col-lg-4 alert alert-success  ml-1 mr-1" role="alert" v-for="(log, log_index) in logChangesStatus">
+					<router-link
+                            :to="{ name: 'evaluacion-preguntas', params: { idCapRegistryVersion: log.idCapRegistryVersion } }"
+                            :title="'click aqui para ver version'"
+                            :id="'ver_version_ev_det_' + log.idCapRegistryVersion"
+                            :class="'schedule-item'"
+                        >
+                            <h6 >{{ log.comentarios }}</h6>
+                            <span class="tx-13 tx-color-03"> {{ log.editada | fechaDate }}</span>
+                            <span class="tx-13 tx-color-03"> {{ log.nombre }}</span>
+                        </router-link>
+				</div>
+                <!--end::Col-->
+            </div>
             <div class="row" v-if="capEva != null">
                 <div class="col-8">
-                    <div class="card mg-b-20 mg-lg-b-5">
+                    <div v-if="logChangesStatus.length && onvalidSms1().show" :class="onvalidSms1().classs" role="alert">
+                            <h4 class="alert-heading">Estimado usuario!</h4>
+                            <p v-html="onvalidSms1().message"></p>
+                            <button type="button" v-if="onvalidSms1().publicar" class="btn btn-sm btn-block btn-dark"  title="publicar" v-on:click="onCapVersionSetActive(4)" id="btn_eva_version_publish">Publicar esta versión<i class="typcn typcn-world"></i></button>
+                    </div>
+                    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30" v-if="version !== undefined && version !== null && $route.params.idCapRegistryVersion !== undefined && $route.params.idCapRegistryVersion !== null">
+                        <div>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb breadcrumb-style1 mg-b-10">
+                                </ol>
+                            </nav>
+                            <h4 class="mg-b-0 tx-spacing--1">Version: {{ version.comentarios }}</h4>
+                        </div>
+                        <div class="d-none d-md-block">
+                            <button class="btn btn-sm pd-x-15 btn-dark btn-uppercase mg-l-5" v-on:click="onBeforeCapEvaChangeStatus()" title="crear nueva versión"><i class="typcn typcn-document-text"></i> Crear nueva versión</button>
+                        </div>
+                    </div>
+                    <div class="card mg-b-20 mg-lg-b-5"  v-if="$route.params.idCapRegistryVersion !== undefined">
                         <div class="card-header pd-t-20 d-sm-flex align-items-start justify-content-between bd-b-0 pd-b-0">
                             <div>
                                 <h5 class="mg-b-5">Detalle de la evaluacion</h5>
@@ -135,11 +215,13 @@ const EvaDetails = {
                             </div>
                             <div class="d-flex mg-t-20 mg-sm-t-0">
                                 <div class="btn-group flex-fill">
-                                   
+                                    <a class=" float-right tx-warning" v-if="view.editEva === false && capEva !== null && capEva.estatus === 1" v-on:click="onEditEva(true)" title="Editar evaluacion"><i class="typcn typcn-pencil"></i></a>
+                                    <a class=" float-right tx-warning" v-if="view.editEva === true && capEva !== null && capEva.estatus === 1" v-on:click="onEditEva(false)" title="Cerrar formulario"><i class="typcn typcn-times"></i></a>
                                 </div>
                             </div>
                         </div><!-- card-header -->
                         <div class="card-body pd-l-25 pd-r-25">
+                            
                             <dl class="row" style="font-size: 13px;" v-if="view.editEva === false">
                                 <dt class="col-12">
                                     Nombre
@@ -154,6 +236,7 @@ const EvaDetails = {
                                     {{ capEva.decripcion }}
                                 </dd>
                             </dl>
+                            
                             <div class="col-12" v-if="view.editEva === true">
                                 <div class="form-group mt-2" style="margin-bottom: 1px !important">
                                     <label for="" class="">Nombre </label>
@@ -162,7 +245,7 @@ const EvaDetails = {
                                 <div class="form-group mt-2" style="margin-bottom: 1px !important">
                                     <label for="" class="">Descripcion </label>
                                     <textarea  class="form-control form-control-sm" maxLength="300" v-model="capEvaDe.decripcion" placeholder="Objetivo" rows="3"></textarea>
-                                    <span class="tx-danger tx-10 col-sm-12 text-right">{{ (300 - capEva.capEvaDe.length) + ' / 300' }}</span>
+                                    <span class="tx-danger tx-10 col-sm-12 text-right">{{ (300 - capEvaDe.decripcion.length) + ' / 300' }}</span>
                                 </div><!-- form-group -->
                                 <div class="form-group row mg-b-0 mt-4">
                                     <div class="col-sm-12 text-right">
@@ -180,7 +263,6 @@ const EvaDetails = {
                             </div>
                             <div class="d-flex mg-t-20 mg-sm-t-0">
                                 <div class="btn-group flex-fill">
-                                    <router-link class=" float-right" :to="{name: 'evaluacion-addPreg'}"><i class="typcn typcn-document-add"></i></router-link>
                                 </div>
                             </div>
                         </div><!-- card-header -->
@@ -188,12 +270,60 @@ const EvaDetails = {
                             <router-view class="col-12"></router-view>
                         </div><!-- card-body -->
                     </div><!-- card -->
-                    <router-view class="col-12" v-if="$route.name !== 'evaluacion-preguntas'"></router-view>
+                    <router-view class="col-12" :key="$route.fullPath" v-if="$route.name !== 'evaluacion-preguntas'"></router-view>
+                    <button class="btn btn-block btn-sm pd-x-15 btn-danger btn-uppercase mg-l-5 mt-3" v-if="capEva !== null && capEva.estatus === 4 && $route.params.idCapRegistryVersion !== undefined" v-on:click="onCapVersionSetActive(2)" id="btn_eva_version_deactive" title="Desactivar esta versión"><i class="typcn typcn-document-text"></i> Desactivar esta versión</button>
                 </div><!-- col -->
-                <div class="col-4">
-
+                <div class="col-4" v-if="$route.params.idCapRegistryVersion !== undefined && $route.params.idCapRegistryVersion !== null">
+                    <div class="d-flex align-items-center justify-content-between mg-b-20">
+                        <h6 class="tx-uppercase tx-semibold mg-b-0">Versiones</h6>
+                    </div>
+                    <div class="schedule-group">
+                        <router-link
+                            v-for="(log, log_index) in logChangesStatus"
+                            :to="{ name: 'evaluacion-preguntas', params: { idCapRegistryVersion: log.idCapRegistryVersion } }"
+                            :title="'click aqui para ver version'"
+                            :id="'ver_version_ev_det_' + log.idCapRegistryVersion"
+                            :class="'schedule-item bd-l bd-2 ' + ( $route.params.idCapRegistryVersion+'' === log.idCapRegistryVersion+'' ? 'bd-warning active-tema' : 'bd-danger' )"
+                        >
+                            <h6 >{{ log.comentarios }}</h6>
+                            <span class="tx-13 tx-color-03"> {{ log.editada | fechaDate }}</span>
+                            <span class="tx-13 tx-color-03"> {{ log.nombre }}</span>
+                        </router-link>
+                    </div><!-- schedule-group -->
                 </div><!-- col -->
             </div><!-- row -->
+            
+            <div class="modal fade" id="modal_add_eva_version" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered mx-wd-sm-650" role="document">
+                    <div class="modal-content bd-0 bg-transparent">
+                        <div class="modal-body pd-0">
+                            <a href="" role="button" class="close pos-absolute t-15 r-15 z-index-10" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </a>
+                            <div class="row no-gutters">
+                                <div class="col-3 col-sm-5 col-md-6 col-lg-5 bg-primary rounded-left">
+                                    <div class="wd-100p ht-100p">
+                                        <img src="https://image.freepik.com/vector-gratis/excelentes-empleados-superando-objetivos-ventas-prometiendo-futuro-prospero_1150-43218.jpg" class="wd-100p img-fit-cover img-object-top rounded-left" alt="" style="object-fit: fill !important;">
+                                    </div>
+                                </div><!-- col -->
+                                <div class="col-9 col-sm-7 col-md-6 col-lg-7 bg-white rounded-right">
+                                    <div class="ht-100p d-flex flex-column justify-content-center pd-20 pd-sm-30 pd-md-40">
+                                          <span class="tx-color-04"><i data-feather="bar-chart-2" class="wd-40 ht-40 stroke-wd-3 mg-b-20"></i></span>
+                                          <h3 class="tx-16 tx-sm-20 tx-md-24 mg-b-15 mg-md-b-20">Crear nueva versión</h3>
+                                          <p class="tx-14 tx-md-16 tx-color-02">Introduce los siguientes datos para continuar..</p>
+                                         <div class="form-group">
+                                            <label>Comentarios</label>
+                                            <textarea class="form-control" rows="2" placeholder="Comentarios" v-model="comentarios"></textarea>
+                                        </div>
+                                        <button class="btn btn-dark btn-sm btn-block" :disabled="comentarios === ''" v-on:click="onCapEvaChangeStatus(1)" id="btn_add_eva_version">Crear</button>
+                                    </div>
+                                </div><!-- col -->
+                            </div><!-- row -->
+                        </div><!-- modal-body -->
+                    </div><!-- modal-content -->
+                </div><!-- modal-dialog -->
+            </div><!-- modal -->
+            <button v-on:click="getCapEvaDetails()" style="display:none" id="bt_eva_refres_version">refresh detailseva</button>
         </div>`,
     data: function () {
         //
@@ -201,41 +331,196 @@ const EvaDetails = {
             error_DarkUI_exception: null,
             capEva: null,
             capEvaDe: null,
+            versionSelected: null,
+            logChangesStatus: [],
             view: {
                 editEva: false,
-                editIdCapEvaPrg: 0
-            }
+                editIdCapEvaPrg: 0,
+
+            },
+            comentarios: "",
+            version: null
         }
     },
     watch: {
         $route(to, from) {
             //if (to.path !== to.path) {
-                if (this.$route.params.idCapEva !== 0 && this.$route.params.idCapEva !== '0')
-                    this.getCapEvaDetails();
+            if (this.$route.params.idCapEva !== 0 && this.$route.params.idCapEva !== '0' && this.$route.params.idCapRegistryVersion !== undefined && this.$route.params.idCapRegistryVersion !== null) {
+                this.getCapEvaDetails();
+                this.capEva = null
+                this.version = null
+                this.versionSelected = null
+                this.comentarios = ''
+            }
             //}
-            console.log(this.$route.params.idCapEva)
+            this.onCapRegistrtList();
         }
     },
     mounted() {
-        //if (this.$route.params.idCapEva !== 0 && this.$route.params.idCapEva !== '0')
-        this.getCapEvaDetails();
-        console.log(this.$route.params.idCapEva)
+        if (this.$route.params.idCapEva !== 0 && this.$route.params.idCapEva !== '0' && this.$route.params.idCapRegistryVersion !== undefined && this.$route.params.idCapRegistryVersion !== null) {
+            this.getCapEvaDetails();
+        }
+        this.onCapRegistrtList();
+    },
+    filters: {
+        fechaDate: function (date) {
+            return moment(date).format('MMMM Do YYYY, h:mm:ss a'); // October 25th 2021, 12:30:30 pm
+        }
     },
     methods: {
+        onvalidSms1: function () {
+            var alertGl = {
+                classs: "",
+                message: "",
+                publicar: false,
+                show: false
+            }
+            if (this.$route.params.idCapRegistryVersion === undefined || this.$route.params.idCapRegistryVersion === null) {
+                alertGl.show = false;
+                alertGl.message = 'Por favor selecciona una versión para poder administrar';
+                alertGl.classs = 'alert alert-info';
+            } else {
+                if (this.capEva !== undefined && this.capEva !== null) {
+                    if (this.capEva.estatus === 4) {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta evaluacion se encuentra <strong class="tx-uppercase">disponible</strong>, ahora podrás utilizarla en cualquier capacitación, si deseas modificarla por favor crea una versión nueva';
+                        alertGl.classs = 'alert alert-success';
+                    }
+                    else if (this.capEva.estatus === 2) {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta evaluacion ha sido <strong class="tx-uppercase">Inactiva</strong>, ahora no podra ser editada y usada en nuevas capacitacion';
+                        alertGl.classs = 'alert alert-info';
+                    }
+                    else if (this.capEva.estatus === 3) {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta evaluacion ha sido <strong class="tx-uppercase">Eliminada</strong>';
+                        alertGl.classs = 'alert alert-warning';
+                    } else {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta versión actualmente se encuentra en <strong class="tx-uppercase">proceso de desarrollo</strong> y no podrá ser usada en alguna capacitación, por favor da click en <strong>Publicar esta versión</strong> para que pueda ser usada.';
+                        alertGl.classs = 'alert alert-info';
+                        alertGl.publicar = true
+                    }
+                }
+            }
+            //{ { $route.params.idCapRegistryVersion } }
+            //{ {  } }
+            //{ { logChangesStatus.find(a => a.idCapRegistryVersion === $route.params.idCapRegistryVersion).actual } }
+            return alertGl;
+        },
+        onCapVersionSetActive: async function (estatus) {
+            var title = ""
+            var text = ""
+            var btn_id = ""
+            var btn_idAction = ""
+            if (estatus === 4) {
+                title = "¿Deseas publicar esta versión?"
+                text = "despues de publicar podrá ser usada esta versión"
+                btn_id = "btn_eva_version_publish"
+                btn_idAction = "Publicar"
+            } else if (estatus === 2) {
+                title = "¿Deseas desactivar esta versión?"
+                text = "despues de desactivar no podrá ser usada y modificada esta versión"
+                btn_id = "btn_eva_version_deactive"
+                btn_idAction = "Desactivar"
+            }
+
+            try {
+                await Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, adelante!'
+                }).then(async (result) => {
+                    if (!result.isConfirmed) {
+                        throw new DarkUI_exception('proceso cancelado', '', true);
+                    }
+                })
+
+                btn_loading(btn_id, 'Procesando...')
+                let formData = new FormData();
+                formData.append("IdCapEva", this.$route.params.idCapEva)
+                formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
+                formData.append("Estatus", estatus)
+
+                await axios.post('../FormacionCapacitacion/CapEvaSetEstatus', formData, null).then(response => {
+                    // agregar la pregunta a la lista
+                    this.capEva.estatus = estatus
+                    window.location.reload()
+                    btn_loading(btn_id, btn_idAction, 'hide')
+                }).catch(error => {
+                    GlobalValidAxios(error);
+                    btn_loading(btn_id, btn_idAction, 'hide')
+                }).finally(() => {
+                    this.onCapRegistrtList();
+
+                })
+
+
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        onCapEvaChangeStatus: async function (Status_) {
+            btn_loading('btn_add_eva_version', 'Guardando...')
+            let formData = new FormData();
+            formData.append("IdCapEva", this.$route.params.idCapEva)
+            formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
+            formData.append("Status_", Status_)
+            formData.append("Comentarios", this.comentarios)
+
+            await axios.post('../FormacionCapacitacion/CapEvaRegistryVersion', formData, null).then(async (response) => {
+                // agregar la pregunta a la lista
+                await this.logChangesStatus.push(response.data)
+                //document.getElementById("btn_preg_list_refresh").click()
+                btn_loading('btn_add_eva_version', 'Guardar', 'hide')
+
+                $("#modal_add_eva_version").modal("hide")
+                this.comentarios = ""
+                document.getElementById("ver_version_ev_det_" + response.data.idCapRegistryVersion).click()
+            }).catch(error => {
+                GlobalValidAxios(error);
+                btn_loading('btn_add_eva_version', 'Guardar', 'hide')
+            }).finally(() => {
+                this.onCapRegistrtList();
+
+            })
+        },
+        onBeforeCapEvaChangeStatus: function () {
+            $("#modal_add_eva_version").modal({
+                backdrop: "static", //remove ability to close modal with click
+                keyboard: false, //remove option to close with keyboard
+                show: true //Display loader!
+            });
+        },
+        onCapRegistrtList: async function () {
+            await axios.get('../FormacionCapacitacion/CapVersionList?TipoRef_=EVA&IdRefer_=' + this.$route.params.idCapEva, null, null).then(response => {
+                this.logChangesStatus = response.data
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        },
         onCapEvaEit: async function () {
+
             btn_loading('btn_upd_eva', 'Guardando...')
 
             let formData = new FormData();
             formData.append("IdCapEva", this.$route.params.idCapEva)
             formData.append("Nombre", this.capEvaDe.nombre)
             formData.append("Instruccionesa", this.capEvaDe.decripcion)
+            formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
 
             await axios.post('../FormacionCapacitacion/CapEvaEit', formData, null).then(response => {
                 // agregar la pregunta a la lista
-                this.capEva = this.capEvaDe
+                this.capEva = JSON.parse(JSON.stringify(this.capEvaDe))
                 /*this.capEva_obj.capEvaPrg_list.push(response.data);*/
                 btn_loading('btn_upd_eva', 'Actualizar <i class="typcn typcn-arrow-sync"></i>', 'hide')
-                view.editEva = false
+                this.view.editEva = false
             }).catch(error => {
                 GlobalValidAxios(error);
                 btn_loading('btn_upd_eva', 'Actualizar <i class="typcn typcn-arrow-sync"></i>', 'hide')
@@ -244,21 +529,20 @@ const EvaDetails = {
         },
         onEditEva: function (status) {
             this.view.editEva = status
+            this.capEvaDe = JSON.parse(JSON.stringify(this.capEva))
         },
         setCapEvaPrgSelected: function (preg_index) {
             this.capEvaPrgSelected = preg_index
         },
- 
-        getCapEvaDetails: async function() {
-            await axios.get('../FormacionCapacitacion/CapEvaDetails?IdCapEva=' + this.$route.params.idCapEva, null, null).then(response => {
-                this.capEva = response.data
-                this.capEvaDe = response.data
+        getCapEvaDetails: async function () {
+            await axios.get('../FormacionCapacitacion/CapEvaDetails?IdVersion=' + this.$route.params.idCapRegistryVersion + '&IdCapEva=' + this.$route.params.idCapEva, null, null).then(response => {
+                this.capEva = response.data.eva
+                this.version = response.data.version
             }).catch(error => {
                 GlobalValidAxios(error);
             }).finally(() => {
 
             })
-
         }
     }
 }
@@ -266,19 +550,35 @@ const EvaDetails = {
 const EvaDetailsList = {
     template: `
         <div>
-            <button type="button" class="btn btn-sm btn-block btn-dark" title="Agregar pregunta" v-on:click="onCapEvaPrgAdd()" id="btn_add_preg_ed"><i class="typcn typcn-document-plus"></i>Agregar una pregunta</button>
-            <div class="schedule-group w-100 mt-3">
+            <button type="button" class="btn btn-sm btn-block btn-dark"  v-on:click="onCapEvaDetails()" id="btn_preg_list_refresh" style="display:none"><i class="typcn typcn-document-plus"></i>Regrescar</button>
+             <div class="content content-fixed content-auth-alt mt-5 row" v-if="capEvaPrgList.length === 0">
+                <div class="container ht-100p tx-center mt-5">
+                    <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
+                        <div class="wd-70p wd-sm-250 wd-lg-300 mg-b-15"><img src="https://image.freepik.com/vector-gratis/empleador-que-reune-al-solicitante-empleo-evaluacion-previa-al-empleo-evaluacion-empleados-formulario-e-informe-evaluacion-ilustracion-concepto-revision-desempeno_335657-2058.jpg" class="img-fluid" alt=""></div>
+                        <h2 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5">Sin preguntas</h2>
+                        <h5 class="tx-16 tx-sm-18 tx-lg-20 tx-normal mg-b-20">No se encontrarón preguntas, por favor crea una para continuar</h5>
+                        <div class="mg-b-40">
+                            <button class="btn btn-white bd-2 pd-x-30" v-on:click="onCapEvaPrgAdd()" id="btn_add_preg_ed_1">Crear primer pregunta</button>
+                        </div>
+                    </div>
+                </div><!-- container -->
+            </div><!-- content -->
+            <div class="schedule-group w-100 mt-1 mb-4" v-if="capEvaPrgList.length > 0">
                 <div v-for="(preg, preg_index) in capEvaPrgList"
                     :class="'schedule-item bd-l bd-2 ' + (capEvaPrgSelected !== null && capEvaPrgSelected.idCapEvaPrg === preg.idCapEvaPrg ? 'bd-warning active-tema': 'bd-success')"
                     :id="'pregunta_' + (capEvaPrgSelected !== null && capEvaPrgSelected.idCapEvaPrg === preg.idCapEvaPrg ? 'nueva': '')"
-
                     >
+                    <div class="alert alert-danger" role="alert" v-if="checkErrors(preg).length > 0">
+                        <p style="margin-bottom: 0px;">
+                            <ul style="margin-bottom: 0px;"><li v-for="(a, a_i) in checkErrors(preg)"> {{ a }}</li></ul>
+                        </p>
+                    </div>
                     <a v-if="capEvaPrgSelected === null || capEvaPrgSelected !== null && capEvaPrgSelected.idCapEvaPrg !== preg.idCapEvaPrg"
                        v-on:click="onSelectedCapEvaPrg(preg_index)"
                        :title="'click aqui para editar la pregunta: ' + preg.pregunta">
-                        <h6> {{ preg.pregunta }}</h6>
+                        <h6>{{ preg.pregunta }}</h6>
                         <span>Puntaje: {{ preg.puntaje }}</span>
-                        <span>{{ preg.comentarios }}</span>
+                        <span>{{ preg.c }}</span>
                         <div class="col-lg-12" v-if="preg.tipo !== 'T'">
                             <ul class="pd-l-10 mg-0  tx-13">
                                 <li v-if="preg.capEvaPrgList !== undefined && preg.capEvaPrgList !== null" v-for="(resp, resp_index) in preg.capEvaPrgList" :class="(resp.esCorrecta ? 'tx-success' : '') + ' '"> {{ resp.respuesta }}</li>
@@ -288,43 +588,50 @@ const EvaDetailsList = {
                             <h6 class="tx-15 mg-b-3">Pregunta abierta al usuario</h6>
                         </div>
                     </a>
-                    <div v-if="capEvaPrgSelected !== null && capEvaPrgSelected.idCapEvaPrg === preg.idCapEvaPrg">
-                        <span>Editar</span><a class=" float-right tx-warning" v-on:click="onCapEvaPrgDelete(preg_index)" title="eliminar esta pregunta"><i class="typcn typcn-trash" ></i></a>
-                        <input type="text" class="w-100 form-control-ds" v-model="capEvaPrgSelected.pregunta" placeholder="Pregunta" v-if="capEvaPrgSelected.pregunta.length <= 90" v-on:change="onCapEvaPrgEdit(preg_index)" />
-                        <textarea class="w-100 form-control-ds" v-model="capEvaPrgSelected.pregunta" rows="3" placeholder="Pregunta" v-if="capEvaPrgSelected.pregunta.length > 90" v-on:change="onCapEvaPrgEdit(preg_index)"></textarea>
+                    <div v-if="capEvaPrgSelected !== null && capEvaPrgSelected.idCapEvaPrg === preg.idCapEvaPrg && capEva !== null && capEva.estatus === 1">
+                        <span v-on:click="capEvaPrgSelected = null">Terminar de editar</span>
+                        <a class=" float-right tx-warning" v-on:click="onCapEvaPrgDelete(preg_index)" title="eliminar esta pregunta"><i class="typcn typcn-trash" ></i></a>
+                        <h6>Pregunta</h6>
+                        <textarea class="w-100 form-control-ds" v-model="capEvaPrgSelected.pregunta" rows="2" placeholder="Pregunta"  v-on:change="onCapEvaPrgEdit(preg_index)"></textarea>
 
-                        <input type="text" class="w-100 form-control-ds" v-model="capEvaPrgSelected.comentarios" placeholder="Comentarios" v-on:change="onCapEvaPrgEdit(preg_index)" />
-                        <textarea class="w-100 form-control-ds" v-model="preg.comentarios" rows="4" placeholder="Comentarios" v-if="capEvaPrgSelected.comentarios.length > 90" v-on:change="onCapEvaPrgEdit(preg_index)"></textarea>
+                        <h6>Comentarios</h6>
+                        <input type="text" class="w-100 form-control-ds" v-model="capEvaPrgSelected.comentarios" placeholder="Comentarios" v-if="capEvaPrgSelected.comentarios.length <= 90" v-on:change="onCapEvaPrgEdit(preg_index)" />
+                        <textarea class="w-100 form-control-ds" v-model="capEvaPrgSelected.comentarios" rows="4" placeholder="Comentarios" v-if="capEvaPrgSelected.comentarios.length > 90" v-on:change="onCapEvaPrgEdit(preg_index)"></textarea>
+
+                        <h6>Puntaje</h6>
                         <input type="number" class="w-50 form-control-ds" v-model="capEvaPrgSelected.puntaje" placeholder="Puntaje" v-on:change="onCapEvaPrgEdit(preg_index)" />
 
+                        <h6>Tipo pregunta</h6>
                         <select v-model="capEvaPrgSelected.tipo" class="w-100 form-control-ds" v-on:change="onCapEvaPrgEdit(preg_index)">
                             <option v-for="option in view.listTipo" v-bind:value="option.value">
                                 {{ option.text }}
                             </option>
                         </select>
-                        <h6 v-if="capEvaPrgSelected.tipo === 'O' || capEvaPrgSelected.tipo === 'M'" class="mt-2">
+                        <h6 v-if="capEvaPrgSelected.tipo === 'O' || capEvaPrgSelected.tipo === 'M'" class="mt-4">
                             Preguntas 
                         </h6>
                         <div v-if="capEvaPrgSelected.tipo === 'O' || capEvaPrgSelected.tipo === 'M'" v-for="(resp, resp_index) in capEvaPrgSelected.capEvaPrgList" class="w-100" style="margin-bottom: 0px;">
-                            <label>
+                            <label style="width: 97%;margin-bottom: 0px;">
                                 <input type="checkbox" :id="'idCapEvaPrgRes_' + resp.idCapEvaPrgRes"  v-model="resp.esCorrecta" v-on:change="onCapEvaPrgResEdit(preg_index, resp_index)">
                                 <input type="text" class="w-80 form-control-ds" v-model="resp.respuesta" placeholder="Respuesta" style="width: 90%;" v-on:change="onCapEvaPrgResEdit(preg_index, resp_index)" />
                             </label>
-                            <a class=" float-right tx-warning" v-on:click="onCapEvaPrgResDelete(preg_index, resp_index)" title="eliminar esta respuesta"><i class="typcn typcn-trash" ></i></a>
+                            <a class=" float-right tx-warning" v-on:click="onCapEvaPrgResDelete(preg_index, resp_index)" title="eliminar esta respuesta" style="width: 3%;"><i class="typcn typcn-trash" ></i></a>
                         </div>
-                        <div v-if="capEvaPrgSelected.tipo === 'O' || capEvaPrgSelected.tipo === 'M'" class="w-100" style="margin-bottom: 0px;">
-                            <input type="text" class="w-80 form-control-ds" v-model="capEvaPrgRes.respuesta" placeholder="Nueva respuesta" style="width: 90%;" v-on:keyup.enter="onCapEvaPrgResAdd(preg_index)" />
+                        <div v-if="capEvaPrgSelected.tipo === 'O' || capEvaPrgSelected.tipo === 'M'" class="w-100 mt-3" style="margin-bottom: 0px;">
+                            <input type="text" class="w-80 form-control-ds" v-model="capEvaPrgRes.respuesta" placeholder="Introduce aqui una nueva respuesta" style="width: 90%;" v-on:keyup.enter="onCapEvaPrgResAdd(preg_index)" />
                             <span class="tx-info tx-10" v-if="capEvaPrgRes.respuesta.trim() !== ''">Presiona enter para agregar</span>
                         </div>
                     </div>
                 </div><!-- schedule-item -->
             </div><!-- schedule-group -->
+            <button type="button" v-if="capEva !== null && capEva.estatus === 1" class="btn btn-sm btn-block btn-dark"  title="Agregar pregunta" v-on:click="onCapEvaPrgAdd()" id="btn_add_preg_ed"><i class="typcn typcn-document-plus"></i>Agregar una pregunta</button>
         </div>`,
     data: function () {
         return {
             error_DarkUI_exception: null,
             capEvaPrgList: [],
             capEvaPrgSelected: null,
+            capEva: null,
             view: {
                 listTipo: [
                     { value: 'T', text: 'Abierta - el usuario puede introducir texto' },
@@ -340,19 +647,56 @@ const EvaDetailsList = {
     },
     watch: {
         $route(to, from) {
+            this.onCapEvaDetails();
             this.getCapEvaPrgList();
+            this.capEvaPrgSelected = null
+            document.getElementById("bt_eva_refres_version").click()
         }
     },
-    mounted() {
-        this.getCapEvaPrgList();
+    async mounted() {
+        await this.onCapEvaDetails();
+        await this.getCapEvaPrgList();
+    },
+    events: {
+
     },
     methods: {
-       
+        oncFinisheditPreg: function () {
+            this.capEvaPrgSelected = null
+        },
+        checkErrors: function (preg) {
+            var error = [];
+            if (preg.tipo === 'O' || preg.tipo === 'M') {
+                if (preg.capEvaPrgList.length === 0) {
+                    error.push("Sin preguntas")
+                } else {
+                    if (preg.tipo === 'O' && preg.capEvaPrgList.filter(a => a.esCorrecta === true).length === 0)
+                        error.push("No se ha seleccionado la respuecta correcta")
+                    else if (preg.tipo === 'O' && preg.capEvaPrgList.filter(a => a.esCorrecta === true).length > 1)
+                        error.push("Solo debes seleccionar una respuesta correcta")
+
+                    if (preg.tipo === 'M' && preg.capEvaPrgList.filter(a => a.esCorrecta === true).length === 0)
+                        error.push("No se han seleccionado las respuestas correctas")
+                }
+            }
+            return error;
+        },
+        onCapEvaDetails: async function () {
+            this.capEvaPrgSelected = null
+            await axios.get('../FormacionCapacitacion/CapEvaDetails?IdVersion=' + this.$route.params.idCapRegistryVersion + '&IdCapEva=' + this.$route.params.idCapEva, null, null).then(response => {
+                this.capEva = response.data.eva
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        },
         onCapEvaPrgAdd: async function () {
-            btn_loading('btn_add_preg_ed', 'Guardando...')
-            
+            btn_loading(this.capEvaPrgList.length > 0 ? 'btn_add_preg_ed' : 'btn_add_preg_ed_1', 'Guardando...')
+
             let formData = new FormData();
             formData.append("IdCapEva", this.$route.params.idCapEva)
+            formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
             formData.append("Pregunta", 'Pregunta')
             formData.append("Comentarios", '')
             formData.append("Puntaje", '10')
@@ -366,21 +710,25 @@ const EvaDetailsList = {
 
             await axios.post('../FormacionCapacitacion/CapEvaPrgAdd', formData, null).then(response => {
                 // agregar la pregunta a la lista
-                this.capEvaPrgSelected = response.data
-                this.capEvaPrgList.push(response.data)
+                //this.capEvaPrgSelected = response.data
+                this.getCapEvaPrgList()
                 /*this.capEva_obj.capEvaPrg_list.push(response.data);*/
-                btn_loading('btn_add_preg_ed', '<i class="typcn typcn-document-plus"></i>Agregar una pregunta', 'hide')
+                btn_loading(this.capEvaPrgList.length > 0 ? 'btn_add_preg_ed' : 'btn_add_preg_ed_1', '<i class="typcn typcn-document-plus"></i>Agregar una pregunta', 'hide')
             }).catch(error => {
                 GlobalValidAxios(error);
-                btn_loading('btn_add_preg_ed', '<i class="typcn typcn-document-plus"></i>Agregar una pregunta', 'hide')
-            }).finally(() => {
-                document.getElementById("pregunta_nueva").focus()
+                btn_loading(this.capEvaPrgList.length > 0 ? 'btn_add_preg_ed' : 'btn_add_preg_ed_1', '<i class="typcn typcn-document-plus"></i>Agregar una pregunta', 'hide')
+            }).finally(async () => {
+                //document.getElementById("pregunta_nueva").focus()
+                //
+
+                //this.capEvaPrgSelected = this.capEvaPrgList.find(a => a.idCapEvaPrg === this.capEvaPrgSelected.idCapEvaPrg)
             })
         },
         onCapEvaPrgDelete: async function (preg_index) {
             //(int IdCapEva, int IdCapEvaPrg)
             let formData = new FormData();
             formData.append("IdCapEva", this.$route.params.idCapEva)
+            formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
             formData.append("IdCapEvaPrg", this.capEvaPrgSelected.idCapEvaPrg)
             await axios.post('../FormacionCapacitacion/CapEvaPrgDelete', formData, null).then(response => {
                 //// agregar la pregunta a la lista
@@ -396,6 +744,7 @@ const EvaDetailsList = {
         onCapEvaPrgEdit: async function (preg_index) {
             let formData = new FormData();
             formData.append("IdCapEva", this.$route.params.idCapEva)
+            formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
             formData.append("IdCapEvaPrg", this.capEvaPrgSelected.idCapEvaPrg)
             formData.append("Pregunta", this.capEvaPrgSelected.pregunta)
             formData.append("Comentarios", this.capEvaPrgSelected.comentarios)
@@ -405,8 +754,9 @@ const EvaDetailsList = {
                 //// agregar la pregunta a la lista
                 ShowMessageErrorShort('Datos cambiados', 'success')
                 //this.capEvaPrgRes.respuesta = ''
-                
+
                 this.capEvaPrgList[preg_index] = JSON.parse(JSON.stringify(this.capEvaPrgSelected))
+
             }).catch(error => {
                 GlobalValidAxios(error);
             }).finally(() => {
@@ -416,7 +766,8 @@ const EvaDetailsList = {
         onCapEvaPrgResAdd: async function (preg_index) {
             if (this.capEvaPrgRes.respuesta.trim() !== '') {
                 let formData = new FormData();
-
+                formData.append("IdCapEva", this.$route.params.idCapEva)
+                formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
                 formData.append("IdCapEvaPrgRes", 1)
                 formData.append("IdCapEvaPrg", this.capEvaPrgSelected.idCapEvaPrg)
                 formData.append("Respuesta", this.capEvaPrgRes.respuesta.trim())
@@ -428,6 +779,7 @@ const EvaDetailsList = {
                     this.capEvaPrgSelected.capEvaPrgList.push(response.data);
                     this.capEvaPrgRes.respuesta = ''
                     this.capEvaPrgList[preg_index] = JSON.parse(JSON.stringify(this.capEvaPrgSelected))
+
                     ShowMessageErrorShort('Respuesta agregada correctamente', 'success')
                 }).catch(error => {
                     GlobalValidAxios(error);
@@ -441,14 +793,19 @@ const EvaDetailsList = {
                 this.capEvaPrgSelected.capEvaPrgList[resp_index].respuesta = 'Respuesta'
             }
             let formData = new FormData();
-
+            formData.append("IdCapEva", this.$route.params.idCapEva)
+            formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
             formData.append("CapEvaPrgRes", this.capEvaPrgSelected.capEvaPrgList[resp_index].idCapEvaPrgRes)
             formData.append("IdCapEvaPrg", this.capEvaPrgSelected.capEvaPrgList[resp_index].idCapEvaPrg)
             formData.append("Respuesta", this.capEvaPrgSelected.capEvaPrgList[resp_index].respuesta.trim())
             formData.append("EsCorrecta", this.capEvaPrgSelected.capEvaPrgList[resp_index].esCorrecta)
             await axios.post('../FormacionCapacitacion/CapEvaPrgResEdit', formData, null).then(response => {
                 //// agregar la pregunta a la lista
-                this.capEvaPrgList[preg_index] = JSON.parse(JSON.stringify(this.capEvaPrgSelected))
+                this.capEvaPrgList[preg_index].capEvaPrgList[resp_index].respuesta = this.capEvaPrgSelected.capEvaPrgList[resp_index].respuesta.trim() + ""
+                this.capEvaPrgList[preg_index].capEvaPrgList[resp_index].esCorrecta = this.capEvaPrgSelected.capEvaPrgList[resp_index].esCorrecta
+
+
+                //this.capEvaPrgList[preg_index].capEvaPrgList[resp_index] = JSON.parse(JSON.stringify(this.capEvaPrgSelected.capEvaPrgList[resp_index]))
                 ShowMessageErrorShort('Respuesta actualizada correctamente', 'success')
                 //this.capEvaPrgRes.respuesta = ''
             }).catch(error => {
@@ -459,7 +816,8 @@ const EvaDetailsList = {
         },
         onCapEvaPrgResDelete: async function (preg_index, resp_index) {
             let formData = new FormData();
-
+            formData.append("IdCapEva", this.$route.params.idCapEva)
+            formData.append("IdVersion", this.$route.params.idCapRegistryVersion)
             formData.append("IdCapEvaPrg", this.capEvaPrgSelected.idCapEvaPrg)
             formData.append("CapEvaPrgRes", this.capEvaPrgSelected.capEvaPrgList[resp_index].idCapEvaPrgRes)
             await axios.post('../FormacionCapacitacion/CapEvaPrgResDelete', formData, null).then(response => {
@@ -475,8 +833,10 @@ const EvaDetailsList = {
             })
         },
         onSelectedCapEvaPrg: function (index) {
-            this.capEvaPrgSelected = JSON.parse(JSON.stringify(this.capEvaPrgList[index]))
-            console.log(this.capEvaPrgSelected)
+            if (this.capEva !== null && this.capEva.estatus === 1) {
+                //if (this.capEva !== null) {
+                this.capEvaPrgSelected = JSON.parse(JSON.stringify(this.capEvaPrgList[index]))
+            }
         },
         getCapEvaPrgResList: async function () {
             this.capEvaPrgList.forEach(async (preg, preg_index) => {
@@ -491,13 +851,21 @@ const EvaDetailsList = {
             })
         },
         getCapEvaPrgList: async function () {
-            await axios.get('../FormacionCapacitacion/capEvaPrgList?IdCapEva=' + this.$route.params.idCapEva, null, null).then(response => {
+            console.log("loadding preguntas")
+
+            await axios.get('../FormacionCapacitacion/capEvaPrgList?IdVersion=' + this.$route.params.idCapRegistryVersion + '&IdCapEva=' + this.$route.params.idCapEva, null, {
+                onUploadProgress: function (progressEvent) {
+                    //var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    console.log("asdasdadadasdas: ")
+                }
+            }).then(response => {
                 //response.data.forEach(async (preg, preg_index) => { preg['capEvaPrgResList'] = [] });
                 this.capEvaPrgList = response.data
+                ShowMessageErrorShort("", "success")
             }).catch(error => {
                 GlobalValidAxios(error);
             }).finally(() => {
-                
+
             })
             //await this.getCapEvaPrgResList();
         },
@@ -623,7 +991,7 @@ const EvaPregAdd = {
     },
     watch: {
         $route(to, from) {
-            
+
         }
     },
     mounted() {
@@ -654,10 +1022,10 @@ const EvaPregAdd = {
                     formData.append("CapEvaPrgList[" + i + "].EsCorrecta", e.esCorrecta)
                     formData.append("CapEvaPrgList[" + i + "].Creada", '2021-10-10 12:12:12')
                     formData.append("CapEvaPrgList[" + i + "].Editada", '2021-10-10 12:12:12')
-                    
+
 
                 });
-                
+
 
                 var inserted = null;
                 await axios.post('../FormacionCapacitacion/CapEvaPrgAdd', formData, null).then(response => {
@@ -734,7 +1102,7 @@ const EvaPregAdd = {
                     this.capEvaPrg.respuestas.push(JSON.parse(JSON.stringify(this.capEvaPrgRes)))
                     this.capEvaPrgRes.respuesta = ''
                 }
-                
+
             } catch (e) {
                 this.error_DarkUI_exception = e
                 $.alert({
@@ -879,7 +1247,7 @@ const EvaPregEdit = {
         this.getCapEvaPrgDeetails();
     },
     methods: {
-        
+
         onCapEvaPrgDelete: async function () {
             //(int IdCapEva, int IdCapEvaPrg)
             let formData = new FormData();
@@ -931,7 +1299,7 @@ const EvaPregEdit = {
         },
         onCapEvaPrgResEdit: async function (resp_index) {
             if (this.capEvaPrg.capEvaPrgList[resp_index].respuesta !== '') {
-                
+
                 let formData = new FormData();
 
                 formData.append("CapEvaPrgRes", this.capEvaPrg.capEvaPrgList[resp_index].idCapEvaPrgRes)
@@ -958,7 +1326,7 @@ const EvaPregEdit = {
                         throw new DarkUI_exception('Ya has gregado una opción similar a <strong>' + this.capEvaPrgRes.respuesta + '</strong>', '');
                     }
                     let formData = new FormData();
-                    
+
                     formData.append("IdCapEvaPrgRes", 1)
                     formData.append("IdCapEvaPrg", this.$route.params.idCapEvaPrg)
                     formData.append("Respuesta", this.capEvaPrgRes.respuesta.trim())
@@ -969,7 +1337,7 @@ const EvaPregEdit = {
                         // agregar la pregunta a la lista
                         this.capEvaPrg.capEvaPrgList.push(response.data);
                         this.capEvaPrgRes.respuesta = ''
-                        ShowMessageErrorShort('Respuesta agregada correctamente','success')
+                        ShowMessageErrorShort('Respuesta agregada correctamente', 'success')
                     }).catch(error => {
                         GlobalValidAxios(error);
                     }).finally(() => {
@@ -996,7 +1364,7 @@ const EvaPregEdit = {
 
             })
         }
-        
+
     },
 }
 
@@ -1014,18 +1382,17 @@ const template = {
                 </div>
             </div>
             <div class="row row-xs mg-b-25">
+                
                 <div class="col-sm-4 col-md-3 col-lg-4 col-xl-3" v-for="(capTemp, capTemp_index) in capTemp_list">
-                    <div class="card card-profile h-100">
-                        <img src="https://www.nobleui.com/html/template/assets/images/photos/img2.jpg" class="card-img-top" alt="">
-                        <div class="card-body tx-13">
-                            <div>
-                                <div class="avatar avatar-lg"><span class="avatar-initial rounded-circle bg-pink-300">c</span></div>
-                                <h5>
-                                     <router-link :to="{ name: 'capacitacion-template-admin', params: { idCapTempl: capTemp.idCapTempl } }">{{ capTemp.nombre }}</router-link>
-                                </h5>
-                                <p>no.Sesiones: {{ capTemp.noSesions }}</p>
-                            </div>
-                        </div>
+                    <div class="card card-event">
+                      <div class="card-body tx-13">
+                        <h5>{{ capTemp.nombre }}</h5>
+                        <p class="mg-b-0"></p>
+                        <span class="tx-12 tx-color-03"></span>
+                      </div><!-- card-body -->
+                      <div class="card-footer tx-13">
+                        <router-link class="btn btn-xs btn-secondary" :to="{ name: 'capacitacion-template-admin', params: { idCapTempl: capTemp.idCapTempl, idVersion : 0 } }">Ver</router-link>
+                      </div><!-- card-footer -->
                     </div><!-- card -->
                 </div><!-- col -->
                 <div class="col-sm-4 col-md-3 col-lg-4 col-xl-3">
@@ -1082,17 +1449,17 @@ const template = {
             error_DarkUI_exception: null,
             capTemp_list: [],
             capTemp: {
-                idCapTempl:	1,
-                clave:	"",
-                nombre:	"",
-                descripcion:	"",
-                objetivo:	"",
-                calRepet:	0,
-                duracion:	0,
-                estatus:	1,
-                noSesions:	6,
-                creada:	"2021-10-04T13:54:42.203",
-                editada:	"2021-10-20T13:30:49.03"
+                idCapTempl: 1,
+                clave: "",
+                nombre: "",
+                descripcion: "",
+                objetivo: "",
+                calRepet: 0,
+                duracion: 0,
+                estatus: 1,
+                noSesions: 6,
+                creada: "2021-10-04T13:54:42.203",
+                editada: "2021-10-20T13:30:49.03"
             }
         }
     },
@@ -1165,11 +1532,49 @@ const template_admin = {
                     <h4 class="mg-b-0 tx-spacing--1">Detalle de template</h4>
                 </div>
             </div>
-            <div class="row" v-if="capTemp !== null">
-                <div class="col-3">
+            <div class="row" v-if="$route.params.idVersion === undefined || $route.params.idVersion === null || $route.params.idVersion === 0 || $route.params.idVersion === '0'">
+                <h2 class="col-lg-12">Selecciona una versión</h2>
+				<!--begin::Col-->
+				<div class="col-lg-4 alert alert-success  ml-1 mr-1" role="alert" v-for="(log, log_index) in logChangesStatus">
+					<router-link
+                            :to="{ name: 'capacitacion-template-admin', params: { idCapTempl:  $route.params.idCapTempl, idVersion: log.idCapRegistryVersion } }"
+                            :title="'click aqui para ver version'"
+                            :id="'ver_version_ev_det_' + log.idCapRegistryVersion"
+                            :class="'schedule-item'"
+                        >
+                            <h6 >{{ log.comentarios }}</h6>
+                            <span class="tx-13 tx-danger" v-if="log.actual === false"> En proceso</span>
+                            <span class="tx-13 tx-success" v-if="log.actual === true"> Disponible</span>
+                            <span class="tx-13 tx-color-03"> {{ log.editada | fechaDate }}</span>
+                            <span class="tx-13 tx-color-03"> {{ log.nombre }}</span>
+                        </router-link>
+				</div>
+                <!--end::Col-->
+            </div>
+            <div class="row" v-if="capTemp !== null && $route.params.idVersion !== undefined && $route.params.idVersion !== null && $route.params.idVersion !== 0 && $route.params.idVersion !== '0'">
+                <div class="col-12 mb-3" role="alert" v-if="logChangesStatus.length > 0 && logChangesStatus.find(a => a.idCapRegistryVersion === parseInt($route.params.idVersion)) !== undefined && logChangesStatus.find(a => a.idCapRegistryVersion === parseInt($route.params.idVersion)) !== null">
+                    
+                    <div class="input-group">
+                        <select class="form-control" v-model="idVersionSelected" v-on:change="onSelectedVersion()">
+                            <option value="0">Selecciona una version</option>
+                            <option v-for="(log, log_index) in logChangesStatus" v-bind:value="log.idCapRegistryVersion" :disabled="$route.params.idVersion === log.idCapRegistryVersion">{{ log.comentarios }} </option>
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-light" v-if="parseInt(this.$route.params.idVersion) !== 0" type="button" id="button-addon2" v-on:click="begoreCapTemplNewVersion()">Nueva</button>
+                        </div>
+                    </div>
+
+                    <h5 class="tx-uppercase mt-4 mb-2">Version: {{ logChangesStatus.find(a => a.idCapRegistryVersion === parseInt($route.params.idVersion)).comentarios }}</h5>
+                </div>
+                <div v-if="logChangesStatus.length && onvalidSms1().show" :class="onvalidSms1().classs + ' col-12'" role="alert">
+                        <h4 class="alert-heading">Estimado usuario!</h4>
+                        <p v-html="onvalidSms1().message"></p>
+                        <button type="button" v-if="onvalidSms1().publicar" class="btn btn-sm btn-block btn-dark"  title="publicar" v-on:click="onCapVersionSetActive(4)" id="btn_eva_version_publish">Publicar esta versión<i class="typcn typcn-world"></i></button>
+                </div>
+                <div class="col-3" >
                     <div class="card mg-b-20 mg-lg-b-5">
                         <div class="card-body pd-l-25 pd-r-25">
-                            <div class="row" v-if="view.editCapTemp === false"><div class="col-12" ><a class=" float-right tx-warning" v-on:click="onBeforeCapTemplEdit()"><i class="typcn typcn-pencil"></i></a></div></div>
+                            <div class="row" v-if="view.editCapTemp === false && capTemp.estatus === 1"><div class="col-12" ><a class=" float-right tx-warning" v-on:click="onBeforeCapTemplEdit()"><i class="typcn typcn-pencil"></i></a></div></div>
                             <dl class="row" style="font-size: 13px;" v-if="view.editCapTemp === false">
                                 <dt class="col-12">
                                    Clave
@@ -1202,8 +1607,8 @@ const template_admin = {
                                     {{ capTemp.calRepet }}
                                 </dd>
                             </dl>
-                            <div class="row" v-if="view.editCapTemp === true"><div class="col-12" ><a class=" float-right tx-warning" v-on:click="view.editCapTemp = false"><i class="typcn typcn-times"></i></a></div></div>
-                            <div class="row" v-if="view.editCapTemp === true">
+                            <div class="row" v-if="view.editCapTemp === true && capTemp.estatus === 1"><div class="col-12" ><a class=" float-right tx-warning" v-on:click="view.editCapTemp = false"><i class="typcn typcn-times"></i></a></div></div>
+                            <div class="row" v-if="view.editCapTemp === true && capTemp.estatus === 1">
                                 <div class="form-group col-12">
                                     <label>Calificación minima</label>
                                     <input type="text" class="form-control form-control-sm" maxLength="20" v-model="capTempSelected.clave" placeholder="Clave"/>
@@ -1234,17 +1639,18 @@ const template_admin = {
                     </div><!-- card -->
                 </div<!-- col -->
                 <div class="col-6" v-if="'capacitacion-template-admin' === $route.name">
-                    <div class="profile-update-option bg-white ht-50 bd d-flex justify-content-end mg-b-20 mg-lg-b-25 rounded">
+                    <div class="profile-update-option bg-white ht-50 bd d-flex justify-content-end mg-b-20 mg-lg-b-25 rounded" v-if="capTemp.estatus === 1">
                         <div class="d-flex align-items-center pd-x-20 mg-r-auto">
                             <i class="typcn typcn-pencil"></i> <a href="#" class="link-03 mg-l-10" v-on:click="onBeforeCapSessCreate()"><span class="d-none d-sm-inline">Nueva sesión</span></a>
                         </div>
                         <div class="wd-50 bd-l d-flex align-items-center justify-content-center">
-                            <router-link :to="{ name: 'evaluaciones-data' }" class="link-03" data-toggle="tooltip" title="Postear una evaluación"><i class="typcn typcn-document-add"></i></router-link>
+                            <a class="link-03" data-toggle="tooltip" title="Postear una evaluación" v-on:click="beforeAddEva()"><i class="typcn typcn-document-add"></i></a>
                         </div>
                     </div>
                     <div  class="card mg-b-20 mg-lg-b-5" v-for="(shedule_, shedule_index) in shedule">
                         <div class="card-body pd-l-25 pd-r-25">
-                            <card-session v-bind:shedule="shedule_" v-on:goto_details="goto_details(shedule_.idRefer)"></card-session>
+                            <card-session v-if="shedule_.tipo === 1" v-bind:estatus="capTemp.estatus" v-bind:shedule="shedule_" v-on:goto_details="goto_details(shedule_.idRefer)" v-bind:idVersion="$route.params.idVersion"></card-session>
+                            <card-evaluation v-if="shedule_.tipo === 2" v-bind:estatus="capTemp.estatus" v-bind:idCapEva="shedule_.idRefer" v-bind:idCapTemplShedule="shedule_.idCapRegistryVersionDet" v-on:goto_deleteEva="goto_deleteEva(shedule_index)" v-bind:idVersion="shedule_.idVersion"></card-evaluation>
                         </div><!-- card-body -->
                     </div><!-- card -->
                     <div  class="card mg-b-20 mg-lg-b-5" v-if="shedule.length === 0">
@@ -1261,6 +1667,7 @@ const template_admin = {
                                 </div><!-- content -->
                         </div><!-- card-body -->
                     </div><!-- card -->
+                    <button class="btn btn-block btn-sm pd-x-15 btn-danger btn-uppercase mg-l-5 mt-3" v-if="capTemp !== null && capTemp.estatus === 4 && $route.params.idVersion !== undefined" v-on:click="onCapVersionSetActive(2)" id="btn_eva_version_deactive" title="Desactivar esta versión"><i class="typcn typcn-document-text"></i> Desactivar esta versión</button>
                 </div<!-- col -->
                 <div class="col-9" v-if="'capacitacion-template-admin' !== $route.name">
                     <router-view ></router-view>
@@ -1285,6 +1692,78 @@ const template_admin = {
                         </div><!-- modal-content -->
                     </div><!-- modal-dialog -->
                 </div><!-- modal -->
+                <div class="modal fade" id="modal_add_eva_templ" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body pd-20 pd-sm-40">
+                                <a href="" role="button" class="close pos-absolute t-15 r-15" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </a>
+                                <div>
+                                    <div v-if="view.stepAddEva === 0" class="mb-3">
+                                        <h4>Selecciona una evaluación</h4>
+                                        <ul class="sidebar-nav mt-3">
+                                            <li v-for="(eva_, eva_index) in versionesEva" :class="'nav-item ' + (view.showkeyEva === eva_.id ? 'bd-warning show active-tema' : '')">
+                                                <a class="nav-link with-sub " v-on:click="view.showkeyEva = eva_.id">
+                                                    <i class="typcn typcn-document-add m-2 tx-20"></i>
+                                                    {{ eva_.name }}
+                                                </a>
+                                                <nav class="nav">
+                                                    <div v-for="(ver_, ver_index) in eva_.versiones" :class="'media align-items-center' + (view.showkeyEvaver === ver_.id ? ' bd-warning active-tema' : '')">
+                                                        <a v-on:click="view.showkeyEvaver = ver_.id">
+                                                            <div class="avatar"><i :class="'typcn typcn-input-checked m-2 tx-15' + (view.showkeyEva === ver_.id ? 'tx-warning': '')"></i></div>
+                                                        </a>
+                                                        <div class="media-body pd-l-15" v-on:click="view.showkeyEvaver = ver_.id">
+                                                            <h6 class="mg-b-2">{{ ver_.nombre }}</h6>
+                                                            <span class="tx-13 tx-color-03">{{ ver_.autor }}</span>
+                                                        </div>
+                                                    </div>
+                                                </nav>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div v-if="view.stepAddEva === 1" class="mb-3">
+                                        <h4 class="mb-3">Confirmar evaluación</h4>
+                                        <card-evaluation v-bind:idCapEva="view.showkeyEva" v-bind:idVersion="view.showkeyEvaver"></card-evaluation>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-dark" :disabled="view.stepAddEva === 0" v-on:click="view.stepAddEva --">Atras</button>
+                                    <button type="button" class="btn btn-sm btn-primary" v-if="view.stepAddEva < 1" :disabled="view.showkeyEvaver === 0" v-on:click="view.stepAddEva ++">Siguiente</button>
+                                    <button type="button" class="btn btn-sm btn-primary" v-if="view.stepAddEva === 1" :disabled="view.showkeyEvaver === 0" v-on:click="onCapTemplEvaAdd()" id="btn_tmpl_add_eva">Agregar a capacitación</button>
+                                </div>
+                            </div><!-- modal-body -->
+                        </div><!-- modal-content -->
+                    </div><!-- modal-dialog -->
+                </div><!-- modal -->
+                <div class="modal fade" id="modal_add_cap_version" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered mx-wd-sm-650" role="document">
+                        <div class="modal-content bd-0 bg-transparent">
+                            <div class="modal-body pd-0">
+                                <a href="" role="button" class="close pos-absolute t-15 r-15 z-index-10" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </a>
+                                <div class="row no-gutters">
+                                    <div class="col-3 col-sm-5 col-md-6 col-lg-5 bg-primary rounded-left">
+                                        <div class="wd-100p ht-100p">
+                                            <img src="https://image.freepik.com/vector-gratis/excelentes-empleados-superando-objetivos-ventas-prometiendo-futuro-prospero_1150-43218.jpg" class="wd-100p img-fit-cover img-object-top rounded-left" alt="" style="object-fit: fill !important;">
+                                        </div>
+                                    </div><!-- col -->
+                                    <div class="col-9 col-sm-7 col-md-6 col-lg-7 bg-white rounded-right">
+                                        <div class="ht-100p d-flex flex-column justify-content-center pd-20 pd-sm-30 pd-md-40">
+                                              <span class="tx-color-04"><i data-feather="bar-chart-2" class="wd-40 ht-40 stroke-wd-3 mg-b-20"></i></span>
+                                              <h3 class="tx-16 tx-sm-20 tx-md-24 mg-b-15 mg-md-b-20">Crear nueva versión</h3>
+                                              <p class="tx-14 tx-md-16 tx-color-02">Introduce los siguientes datos para continuar..</p>
+                                             <div class="form-group">
+                                                <label>Comentarios</label>
+                                                <textarea class="form-control" rows="2" placeholder="Comentarios" v-model="comentarios"></textarea>
+                                            </div>
+                                            <button class="btn btn-dark btn-sm btn-block" :disabled="comentarios === ''" v-on:click="onCapTemplNewVersion()" id="btn_add_capp_version">Crear</button>
+                                        </div>
+                                    </div><!-- col -->
+                                </div><!-- row -->
+                            </div><!-- modal-body -->
+                        </div><!-- modal-content -->
+                    </div><!-- modal-dialog -->
+                </div><!-- modal -->
             </div>
         </div>
     `,
@@ -1292,7 +1771,9 @@ const template_admin = {
         return {
             error_DarkUI_exception: null,
             capTemp: null,
+            logChangesStatus: [],
             shedule: [],
+            versionesEva: [],
             sess_add: {
                 name: ''
             },
@@ -1303,24 +1784,233 @@ const template_admin = {
                 calRepet: 0
             },
             view: {
-                editCapTemp: false
-            }
+                editCapTemp: false,
+                showkeyEva: 0,
+                showkeyEvaver: 0,
+                stepAddEva: 0
+            },
+            idVersionSelected: 0,
+            comentarios: ''
         }
     },
     watch: {
         $route(to, from) {
-            this.onCapTemplDetails();
+            if (this.$route.params.idVersion !== undefined && this.$route.params.idVersion !== null && this.$route.params.idVersion !== '0' && this.$route.params.idVersion !== 0) {
+                this.shedule = []
+                this.onCapTemplDetails()
+                this.onGetShedule();
+                this.onCapEvaVersions();
+                this.idVersionSelected = parseInt(this.$route.params.idVersion)
+                this.view.showkeyEva = 0
+                this.view.showkeyEvaver = 0
+                this.view.showkeyEva = 0
+            }
+            this.onCapVersionList();
+
         }
     },
     mounted() {
-        this.onCapTemplDetails()
-        this.onGetShedule();
+        if (this.$route.params.idVersion !== undefined && this.$route.params.idVersion !== null && this.$route.params.idVersion !== '0' && this.$route.params.idVersion !== 0) {
+            this.shedule = []
+            this.onCapTemplDetails()
+            this.onGetShedule();
+            this.onCapEvaVersions();
+            this.idVersionSelected = parseInt(this.$route.params.idVersion)
+            this.view.showkeyEva= 0
+            this.view.showkeyEvaver= 0
+            this.view.showkeyEva= 0
+        }
+
+        this.onCapVersionList();
     },
     methods: {
+        onCapVersionSetActive: async function (estatus) {
+            var title = ""
+            var text = ""
+            var btn_id = ""
+            var btn_idAction = ""
+            if (estatus === 4) {
+                title = "¿Deseas publicar esta versión?"
+                text = "despues de publicar podrá ser usada esta versión"
+                btn_id = "btn_eva_version_publish"
+                btn_idAction = "Publicar"
+            } else if (estatus === 2) {
+                title = "¿Deseas desactivar esta versión?"
+                text = "despues de desactivar no podrá ser usada y modificada esta versión"
+                btn_id = "btn_eva_version_deactive"
+                btn_idAction = "Desactivar"
+            }
+
+            try {
+                await Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, adelante!'
+                }).then(async (result) => {
+                    if (!result.isConfirmed) {
+                        throw new DarkUI_exception('proceso cancelado', '', true);
+                    }
+                })
+
+                btn_loading(btn_id, 'Procesando...')
+                let formData = new FormData();
+                formData.append("IdCapTempl", this.$route.params.idCapTempl)
+                formData.append("IdVersion", this.$route.params.idVersion)
+                formData.append("Estatus", estatus)
+                formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
+
+                await axios.post('../FormacionCapacitacion/CapTemplChageStatus', formData, null).then(response => {
+                    // agregar la pregunta a la lista
+                    this.capTemp.estatus = estatus
+                    window.location.reload()
+                    btn_loading(btn_id, btn_idAction, 'hide')
+                }).catch(error => {
+                    GlobalValidAxios(error);
+                    btn_loading(btn_id, btn_idAction, 'hide')
+                }).finally(() => {
+
+                })
+
+
+            } catch (e) {
+                console.log(e)
+            }
+        },
+        onvalidSms1: function () {
+            var alertGl = {
+                classs: "",
+                message: "",
+                publicar: false,
+                show: false
+            }
+            if (this.$route.params.idVersion === undefined || this.$route.params.idVersion === null) {
+                alertGl.show = false;
+                alertGl.message = 'Por favor selecciona una versión para poder administrar';
+                alertGl.classs = 'alert alert-info';
+            } else {
+                if (this.capTemp !== undefined && this.capTemp !== null) {
+                    if (this.capTemp.estatus === 4) {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta capacitacion se encuentra <strong class="tx-uppercase">disponible</strong>, ahora podrás utilizarla en cualquier capacitación, si deseas modificarla por favor crea una versión nueva';
+                        alertGl.classs = 'alert alert-success';
+                    }
+                    else if (this.capTemp.estatus === 2) {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta capacitacion ha sido <strong class="tx-uppercase">Inactiva</strong>, ahora no podra ser editada y usada en nuevas capacitacion';
+                        alertGl.classs = 'alert alert-info';
+                    }
+                    else if (this.capTemp.estatus === 3) {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta capacitacion ha sido <strong class="tx-uppercase">Eliminada</strong>';
+                        alertGl.classs = 'alert alert-warning';
+                    } else {
+                        alertGl.show = true;
+                        alertGl.message = 'Esta versión actualmente se encuentra en <strong class="tx-uppercase">proceso de desarrollo</strong> y no podrá ser usada en alguna capacitación, por favor da click en <strong>Publicar esta versión</strong> para que pueda ser usada.';
+                        alertGl.classs = 'alert alert-info';
+                        alertGl.publicar = true
+                    }
+                }
+            }
+            //{ { $route.params.idCapRegistryVersion } }
+            //{ {  } }
+            //{ { logChangesStatus.find(a => a.idCapRegistryVersion === $route.params.idCapRegistryVersion).actual } }
+            return alertGl;
+        },
+        onCapTemplEvaAdd: async function () {
+            //(int IdCapTempl, int IdVersion, int IdEvaCap, int IdVersionEva)
+            
+            btn_loading('btn_tmpl_add_eva', 'Registrando...')
+            let formData = new FormData();
+            formData.append("IdCapTempl", this.$route.params.idCapTempl)
+            formData.append("IdVersion", this.$route.params.idVersion)
+            formData.append("IdEvaCap", this.view.showkeyEva)
+            formData.append("IdVersionEva", this.view.showkeyEvaver)
+            formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
+            await axios.post('../FormacionCapacitacion/CapTemplEvaAdd', formData, null).then(async (response) => {
+                // agregar la pregunta a la lista
+                await this.logChangesStatus.push(response.data)
+                //document.getElementById("btn_preg_list_refresh").click()
+                btn_loading('btn_tmpl_add_eva', 'Agregar a capacitación', 'hide')
+                this.shedule.push(response.data)
+                this.view.showkeyEva = 0
+                this.view.showkeyEvaver = 0
+                $("#modal_add_eva_templ").modal("hide")
+            }).catch(error => {
+                GlobalValidAxios(error);
+                btn_loading('btn_tmpl_add_eva', 'Agregar a capacitación', 'hide')
+            }).finally(() => {
+
+            })
+        },
+        onCapEvaVersions: async function () {
+            await axios.get('../FormacionCapacitacion/CapEvaVersions', null, null).then(response => {
+                this.versionesEva = response.data
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        },
+        beforeAddEva: function () {
+            this.onCapEvaVersions();
+            this.view.showkeyEva = 0
+            this.view.showkeyEvaver = 0
+            $("#modal_add_eva_templ").modal({
+                backdrop: "static", //remove ability to close modal with click
+                keyboard: false, //remove option to close with keyboard
+                show: true //Display loader!
+            });
+        },
+        begoreCapTemplNewVersion: function () {
+            $("#modal_add_cap_version").modal({
+                backdrop: "static", //remove ability to close modal with click
+                keyboard: false, //remove option to close with keyboard
+                show: true //Display loader!
+            });
+        },
+        onCapTemplNewVersion: async function () {
+            btn_loading('btn_add_capp_version', 'Guardando...')
+            let formData = new FormData();
+            formData.append("IdCapTempl", this.$route.params.idCapTempl)
+            formData.append("IdVersion", this.$route.params.idVersion)
+            formData.append("Comentarios", this.comentarios)
+            formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
+            await axios.post('../FormacionCapacitacion/CapTemplNewVersion', formData, null).then(async (response) => {
+                // agregar la pregunta a la lista
+                await this.logChangesStatus.push(response.data)
+                //document.getElementById("btn_preg_list_refresh").click()
+                btn_loading('btn_add_capp_version', 'Guardar', 'hide')
+                router.push({ name: 'capacitacion-template-admin', params: { idCapTempl: this.$route.params.idCapTempl, idVersion: response.data.idCapRegistryVersion } })
+                $("#modal_add_cap_version").modal("hide")
+                this.comentarios = ""
+            }).catch(error => {
+                GlobalValidAxios(error);
+                btn_loading('btn_add_capp_version', 'Guardar', 'hide')
+            }).finally(() => {
+
+            })
+        },
+        onSelectedVersion: async function () {
+            router.push({ name: 'capacitacion-template-admin', params: { idCapTempl: this.$route.params.idCapTempl, idVersion: this.idVersionSelected } })
+        },
+        onCapVersionList: async function () {
+            await axios.get('../FormacionCapacitacion/CapVersionList?TipoRef_=TEMP&IdRefer_=' + this.$route.params.idCapTempl, null, null).then(response => {
+                this.logChangesStatus = response.data
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        },
         onCapTemplEdit: async function () {
             btn_loading('btn_update_capTempl', 'Actualizando... <i class="typcn typcn-arrow-sync"></i>')
             let formData = new FormData();
             formData.append("IdCapTempl", this.$route.params.idCapTempl)
+            formData.append("idVersion", this.$route.params.idVersion)
             formData.append("Clave", this.capTempSelected.clave)
             formData.append("Nombre", this.capTempSelected.nombre)
             formData.append("Descripcion", this.capTempSelected.descripcion)
@@ -1362,6 +2052,7 @@ const template_admin = {
             btn_loading('btn_add_session_templ', '<i class="typcn typcn-plus"></i>Registrando...')
             let formData = new FormData();
             formData.append("IdCapTempl", this.$route.params.idCapTempl)
+            formData.append("idVersion", this.$route.params.idVersion)
             formData.append("IdCapSess", '1')
             formData.append("NoSession", '1')
             formData.append("Duracion", '1')
@@ -1372,6 +2063,8 @@ const template_admin = {
             formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
             await axios.post('../FormacionCapacitacion/CapSessCreate', formData, null).then(response => {
                 //// agregar la pregunta a la lista
+                this.sess_add.name = ''
+                btn_loading('btn_add_session_templ', 'Registrar')
                 ShowMessageErrorShort('Sesión agregada', 'success')
                 router.push({ name: 'admin-session-edit', params: { idCapSess: response.data.idCapSess } })
                 $("#modal_add_session_templ").modal('hide')
@@ -1381,11 +2074,14 @@ const template_admin = {
                 btn_loading('btn_add_session_templ', 'Registrar')
             })
         },
+        goto_deleteEva: function (index) {
+            this.shedule.splice(index, 1)
+        },
         goto_details: function (idRefer) {
             router.push({ name: 'admin-session-edit', params: { idCapSess: idRefer } })
         },
         onCapTemplDetails: async function () {
-            await axios.get('../FormacionCapacitacion/CapTemplDetails/' + this.$route.params.idCapTempl, null, null).then(response => {
+            await axios.get('../FormacionCapacitacion/CapTemplDetails?id=' + this.$route.params.idCapTempl + '&IdVersion=' + this.$route.params.idVersion, null, null).then(response => {
                 this.capTemp = response.data
             }).catch(error => {
                 GlobalValidAxios(error);
@@ -1394,7 +2090,8 @@ const template_admin = {
             })
         },
         onGetShedule: async function () {
-            await axios.get('../FormacionCapacitacion/GetShedule/' + this.$route.params.idCapTempl, null, null).then(response => {
+
+            await axios.get('../FormacionCapacitacion/GetShedule?id=' + this.$route.params.idCapTempl + '&IdVersion=' + this.$route.params.idVersion, null, null).then(response => {
                 this.shedule = response.data
             }).catch(error => {
                 GlobalValidAxios(error);
@@ -1435,7 +2132,7 @@ const CapTemplSessEdit = {
                                 <h5 class="mg-b-5">Detalle de la sesión</h5>
                                 <p class="tx-13 tx-color-03 mg-b-0"></p>
                             </div>
-                            <div class="d-flex mg-t-20 mg-sm-t-0">
+                            <div class="d-flex mg-t-20 mg-sm-t-0" v-if="capTemp.estatus === 1">
                                 <div class="btn-group flex-fill">
                                     <a class=" float-right tx-warning"  v-if="view.editSess === false" v-on:click="view.editSess = true"><i class="typcn typcn-pencil"></i></a>
                                     <a class=" float-right tx-warning"  v-if="view.editSess === true" v-on:click="view.editSess = false"><i class="typcn typcn-times"></i></a>
@@ -1463,7 +2160,7 @@ const CapTemplSessEdit = {
                                     {{ capSess.duracion }}
                                 </dd>
                             </dl>
-                            <div class="col-12" v-if="view.editSess === true">
+                            <div class="col-12" v-if="view.editSess === true && capTemp.estatus === 1">
                                 <div class="form-group mt-2" style="margin-bottom: 1px !important">
                                     <label for="capSess_nombre" class="">Nombre </label>
                                     <input type="text" class="form-control form-control-sm" id="capSess_nombre" maxLength="100" v-model="capSess.nombre" placeholder="Nombre de la sesión">
@@ -1492,7 +2189,7 @@ const CapTemplSessEdit = {
                                 <p class="tx-13 tx-color-03 mg-b-0"></p>
                             </div>
                             <div class="d-flex mg-t-20 mg-sm-t-0">
-                                <div class="btn-group flex-fill">
+                                <div class="btn-group flex-fill" v-if="capTemp.estatus === 1">
                                     <a class=" float-right tx-warning btn-ripple" title="Agregar nuevo tema" v-on:click="view.addTema = !view.addTema"><i class="typcn typcn-document-add"></i></a>
                                 </div>
                             </div>
@@ -1513,10 +2210,10 @@ const CapTemplSessEdit = {
                             </div>
                         </div><!-- card-body -->
                     </div><!-- card -->
-                    <button type="button" class="btn btn-sm btn-block btn-danger"   title="Eliminar session"  v-on:click="onCapSessDelete()" id="btn_session_delete"><i class="typcn typcn-trash"></i>Eliminar esta sesión</button>
+                    <button type="button" v-if="capTemp.estatus === 1" class="btn btn-sm btn-block btn-danger"   title="Eliminar session"  v-on:click="onCapSessDelete()" id="btn_session_delete"><i class="typcn typcn-trash"></i>Eliminar esta sesión</button>
                 </div><!-- col -->
                 <div class="col-4" v-if="capSess != null && capSess.eliminada === false">
-                    <div class="card mg-b-20 mg-lg-b-5"  v-if="view.addTema === true ">
+                    <div class="card mg-b-20 mg-lg-b-5"  v-if="view.addTema === true && capTemp.estatus === 1" >
                         <div class="card-body pd-l-25 pd-r-25 row">
                             <div class="col-12"><a class=" float-right tx-warning" title="Cerrar este formulario" v-on:click="view.addTema = false"><i class="typcn typcn-times"></i></a></div>
                             <h5 class="col-12">Agregar tema</h5>
@@ -1537,7 +2234,7 @@ const CapTemplSessEdit = {
                             </div><!-- form-group -->
                         </div><!-- card-body -->
                     </div><!-- card -->
-                    <div class="card mg-b-20 mg-lg-b-5"  v-if="view.capTema_selected !== null && view.capTema_selected !== undefined ">
+                    <div class="card mg-b-20 mg-lg-b-5"  v-if="view.capTema_selected !== null && view.capTema_selected !== undefined && capTemp.estatus === 1">
                         <div class="card-body pd-l-25 pd-r-25 row">
                             <div class="col-12"><a class=" float-right tx-warning" title="Cerrar este formulario" v-on:click="view.capTema_selected = null"><i class="typcn typcn-times"></i></a></div>
                             <h5 class="col-12">Editar tema</h5>
@@ -1567,6 +2264,7 @@ const CapTemplSessEdit = {
         return {
             error_DarkUI_exception: null,
             capSess: null,
+            capTemp: null,
             capTemaList: [],
             capTema: {
                 nombre: '',
@@ -1581,15 +2279,35 @@ const CapTemplSessEdit = {
     },
     watch: {
         $route(to, from) {
-            this.onCapSessDetails(); 
+            this.onCapSessDetails();
+            this.onCapTemplDetails();
         }
     },
     mounted() {
         this.onCapSessDetails();
         this.onCapTemaBySession();
-        canvas_menu_toogle();
+        this.onCapTemplDetails();
     },
     methods: {
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
+        onCapTemplDetails: async function () {
+            await axios.get('../FormacionCapacitacion/CapTemplDetails?id=' + this.$route.params.idCapTempl + '&IdVersion=' + this.$route.params.idVersion, null, null).then(response => {
+                this.capTemp = response.data
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        },
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
         onCapSessDelete: async function () {
             try {
                 await Swal.fire({
@@ -1608,6 +2326,7 @@ const CapTemplSessEdit = {
 
                 btn_loading('btn_session_delete', '<i class="typcn typcn-trash"></i>Eliminando esta sesión...')
                 let formData = new FormData();
+                formData.append("idVersion", this.$route.params.idVersion)
                 formData.append("IdCapTempl", this.$route.params.idCapTempl)
                 formData.append("IdRefer", this.$route.params.idCapSess)
                 formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
@@ -1617,7 +2336,7 @@ const CapTemplSessEdit = {
                     btn_loading('btn_session_delete', '<i class="typcn typcn-trash"></i>Eliminar esta sesión', 'hide')
                     this.capSess.eliminada = true
                 }).catch(error => {
-                    btn_loading('btn_session_delete', '<i class="typcn typcn-trash"></i>Eliminar esta sesión','hide')
+                    btn_loading('btn_session_delete', '<i class="typcn typcn-trash"></i>Eliminar esta sesión', 'hide')
                     GlobalValidAxios(error);
                 }).finally(() => {
                 })
@@ -1626,6 +2345,11 @@ const CapTemplSessEdit = {
                 console.log(e)
             }
         },
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
         onCapTemaDelete: async function () {
             try {
                 await Swal.fire({
@@ -1641,10 +2365,11 @@ const CapTemplSessEdit = {
                         throw new DarkUI_exception('proceso cancelado', '', true);
                     }
                 })
-                
+
                 btn_loading('btn_tema_del', '<i class="typcn typcn-trash"></i>Eliminando..')
                 let formData = new FormData();
                 formData.append("IdCapTempl", this.$route.params.idCapTempl)
+                formData.append("idVersion", this.$route.params.idVersion)
                 formData.append("IdCapSess", this.$route.params.idCapSess)
                 formData.append("IdCapTema", this.view.capTema_selected.idCapTema)
                 formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
@@ -1662,8 +2387,8 @@ const CapTemplSessEdit = {
             } catch (e) {
                 console.log(e)
             }
-            
-            
+
+
         },
         /**
           * configurar seleccion de tema a editar o eliminar
@@ -1673,20 +2398,26 @@ const CapTemplSessEdit = {
         onCapTemaSelected: function (captema) {
             this.view.capTema_selected = JSON.parse(JSON.stringify(captema))
         },
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
         onCapTemaUpdate: async function () {
             try {
 
                 if (this.view.capTema_selected.nombre === '')
                     throw new DarkUI_exception('Por favor introduce un nombre valido para el tema a actualizar', '');
 
-                
+
                 btn_loading('btn_tema_add', 'Guardar')
                 let formData = new FormData();
                 formData.append("IdCapTempl", this.$route.params.idCapTempl)
+                formData.append("idVersion", this.$route.params.idVersion)
                 formData.append("IdCapSess", this.$route.params.idCapSess)
                 formData.append("IdCapTema", this.view.capTema_selected.idCapTema)
                 formData.append("Nombre", this.view.capTema_selected.nombre)
-                
+
                 formData.append("Descripcion", this.view.capTema_selected.descripcion)
                 formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
                 await axios.post('../FormacionCapacitacion/CapTemaUpdate', formData, null).then(response => {
@@ -1696,7 +2427,7 @@ const CapTemplSessEdit = {
                     var tema = this.capTemaList.find(a => a.idCapTema === this.view.capTema_selected.idCapTema)
                     tema.nombre = this.view.capTema_selected.nombre
                     tema.descripcion = this.view.capTema_selected.descripcion
-                    
+
                 }).catch(error => {
                     GlobalValidAxios(error);
                 }).finally(() => {
@@ -1711,6 +2442,11 @@ const CapTemplSessEdit = {
                 });
             }
         },
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
         onCapTemaCreate: async function () {
             try {
 
@@ -1724,6 +2460,7 @@ const CapTemplSessEdit = {
                 btn_loading('btn_tema_add', 'Guardar')
                 let formData = new FormData();
                 formData.append("IdCapTempl", this.$route.params.idCapTempl)
+                formData.append("idVersion", this.$route.params.idVersion)
                 formData.append("IdCapSess", this.$route.params.idCapSess)
                 formData.append("Nombre", this.capTema.nombre)
                 formData.append("Descripcion", this.capTema.descripcion)
@@ -1748,8 +2485,13 @@ const CapTemplSessEdit = {
                 });
             }
         },
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
         onCapTemaBySession: async function () {
-            await axios.get('../FormacionCapacitacion/CapTemaBySession/?IdCapSess=' + this.$route.params.idCapSess, null, null).then(response => {
+            await axios.get('../FormacionCapacitacion/CapTemaBySession/?idVersion=' + this.$route.params.idVersion + '&IdCapSess=' + this.$route.params.idCapSess, null, null).then(response => {
                 this.capTemaList = response.data
             }).catch(error => {
                 GlobalValidAxios(error);
@@ -1757,10 +2499,16 @@ const CapTemplSessEdit = {
 
             })
         },
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
         onCapSessEdit: async function () {
-            btn_loading('btn_sessio_update','Actualizando.. <i class="typcn typcn-arrow-sync"></i>')
+            btn_loading('btn_sessio_update', 'Actualizando.. <i class="typcn typcn-arrow-sync"></i>')
             let formData = new FormData();
             formData.append("IdCapTempl", this.$route.params.idCapTempl)
+            formData.append("idVersion", this.$route.params.idVersion)
             formData.append("IdCapSess", this.$route.params.idCapSess)
             formData.append("Nombre", this.capSess.nombre)
             formData.append("Objetivo", this.capSess.objetivo)
@@ -1773,13 +2521,18 @@ const CapTemplSessEdit = {
                 this.view.editSess = false
             }).catch(error => {
                 GlobalValidAxios(error);
-                btn_loading('btn_sessio_update', 'Actualizar <i class="typcn typcn-arrow-sync"></i>','hide')
+                btn_loading('btn_sessio_update', 'Actualizar <i class="typcn typcn-arrow-sync"></i>', 'hide')
             }).finally(() => {
             })
 
         },
+        /**
+          * configurar seleccion de tema a editar o eliminar
+          * @param {Object} captema
+          * @return void
+          */
         onCapSessDetails: async function () {
-            await axios.get('../FormacionCapacitacion/CapSessDetails/?IdCapTempl=' + this.$route.params.idCapTempl + '&IdCapSess=' + this.$route.params.idCapSess, null, null).then(response => {
+            await axios.get('../FormacionCapacitacion/CapSessDetails/?idVersion=' + this.$route.params.idVersion + '&IdCapTempl=' + this.$route.params.idCapTempl + '&IdCapSess=' + this.$route.params.idCapSess, null, null).then(response => {
                 this.capSess = response.data
                 //if (this.capSess.eliminada === true) {
                 //    ShowMessageErrorShort('Esta sesión fue eliminada', 'warning')
@@ -1794,18 +2547,162 @@ const CapTemplSessEdit = {
     }
 }
 
+Vue.component('card-evaluation', {
+    props: ['idCapEva', 'idVersion', 'idCapTemplShedule', 'estatus' ],
+    template: `
+        <div>
+            <div class="row" v-if="estatus === 1"><div class="col-12"><a class=" float-right tx-warning" v-on:click="onCapTemplEvaDel()" title="eliminar esta evaluación" id="btn_del_eva_templ"><i class="typcn typcn-trash tx-danger"></i></a></div></div>
+            <div class="media align-items-center mg-b-20" v-if="capEva !== null">
+                <div class="wd-45 ht-45 bg-primary rounded d-flex align-items-center justify-content-center">
+                    <i class="tx-white-7 wd-20 ht-20 typcn typcn-document"></i>
+                </div>
+                <div class="media-body pd-l-15">
+                    <h6 class="mg-b-3">{{ capEva.nombre }}</h6>
+                    <span class="d-block tx-13 tx-color-03">{{ capEva.decripcion }}</span>
+                </div>
+                <span class="d-none d-sm-block tx-12 tx-color-03 align-self-start"></span>
+            </div><!-- media -->
+            <p class="mg-b-20" v-if="capEva !== null" >
+                Resumen de preguntas
+            </p>
+            <div class="bd bg-gray-50 pd-y-15 pd-x-15 pd-sm-x-20">
+                <div class="d-flex">
+                  <div class="profile-skillset flex-fill">
+                    <h4 class="link-01">{{ capEvaPrgList.filter(a => a.tipo === 'O').length }}</h4>
+                    <label>OPCIONALES</label>
+                  </div>
+                  <div class="profile-skillset flex-fill">
+                    <h4 class="link-01">{{ capEvaPrgList.filter(a => a.tipo === 'M').length }}</h4>
+                    <label>OPCIONALES(+1)</label>
+                  </div>
+                  <div class="profile-skillset flex-fill">
+                    <h4 class="link-01">{{ capEvaPrgList.filter(a => a.tipo === 'T').length }}</h4>
+                    <label>ABIERTAS</label>
+                  </div>
+                </div>
+            </div>
+            <a v-on:click="verEva('show')" title="previsualizar esta evaluación" class="linkds">Visualizar Evaluación</a>
+            <div class="modal fade" :id="'modal_preview_eva_templ_'+idCapTemplShedule" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body pd-20 pd-sm-40">
+                            <a role="button" class="close pos-absolute t-15 r-15" v-on:click="verEva('hide')">
+                                <span aria-hidden="true">&times;</span>
+                            </a>
+                            <h4>vista previa de evaluacion</h4>
+                            <div class="media align-items-center mg-b-20" v-if="capEva !== null">
+                                <div class="wd-45 ht-45 bg-primary rounded d-flex align-items-center justify-content-center">
+                                    <i class="tx-white-7 wd-20 ht-20 typcn typcn-document"></i>
+                                </div>
+                                <div class="media-body pd-l-15">
+                                    <h6 class="mg-b-3">{{ capEva.nombre }}</h6>
+                                    <span class="d-block tx-13 tx-color-03">{{ capEva.decripcion }}</span>
+                                </div>
+                                <span class="d-none d-sm-block tx-12 tx-color-03 align-self-start"></span>
+                            </div><!-- media -->
+                            <div class="schedule-group ">
+                                <div v-for="(preg, preg_index) in capEvaPrgList" class="schedule-item bd-l bd-2 bd-success">
+                                    <h6>[{{ preg.idCapEvaPrg }}] {{ preg.pregunta }}</h6>
+                                    <span>Puntaje: {{ preg.puntaje }}</span>
+                                    <span>{{ preg.c }}</span>
+                                    <div class="col-lg-12" v-if="preg.tipo !== 'T'">
+                                        <ul class="pd-l-10 mg-0  tx-13">
+                                            <li v-if="preg.capEvaPrgList !== undefined && preg.capEvaPrgList !== null" v-for="(resp, resp_index) in preg.capEvaPrgList" :class="(resp.esCorrecta ? '' : '') + ' '">[{{ resp.idCapEvaPrgRes }}] {{ resp.respuesta }}</li>
+                                        </ul>
+                                    </div>
+                                    <div v-if="preg.tipo === 'T'" class="bd bg-gray-50 pd-y-15 pd-x-15 pd-sm-x-20 col-12">
+                                        <h6 class="tx-15 mg-b-3">Pregunta abierta al usuario</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- modal-body -->
+                    </div><!-- modal-content -->
+                </div><!-- modal-dialog -->
+            </div><!-- modal -->
+        </div>
+    `,
+    data: function () {
+        return {
+            capEva: null,
+            capEvaPrgList: []
+        }
+    },
+    mounted() {
+        this.getCapEvaPrgList()
+        this.getCapEvaDetails()
+
+        
+    },
+    watch: {
+
+    },
+    renderTriggered({ key, target, type }) {
+    },
+    methods: {
+        verEva: function (mode) {
+            if (mode === "show") {
+                $("#modal_preview_eva_templ_" + this.idCapTemplShedule).modal({
+                    backdrop: "static", //remove ability to close modal with click
+                    keyboard: false, //remove option to close with keyboard
+                    show: true //Display loader!
+                });
+            } else {
+                $("#modal_preview_eva_templ_" + this.idCapTemplShedule).modal("hide")
+            }
+        },
+        onCapTemplEvaDel: async function () {
+            //(int IdCapTempl, int IdVersion, int IdEvaCap, int IdCapTemplShedule)
+            btn_loading('btn_del_eva_templ', 'Eliminando...')
+            let formData = new FormData();
+            formData.append("IdCapTempl", this.$route.params.idCapTempl)
+            formData.append("idVersion", this.$route.params.idVersion)
+            formData.append("IdEvaCap", this.idCapEva)
+            formData.append("IdCapRegistryVersionDet", this.idCapTemplShedule)
+            formData.append("__RequestVerificationToken", document.querySelector("input[name='__RequestVerificationToken']").value)
+            await axios.post('../FormacionCapacitacion/CapTemplEvaDel', formData, null).then(response => {
+                this.$emit('goto_deleteEva');
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+            })
+        },
+        getCapEvaPrgList: async function () {
+            await axios.get('../FormacionCapacitacion/capEvaPrgList?IdVersion=' + this.idVersion + '&IdCapEva=' + this.idCapEva, null, {
+                onUploadProgress: function (progressEvent) {
+                    console.log("asdasdadadasdas: ")
+                }
+            }).then(response => {
+                this.capEvaPrgList = response.data
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        },
+        getCapEvaDetails: async function () {
+            await axios.get('../FormacionCapacitacion/CapEvaDetails?IdVersion=' + this.idVersion + '&IdCapEva=' + this.idCapEva, null, null).then(response => {
+                this.capEva = response.data.eva
+            }).catch(error => {
+                GlobalValidAxios(error);
+            }).finally(() => {
+
+            })
+        }
+    }
+})
 // details component session
 Vue.component('card-session', {
-    props: ['id', 'shedule'],
+    props: ['id', 'shedule', 'idVersion', 'estatus'],
     template: `
     <div>
-        <div class="row"><div class="col-12"><a class=" float-right tx-warning" v-on:click="$emit('goto_details')" title="ir a detalles"><i class="typcn typcn-pencil"></i></a></div></div>
+        <div class="row"><div class="col-12"><a class=" float-right tx-warning" v-on:click="$emit('goto_details')" title="ir a detalles"><i class="typcn typcn-eye"></i></a></div></div>
+        
         <dl class="row" style="font-size: 13px;" v-if="capSess !== null">
             <dt class="col-12">
                 Nombre
             </dt>
             <dd class="col-12">
-                {{ capSess.nombre }}
+                 {{ capSess.nombre }}
             </dd>
             <dt class="col-12">
                 Objetivo
@@ -1839,15 +2736,19 @@ Vue.component('card-session', {
         }
     },
     mounted() {
+        console.log("version: " + this.idVersion + " ref: " + this.data.idRefer)
         this.onCapSessDetails()
         this.onCapTemaBySession()
     },
     watch: {
 
     },
+    renderTriggered({ key, target, type }) {
+        console.log({ key, target, type })
+    },
     methods: {
         onCapTemaBySession: async function () {
-            await axios.get('../FormacionCapacitacion/CapTemaBySession/?IdCapSess=' + this.data.idRefer, null, null).then(response => {
+            await axios.get('../FormacionCapacitacion/CapTemaBySession/?idVersion=' + this.idVersion + '&IdCapSess=' + this.data.idRefer, null, null).then(response => {
                 this.capTemaList = response.data
             }).catch(error => {
                 GlobalValidAxios(error);
@@ -1856,7 +2757,7 @@ Vue.component('card-session', {
             })
         },
         onCapSessDetails: async function () {
-            await axios.get('../FormacionCapacitacion/CapSessDetails/?IdCapTempl=' + this.data.idCapTempl + '&IdCapSess=' + this.data.idRefer, null, null).then(response => {
+            await axios.get('../FormacionCapacitacion/CapSessDetails/?idVersion=' + this.idVersion + '&IdCapTempl=' + this.data.idCapTempl + '&IdCapSess=' + this.data.idRefer, null, null).then(response => {
                 this.capSess = response.data
             }).catch(error => {
                 GlobalValidAxios(error);
@@ -1896,11 +2797,11 @@ const routes = [
                 name: 'evaluacion-details',
                 path: 'Detalle/:idCapEva',
                 component: EvaDetails,
-                redirect: { name: 'evaluacion-preguntas' },
+                //redirect: { name: 'evaluacion-preguntas' }, 
                 children: [
                     {
                         name: 'evaluacion-preguntas',
-                        path: '/',
+                        path: ':idCapRegistryVersion/admin',
                         component: EvaDetailsList
                     },
                     {
@@ -1924,7 +2825,7 @@ const routes = [
     },
     {
         name: 'capacitacion-template-admin',
-        path: '/Template/:idCapTempl/admin',
+        path: '/Template/:idCapTempl/admin/:idVersion',
         component: template_admin,
         children: [
             {
@@ -1940,7 +2841,7 @@ const routes = [
 // You can pass in additional options here, but let's
 // keep it simple for now.
 const router = new VueRouter({
-    routes // short for `routes: routes`
+    routes, // short for `routes: routes`
 })
 
 // 4. Create and mount the root instance.

@@ -421,6 +421,11 @@ namespace GPSInformation.DBManagers
                             var value = Data.GetValue(Data.GetOrdinal(NombrePropiedad)) is System.DBNull ? null : Data.GetValue(Data.GetOrdinal(NombrePropiedad));
                             propertyInfo.SetValue(exFormAsObj, value, null);
                         }
+                        if (prop.PropertyType.Equals(typeof(TimeSpan?)))
+                        {
+                            var value = Data.GetValue(Data.GetOrdinal(NombrePropiedad)) is System.DBNull ? null : Data.GetValue(Data.GetOrdinal(NombrePropiedad));
+                            propertyInfo.SetValue(exFormAsObj, value, null);
+                        }
                         if (prop.PropertyType.Equals(typeof(double)))
                         {
                             var value = Data.GetValue(Data.GetOrdinal(NombrePropiedad)) is System.DBNull ? 0 : Data.GetValue(Data.GetOrdinal(NombrePropiedad));

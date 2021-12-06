@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "z14h666mh/xVOAimY+J+A6Ds7j8LGrORnEM1PS2tasEo62CgZEdxaFhbo7/df5Mqf8Mp+khvBwfi9o9HsSoXug==",
+  "dgSpecHash": "0fp1H44yxGvcgMqWiJq/cE+1s58dYJlEVYPbkh5QhIbsCZKSxcxWIRFeW1QLOIO8NGslqiLKKgwFUwPxxttRDg==",
   "success": true,
   "projectFilePath": "C:\\Luis Martinez backup\\Splittel\\Repositorios\\GS_GestionPersonal_\\GestionPersonal\\GestionPersonal.csproj",
   "expectedPackageFiles": [
@@ -210,7 +210,8 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.xml.xpath\\4.3.0\\system.xml.xpath.4.3.0.nupkg.sha512",
-    "C:\\Users\\Luis Martinez\\.nuget\\packages\\system.xml.xpath.xmldocument\\4.3.0\\system.xml.xpath.xmldocument.4.3.0.nupkg.sha512"
+    "C:\\Users\\Luis Martinez\\.nuget\\packages\\system.xml.xpath.xmldocument\\4.3.0\\system.xml.xpath.xmldocument.4.3.0.nupkg.sha512",
+    "C:\\Users\\Luis Martinez\\.nuget\\packages\\timeperiodlibrary.net\\2.1.1\\timeperiodlibrary.net.2.1.1.nupkg.sha512"
   ],
   "logs": []
 }

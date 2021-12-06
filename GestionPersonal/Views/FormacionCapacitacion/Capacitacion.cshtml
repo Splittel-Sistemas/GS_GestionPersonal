@@ -1,0 +1,180 @@
+﻿@{
+    ViewData["Title"] = "Capacitación";
+
+}
+@section Style{
+    <link href="~/template/assets/css/dashforge.mail.css" rel="stylesheet" />
+    <link href="https://craftpip.github.io/jquery-confirm/css/jquery-confirm.css" rel="stylesheet" />
+    <style>
+        .mail-group {
+            left: 0px !important;
+        }
+
+        .mail-wrapper {
+            left: 240px !important;
+        }
+
+        .mail-content {
+            left: 320px !important;
+        }
+
+        .list-group-item.active {
+            z-index: 2;
+            color: #fff;
+            background-color: #0168fa14 !important;
+            border-color: #0168fa;
+        }
+
+
+        .mail-content-body {
+            background-color: #f5f6fa !important;
+        }
+
+        .schedule-item {
+            display: block;
+            padding: 0 10px;
+            color: #1b2e4b;
+            transition: all 0.2s ease-in-out;
+        }
+
+        @@media (prefers-reduced-motion: reduce) {
+            .schedule-item {
+                transition: none;
+            }
+        }
+
+        .schedule-item:hover, .schedule-item:focus {
+            color: #0168fa;
+        }
+
+        .schedule-item h6 {
+            margin-bottom: 3px;
+        }
+
+        .schedule-item span {
+            font-size: 12px;
+            color: #8392a5;
+            display: block;
+        }
+
+        .schedule-item + .schedule-item {
+            margin-top: 20px;
+        }
+
+        .active-tema {
+            background-color: #ffc10700;
+            padding: 10px;
+            box-shadow: 0 0 20px #0d0d0d2e;
+        }
+
+        .form-control {
+            font-size: 14px;
+        }
+
+        @@keyframes ripple {
+            0%, 35% {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(4);
+            }
+        }
+
+        option:disabled {
+            background-color: #0168fa;
+            color: white;
+        }
+
+        .btn-ripple::after {
+            animation: ripple 1.2s ease-out infinite;
+            animation-delay: 1s;
+        }
+
+        .form-control-ds {
+            font-size: 0.875rem;
+            border: 0px;
+            background-color: #ffc10705;
+            /*border: 1px solid #a681123b;*/
+            border: 1px solid #02020247;
+            /*margin-bottom: 10px;*/
+        }
+
+        .alert-success {
+            color: #085f2e;
+            background-color: #cff1de47;
+            border-color: #aadbc0;
+            border-style: dashed;
+        }
+
+        .alert-dark {
+            background-color: #97a3b91c;
+            border-color: #8e9bb3;
+            border-style: dashed;
+        }
+
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd4f;
+            border-color: #bdaf85;
+            border-style: dashed;
+        }
+
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da4d;
+            border-color: #f97684;
+            border-style: dashed;
+        }
+
+        .alert-info {
+            color: #00606e;
+            background-color: #ccf1f65e;
+            border-color: #83e1f0;
+            border-style: dashed;
+        }
+
+        .alert > p {
+            font-size: 12px;
+        }
+
+        .linkds:hover {
+            color: #0148ae !important;
+            text-decoration: none !important;
+        }
+
+        .linkds {
+            color: #0168fa !important;
+            text-decoration: none !important;
+            background-color: transparent !important;
+            font-size: 12px !important;
+        }
+        .profile-sidebar {
+            width: 310px !important;
+        }
+    </style>
+    <link href="~/template/assets/css/dashforge.profile.css" rel="stylesheet" />
+    <link href="~/template/assets/css/dashforge.dashboard.css" rel="stylesheet" />
+    <link href="~/template/assets/css/dashforge.profile.css" rel="stylesheet" />
+
+}
+<div id="app">
+    <router-view></router-view>
+</div>
+<div style="display:none">
+    @Html.AntiForgeryToken()
+
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <script src="~/js/MisCapacitaciones.js"></script>
+}
+

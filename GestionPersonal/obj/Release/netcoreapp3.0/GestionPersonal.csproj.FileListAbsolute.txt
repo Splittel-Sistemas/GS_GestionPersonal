@@ -616,8 +616,10 @@ C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersona
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\GestionPersonal.pdb
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\GestionPersonal.genruntimeconfig.cache
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\GestionPersonal.MvcApplicationPartsAssemblyInfo.cs
-C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\Razor\Views\FormacionCapacitacion\Template.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\Razor\Views\FormacionCapacitacion\CapTemplDetails.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\Razor\Views\FormacionCapacitacion\CapTemplCreate.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\Razor\Views\FormacionCapacitacion\CapSessCreate.cshtml.g.cs
 C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\Razor\Views\FormacionCapacitacion\CapSessDetails.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\Razor\Views\FormacionCapacitacion\Programar.cshtml.g.cs
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\bin\Release\netcoreapp3.0\Itenso.TimePeriod.dll
+C:\Luis Martinez backup\Splittel\Repositorios\GS_GestionPersonal_\GestionPersonal\obj\Release\netcoreapp3.0\Razor\Views\FormacionCapacitacion\Capacitacion.cshtml.g.cs

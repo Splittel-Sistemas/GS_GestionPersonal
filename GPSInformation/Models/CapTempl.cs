@@ -64,7 +64,7 @@ namespace GPSInformation.Models
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
         [Display(Name = "Calificación aceptada")]
-        public float CalRepet { get; set; }
+        public decimal CalRepet { get; set; }
         
         /// <summary>
         /// Duracion
@@ -155,13 +155,13 @@ namespace GPSInformation.Models
     /// registro de cambios estatus
     /// </summary>
     [TableDB(IsMappedByLabels = false, IsStoreProcedure = false)]
-    public class CapTemplStatusStand
+    public class CapRegistryStatus
     {
         [ColumnDB(IsMapped = true, IsKey = true)]
-        public int IdRegistry { get; set; }
+        public int IdCapRegistryStatus { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdCapTempl { get; set; }
+        public int IdRefer { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Inicio { get; set; }
@@ -171,9 +171,22 @@ namespace GPSInformation.Models
 
         [ColumnDB(IsMapped = true, IsKey = false)]
         public bool Actual { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdPersona { get; set; }
         
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string TipoRef { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Nombre { get; set; }
+
         [ColumnDB(IsMapped = true, IsKey = false)]
         public int Estatus { get; set; }
+        
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdCapRegistryVersion { get; set; }
     }
 
     /// <summary>
@@ -195,7 +208,13 @@ namespace GPSInformation.Models
         public int Tipo { get; set; }
 
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public int Ordern { get; set; }
+        public int Ordern { get; set; } 
+        
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdVersion { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public int IdCapRegistryVersionDet { get; set; }
 
         /// <summary>
         /// 
@@ -496,6 +515,12 @@ namespace GPSInformation.Models
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
         public int Puntaje { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool Eliminada { get; set; }
 
         [ColumnDB(IsMapped = false, IsKey = false)]
         public string LabelStatus(bool ShowSalbel = false)
@@ -558,6 +583,12 @@ namespace GPSInformation.Models
         public bool EsCorrecta { get; set; }
 
         /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool Eliminada { get; set; }
+
+        /// <summary>
         /// Fe.Registro
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
@@ -575,33 +606,7 @@ namespace GPSInformation.Models
 
     }
 
-    //[TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
-    //public class CapSessEva
-    //{
-
-    //    /// <summary>
-    //    /// 
-    //    /// </summary>
-    //    [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
-    //    public int IdCapSessEva { get; set; }
-
-    //    /// <summary>
-    //    /// 
-    //    /// </summary>
-    //    [ColumnDB(IsMapped = true, IsKey = false)]
-    //    public int IdCapEva { get; set; }
-
-    //    /// <summary>
-    //    /// 
-    //    /// </summary>
-    //    [ColumnDB(IsMapped = true, IsKey = false)]
-    //    public int IdCapSess { get; set; }
-    //}
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
+    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada")]
     public class CapProg
     {
 
@@ -621,19 +626,91 @@ namespace GPSInformation.Models
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdVersion { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
         public int Estatus { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public DateTime FePubli { get; set; }
+        public string Modalidad { get; set; }
+        
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string NombreCap { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public DateTime FeCierre { get; set; }
+        public DateTime Creada { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Editada { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string LabelStatus(bool ShowSalbel = false)
+        {
+            if (Estatus == 1) return ShowSalbel ? "<span class='badge badge-warning'><i class='icon ion-md-construct mg-r-5 tx-16 lh--9'></i>En proceso</span>" : "En proceso";
+            if (Estatus == 2) return ShowSalbel ? "<span class='badge badge-warning'><i class='icon ion-md-construct mg-r-5 tx-16 lh--9'></i>En mantenimiento</span>" : "En mantenimiento";
+            if (Estatus == 3) return ShowSalbel ? "<span class='badge badge-danger'><i class='icon ion-md-trash mg-r-5 tx-16 lh--9'></i>Eliminada</span>" : "Eliminada";
+            if (Estatus == 4) return ShowSalbel ? "<span class='badge badge-success'><i class='icon ion-md-checkmarck-done mg-r-5 tx-16 lh--9'></i>Disponible</span>" : "Disponible";
+            else return ShowSalbel ? "<span class='badge badge-light'>--</span>" : "--";
+        }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string Folio
+        {
+            get
+            {
+                return string.Format("CAP-{0:0000}", IdCapProg);
+            }
+        }
+    }
+
+    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
+    public class CapProgInstr
+    {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
+        public int IdCapProgInstr { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdCapProg { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdPersona { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Nombre { get; set; }
+        
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Ocupacion { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Tipo { get; set; }
 
         /// <summary>
         /// 
@@ -648,18 +725,171 @@ namespace GPSInformation.Models
         public DateTime Editada { get; set; }
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
     [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
-    public class CapProgPonts
+    public class CapProgShedule
     {
 
         /// <summary>
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
-        public int IdCapProgPonts { get; set; }
+        public int IdCapProgShedule { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdCapProg { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdCapTemplShedule { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdVersion { get; set; }
+
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool Actual { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Modalidad { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string TipoShedule { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string NombreStep { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime? Fecha { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public TimeSpan? Inicio { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public TimeSpan? Fin { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool FijarTime { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string TipoEva { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Creada { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Editada { get; set; }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string FechaFormat
+        {
+            get
+            {
+                return Fecha is null ? "" : string.Format("{0:yyyy-MM-dd}", Fecha);
+            }
+        }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string InicioFormat
+        {
+            get
+            {
+                return Inicio is null ? "" : string.Format("{0:c}", Inicio);
+            }
+        }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string FinFormat
+        {
+            get
+            {
+                return Fin is null ? "" : string.Format("{0:c}", Fin);
+            }
+        }
+
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string DurFormat
+        {
+            get
+            {
+                return Fin is null ? "" :  string.Format("{0:c}", Fin - Inicio);
+            }
+        }
+
+        [ColumnDB(IsMapped = false, IsKey = false)]
+        public string TipeEvaDescr
+        {
+            get
+            {
+                if(TipoShedule == "EVA")
+                {
+                    if (TipoEva == "FIN01") return $"Fecha limite <strong>{FechaFormat}</strong>";
+                    else if (TipoEva == "FIN02") return $"Fecha limite <strong>{FechaFormat}</strong> a las <strong>12:00:00 am</strong>";
+                    else if (TipoEva == "FIN03") return $"Fecha limite <strong>{FechaFormat}</strong>, duración: <strong>{DurFormat} hr(s)</strong>";
+                    else if (TipoEva == "FIN04") return $"Fecha limite <strong>{FechaFormat}</strong>, horario de <strong>{InicioFormat}</strong> a <strong>{FinFormat}</strong>";
+                    else if (TipoEva == "EVA01") return $"Fecha limite <strong>{FechaFormat}</strong>";
+                    else if (TipoEva == "EVA02") return $"Fecha limite <strong>{FechaFormat}</strong> a las <strong>12:00:00 am</strong>";
+                    else if (TipoEva == "EVA03") return $"Fecha limite <strong>{FechaFormat}</strong>, duración: <strong>{DurFormat} hr(s)</strong>";
+                    else if (TipoEva == "EVA04") return $"Fecha limite <strong>{FechaFormat}</strong>, horario de <strong>{InicioFormat}</strong> a <strong>{FinFormat}</strong>";
+                    else return "";
+                }
+                else
+                {
+                    return "Sesión";
+                }
+            }
+        }
+    }
+
+    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
+    public class CapKardex
+    {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
+        public int IdCapKardex { get; set; }
 
         /// <summary>
         /// 
@@ -689,170 +919,25 @@ namespace GPSInformation.Models
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public char Tipo { get; set; }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
-    public class CapProgSess
-    {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
-        public int IdCapProgSess { get; set; }
+        public string Departamento { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdCapProg { get; set; }
+        public decimal CalInicial { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdCapSess { get; set; }
-        public DateTime Fecha { get; set; }
+        public decimal CalFinal { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
-        public TimeSpan HrInicio { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public TimeSpan HrFin { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public float Duracion { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public bool EsReprog { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public string ComtsReprog { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public bool Ultima { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public DateTime Creada { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public DateTime Editada { get; set; }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
-    public class CapProgEmp
-    {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
-        public int IdCapProgEmp { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdCapProg { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdPersona { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public string Nombre { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public string Puesto { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public DateTime Creada { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public DateTime Editada { get; set; }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
-    public class CapProgEmpSes
-    {
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
-        public int IdCapProgEmpSes { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdCapProg { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdCapSess { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public int IdCapEva { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [ColumnDB(IsMapped = true, IsKey = false)]
-        public float Calificacion { get; set; }
+        public int Intento { get; set; }
 
         /// <summary>
         /// 
@@ -864,6 +949,12 @@ namespace GPSInformation.Models
         /// 
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
+        public int Estatus { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Creada { get; set; }
 
         /// <summary>
@@ -871,6 +962,118 @@ namespace GPSInformation.Models
         /// </summary>
         [ColumnDB(IsMapped = true, IsKey = false)]
         public DateTime Editada { get; set; }
+    }
+
+    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
+    public class CapkardexCal
+    {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = true, IsKeyNotIdenti = true)]
+        public int IdCapkardexCal { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdCapProgShedule { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdCapKardex { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Fecha { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public TimeSpan Inicio { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public TimeSpan Fin { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public decimal Calificacion { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdPersona { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Nombre { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Creada { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Editada { get; set; }
+    }
+
+    [TableDB(IsMappedByLabels = false, IsStoreProcedure = false, Created_at = "Creada", Updated_at = "Editada")]
+    public class CapProgSheduleTimer
+    {
+
+        [ColumnDB(IsMapped = true, IsKey = true)]
+        public int IdCapProgSheduleTimer { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdCapProgShedule { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public bool Actual { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public int IdPersona { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Modalidad { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public string Nombre { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Fecha { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public TimeSpan Inicio { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public TimeSpan Fin { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Creada { get; set; }
+
+        [ColumnDB(IsMapped = true, IsKey = false)]
+        public DateTime Editada { get; set; }
+
+
+        
     }
 
 }
