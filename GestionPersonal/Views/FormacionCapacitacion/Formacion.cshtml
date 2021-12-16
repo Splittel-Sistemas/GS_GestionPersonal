@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Capacitación";
+}
+@section Style{
+
+    <link href="~/template/assets/css/dashforge.css" rel="stylesheet" />
+    <link href="~/template/assets/css/dashforge.contacts.css" rel="stylesheet" />
+    <link href="https://craftpip.github.io/jquery-confirm/css/jquery-confirm.css" rel="stylesheet" />
+    <link href="~/template/lib/quill/quill.core.css" rel="stylesheet" />
+    <link href="~/template/lib/quill/quill.bubble.css" rel="stylesheet" />
+    <link href="~/template/lib/quill/quill.snow.css" rel="stylesheet" />
+    <link href="~/template/lib/fullcalendar/fullcalendar.min.css" rel="stylesheet" />
+    <style>
+
+        .btn-x {
+            padding: 5px 5px 5px 5px;
+            line-height: 1 !important;
+            margin-left: 5px;
+            font-size: 13px;
+            background-color: #fff;
+            border-color: #c0ccda;
+            color: rgba(27, 46, 75, 0.7);
+        }
+    </style>
+}
+<div id="app">
+    <router-view></router-view>
+</div>
+<div style="display:none">
+    @Html.AntiForgeryToken()
+
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/template/assets/js/dashforge.js"></script>
+    <script src="~/template/assets/js/dashforge.contacts.js"></script>
+    <script src="~/template/lib/fullcalendar/fullcalendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <script src="~/template/lib/quill/quill.min.js"></script>
+    <script src="~/js/Formacion.js"></script>
+}

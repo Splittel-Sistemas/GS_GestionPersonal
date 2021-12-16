@@ -857,6 +857,8 @@ namespace GPSInformation.Models
         }
 
         [ColumnDB(IsMapped = false, IsKey = false)]
+        public int IdRefer { get; set; }
+        [ColumnDB(IsMapped = false, IsKey = false)]
         public string TipeEvaDescr
         {
             get

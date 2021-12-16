@@ -398,6 +398,7 @@ namespace GPSInformation.Controllers
                     a.Fin = agenda.Fin;
                     a.Modalidad = agenda.Modalidad;
                 }
+                a.IdRefer = _darkM.CapProgShedule.GetIntValue($"select IdRefer from CapTemplShedule where IdCapTemplShedule = {a.IdCapTemplShedule}");
             });
 
             return data;

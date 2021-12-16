@@ -1,0 +1,8 @@
+<h2>Overview of dependency injection</h2><p>A&nbsp;<em>dependency</em>&nbsp;is an object that another object depends on. Examine the following&nbsp;<code style="background-color: var(--theme-inline-code);">MyDependency</code>&nbsp;class with a&nbsp;<code style="background-color: var(--theme-inline-code);">WriteMessage</code>&nbsp;method that other classes depend on:</p><p><br></p><pre class="ql-syntax" spellcheck="false">public class MyDependency
+{
+    public void WriteMessage(string message)
+    {
+        Console.WriteLine($"MyDependency.WriteMessage called. Message: {message}");
+    }
+}
+</pre><p><br></p>

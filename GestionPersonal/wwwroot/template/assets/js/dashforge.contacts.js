@@ -10,17 +10,17 @@ $(function(){
   }
 
 
-  const contactSidebar = new PerfectScrollbar('.contact-sidebar-body', {
-    suppressScrollX: true
-  });
+  //const contactSidebar = new PerfectScrollbar('.contact-sidebar-body', {
+  //  suppressScrollX: true
+  //});
 
-  new PerfectScrollbar('.contact-content-body', {
-    suppressScrollX: true
-  });
+  //new PerfectScrollbar('.contact-content-body', {
+  //  suppressScrollX: true
+  //});
 
-  new PerfectScrollbar('.contact-content-sidebar', {
-    suppressScrollX: true
-  });
+  //new PerfectScrollbar('.contact-content-sidebar', {
+  //  suppressScrollX: true
+  //});
 
   $('.contact-navleft .nav-link').on('shown.bs.tab', function(e) {
     contactSidebar.update()

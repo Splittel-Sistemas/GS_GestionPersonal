@@ -41,6 +41,11 @@ namespace GestionPersonal.Controllers
         {
             return View();
         }
+        [AccessView]
+        public IActionResult Formacion()
+        {
+            return View();
+        }
 
         #region Respuestas
         [HttpPost]
@@ -1194,16 +1199,18 @@ namespace GestionPersonal.Controllers
         public IActionResult CapProgdetails(int IdCapProg)
         {
             _V2CapacitacionCtrl = new V2CapacitacionCtrl(darkManager, (int)HttpContext.Session.GetInt32("user_id_permiss"), (int)HttpContext.Session.GetInt32("user_id"));
-            _V2CapacitacionCtrl._darkM.StartTransaction();
+            //_V2CapacitacionCtrl._darkM.StartTransaction();
             try
             {
                 var data = _V2CapacitacionCtrl.CapProgdetails(IdCapProg);
-                _V2CapacitacionCtrl._darkM.Commit();
+                //_V2CapacitacionCtrl._darkM.Commit();
+
+                if (data is null) return NotFound();
                 return Ok(data);
             }
             catch (GPSInformation.Exceptions.GPException ex)
             {
-                _V2CapacitacionCtrl._darkM.RolBack();
+                //_V2CapacitacionCtrl._darkM.RolBack();
                 return BadRequest(ex.Message);
             }
             finally
@@ -1363,6 +1370,7 @@ namespace GestionPersonal.Controllers
             try
             {
                 var data = _V2CapacitacionCtrl.CapKardexDetailsByEmp(id, (int)HttpContext.Session.GetInt32("user_id"));
+                if (data is null) return NotFound();
                 //_V2CapacitacionCtrl._darkM.Commit();
                 return Ok(data);
             }

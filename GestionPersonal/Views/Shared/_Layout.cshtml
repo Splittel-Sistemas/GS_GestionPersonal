@@ -61,12 +61,14 @@ controllerName == "Evaluacion" && controllerAction == "EmailDetails")
         <partial name="_NavBar" />
         @if (controllerName == "Sala" && controllerAction == "Reservar" 
             || controllerName == "Usuario" && controllerAction == "DetailsEmail" 
+            || controllerName == "FormacionCapacitacion" && controllerAction == "Formacion" 
             || controllerName == "IncPermiso" && controllerAction == "CompleteProcess" 
             || controllerName == "IncVacacion" && controllerAction == "CompleteProcess")
         {
-            @if (controllerName == "Sala" && controllerAction == "Reservar" 
-                || controllerName == "IncPermiso" && controllerAction == "CompleteProcess" 
-                || controllerName == "IncVacacion" && controllerAction == "CompleteProcess")
+            @if (controllerName == "Sala" && controllerAction == "Reservar"
+               || controllerName == "IncPermiso" && controllerAction == "CompleteProcess"
+               || controllerName == "FormacionCapacitacion" && controllerAction == "Formacion"
+               || controllerName == "IncVacacion" && controllerAction == "CompleteProcess")
             {
 
                 @RenderBody()

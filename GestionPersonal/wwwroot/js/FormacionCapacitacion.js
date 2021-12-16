@@ -1624,7 +1624,7 @@ const template_admin = {
                                     <textarea  class="form-control form-control-sm"  maxLength="300" v-model="capTempSelected.descripcion" placeholder="Descripción" rows="5"></textarea>
                                     <span class="tx-danger tx-10 col-sm-12 text-right">{{ (300 - capTempSelected.descripcion.length) + ' / 300' }}</span>
                                 </div>
-                                <div class="form-group col-12">
+                                <div class="form-group col-12">CapSessDetails
                                     <label>Objetivo</label>
                                     <textarea  class="form-control form-control-sm"  maxLength="400" v-model="capTempSelected.objetivo" placeholder="Objetivo" rows="7"></textarea>
                                     <span class="tx-danger tx-10 col-sm-12 text-right">{{ (400 - capTempSelected.objetivo.length) + ' / 400' }}</span>

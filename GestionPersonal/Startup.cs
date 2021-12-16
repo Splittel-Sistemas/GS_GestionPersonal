@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GestionPersonal.Areas.v2.Entities;
 using GestionPersonal.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using GestionPersonal.Areas.v2.Services;
+using AutoMapper;
 
 namespace GestionPersonal
 {
@@ -40,12 +44,21 @@ namespace GestionPersonal
             //    options.StringConnectionDb = Configuration.GetConnectionString("Default");
 
             //});
+            // agregar context de entity framework
+
+            string is_production_mode = Configuration.GetSection("ModeProduction").Value;
+            string GPS_con = is_production_mode == "true" ? Configuration.GetConnectionString("Production") : Configuration.GetConnectionString("test");
+
+            services.AddDbContext<GPSctx>(options =>
+                options.UseSqlServer(GPS_con));
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", builder =>
             {
                 builder.WithOrigins("http://localhost:89").AllowAnyMethod().AllowAnyHeader();
             }));
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromSeconds(7200);
@@ -55,8 +68,9 @@ namespace GestionPersonal
 
             });
             services.AddScoped<IViewRenderService, ViewRenderService>();
+            services.AddScoped<IFormacion, FormacionServ>();
+            services.AddScoped<ICF_Evaluacion, CF_EvaluacionServ>();
             services.AddSingleton<IConfiguration>(Configuration);
-
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
         }
@@ -88,8 +102,11 @@ namespace GestionPersonal
                 routes.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Login}/{action=DoLogin}/{id?}");
+                routes.MapControllerRoute(
+                    name: "default",
+                    pattern: "{area:exists}/{controller=Login}/{action=DoLogin}/{id?}");
             });
-
+           
             // Configuramos Rotativa indicándole el Path RELATIVO donde se
             // encuentran los archivos de la herramienta wkhtmltopdf.
             Rotativa.AspNetCore.RotativaConfiguration.Setup(env);

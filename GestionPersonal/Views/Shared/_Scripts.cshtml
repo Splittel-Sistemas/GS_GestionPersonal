@@ -8,13 +8,9 @@
 <script src="~/template/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="~/template/lib/feather-icons/feather.min.js"></script>
 <script src="~/template/lib/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-@*<script src="~/template/lib/prismjs/prism.js"></script>*@
-@*<script src="~/template/lib/spectrum-colorpicker/spectrum.js"></script>*@
-
-
+    <script src="~/template/lib/datatables.net/js/jquery.dataTables.min.js"></script>
 @if (controllerName != "FormacionCapacitacion")
 {
-    <script src="~/template/lib/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/template/lib/datatables.net-dt/js/dataTables.dataTables.min.js"></script>
     <script src="~/template/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
     <script src="~/template/lib/datatables.net-responsive-dt/js/responsive.dataTables.min.js"></script>
@@ -34,14 +30,7 @@
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
 <script src="~/template/lib/select2/js/select2.min.js"></script>
-@*<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>*@
-@*<script src="https://bootboxjs.com/v3.x/bootbox.js"></script>*@
 
-@*<script src="~/template/lib/jquery.flot/jquery.flot.js"></script>
-    <script src="~/template/lib/jquery.flot/jquery.flot.stack.js"></script>
-    <script src="~/template/lib/jquery.flot/jquery.flot.resize.js"></script>
-    <script src="~/template/lib/chart.js/Chart.bundle.min.js"></script>
-    <script src="~/template/lib/jqvmap/jquery.vmap.min.js"></script>*@
 
 <script src="~/template/lib/cleave.js/cleave.min.js"></script>
 <script src="~/template/lib/cleave.js/addons/cleave-phone.us.js"></script>
@@ -527,12 +516,14 @@
             element.disabled = false
         })
     }
-    var gl_openModal = function (modalId) {
+    var gl_openModal = function (modalId, activarDrop = false) {
         $("#" + modalId).modal({
             backdrop: "static", //remove ability to close modal with click
             keyboard: false, //remove option to close with keyboard
             show: true //Display loader!
         });
+        if (activarDrop === true)
+            $('.modal-backdrop').remove();
     }
     var gl_validSess = async function (callback) {
         await axios.get('@Url.Action("CheckSession", "Home")', null, null).then(response => {
@@ -567,10 +558,6 @@
                 element.disabled = false;
                 element.innerHTML =  title
             }
-
-
-
-
         }
     }
     var ShowCanvasToggle = function (ref) {
