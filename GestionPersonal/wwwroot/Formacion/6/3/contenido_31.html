@@ -1,0 +1,18 @@
+<h2>Disable automatic loading of hosting startup assemblies</h2><p>To disable automatic loading of hosting startup assemblies, use one of the following approaches:</p><ul><li>To prevent all hosting startup assemblies from loading, set one of the following to&nbsp;<code style="background-color: var(--theme-inline-code);">true</code>&nbsp;or&nbsp;<code style="background-color: var(--theme-inline-code);">1</code>:</li><li>Prevent Hosting Startup host configuration setting:</li></ul><pre class="ql-syntax" spellcheck="false">public static IHostBuilder CreateHostBuilder(string[] args) =&gt;
+    Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =&gt;
+        {
+            webBuilder.UseSetting(
+                    WebHostDefaults.PreventHostingStartupKey, "true")
+                .UseStartup&lt;Startup&gt;();
+        });
+</pre><ul><li class="ql-indent-1"><code style="background-color: var(--theme-inline-code);">ASPNETCORE_PREVENTHOSTINGSTARTUP</code>&nbsp;environment variable.</li><li>To prevent specific hosting startup assemblies from loading, set one of the following to a semicolon-delimited string of hosting startup assemblies to exclude at startup:</li><li>Hosting Startup Exclude Assemblies host configuration setting</li></ul><pre class="ql-syntax" spellcheck="false">public static IHostBuilder CreateHostBuilder(string[] args) =&gt;
+    Host.CreateDefaultBuilder(args)
+        .ConfigureWebHostDefaults(webBuilder =&gt;
+        {
+            webBuilder.UseSetting(
+                    WebHostDefaults.HostingStartupExcludeAssembliesKey, 
+                    "{ASSEMBLY1;ASSEMBLY2; ...}")
+                .UseStartup&lt;Startup&gt;();
+        });
+</pre><ul><li class="ql-indent-1">The&nbsp;<code style="background-color: var(--theme-inline-code);">{ASSEMBLY1;ASSEMBLY2; ...}</code>&nbsp;placeholder represents the semicolon-separated list of assemblies.</li><li class="ql-indent-1"><code style="background-color: var(--theme-inline-code);">ASPNETCORE_HOSTINGSTARTUPEXCLUDEASSEMBLIES</code>&nbsp;environment variable.</li></ul><p>If both the host configuration setting and the environment variable are set, the host setting controls the behavior.</p><p>Disabling hosting startup assemblies using the host setting or environment variable disables the assembly globally and may disable several characteristics of an app.</p>

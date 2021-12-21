@@ -55,4 +55,18 @@ namespace GestionPersonal.Areas.v2.Helpers
 
         }
     }
+    public class CF_FormacionEvaMapperProfile : Profile
+    {
+        public CF_FormacionEvaMapperProfile()
+        {
+            CreateMap<CF_FormacionEva_addModel, CF_FormacionEval>();
+        }
+    }
+    public class CF_versionObjectMapperProfile : Profile
+    {
+        public CF_versionObjectMapperProfile()
+        {
+            CreateMap<CF_versionObject_addModel, CF_versionObject>();
+        }
+    }
 }

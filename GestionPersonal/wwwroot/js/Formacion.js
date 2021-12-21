@@ -1,4 +1,30 @@
-﻿
+﻿var BtnSpinner = class {
+    constructor(element) {
+        this.button = element
+        this.oldContent = element.innerHTML
+
+        this.start()
+    }
+
+    start() {
+        this.button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true""></span>`
+    }
+
+    complete() {
+        this.button.innerHTML = this.oldContent
+
+    }
+}
+
+
+
+//datetime_calendar
+Vue.filter('datetime_calendar', function (value) {
+    if (!value) return '---'
+
+    moment.locale('es-mx');
+    return moment(value).calendar();
+})
 //capacitacion - programas
 Vue.component('capacitacion-programas', {
     props: [],
@@ -66,7 +92,7 @@ Vue.component('capacitacion-templates', {
         <div class="line"></div>
     </div>
     <div class="pd-y-20 pd-x-10 contact-list" v-if="loadding === false && formaciones.length > 0">
-        <div v-for="(formacion, formacion_index) in formaciones" :class="'media ' + (parseInt($route.params.idCF_Formacion) === formacion.idCF_Formacion ? 'active' : '' )"  :key="formacion.idCF_Formacion">
+        <div v-for="(formacion, formacion_index) in formaciones" :class="'media ' + (parseInt($route.params.idCF_Formacion) === formacion.idCF_Formacion ? 'active' : '' )"  :key="'eva_' + formacion.idCF_Formacion">
             <div class="media-body mg-l-10">
                 <h6 class="tx-13 mg-b-3">{{ formacion.folio }}</h6>
                 <span class="tx-12">{{ formacion.nombre | reducir }}</span>
@@ -527,53 +553,27 @@ Vue.component('version-btn-add', {
 })
 // version-edit-page
 Vue.component('version-edit-page', {
-    props: ['idCF_Formacion', 'idCF_Version','idCF_PaginaContent'],
+    props: ['idCF_Formacion', 'idCF_Version', 'idCF_PaginaContent', 'publicada'],
     template: `
 <div style="height: 100%;">
-    <div>
-        <label>Nombre del contenido</label>
-        <input type="text" class="form-control col-12" placeholder="Nombre" v-if="page !== null" v-model="page.nombrePage">
-    </div>
-    <div :id="'editor-html' + idCF_Formacion + '' + idCF_Version + '' + idCF_PaginaContent" class="tx-13 tx-lg-14 ht-100 mt-2" v-html="contentHTML" style="min-height: 650px;">
-    </div>
-    <div class="d-flex align-items-center justify-content-between mg-t-10">
-        <div :id="'toolbar-container' + idCF_Formacion + '' + idCF_Version + '' + idCF_PaginaContent" class="bd-0-f pd-0-f toolbar">
-            <span class="ql-formats">
-                <select class="ql-size">
-                    <option value="small"></option>
-                    <option selected=""></option>
-                    <option value="large"></option>
-                    <option value="huge"></option>
-                </select>
-            </span>
-            <span class="ql-formats">
-                <button class="ql-bold"></button>
-                <button class="ql-italic"></button>
-                <button class="ql-underline"></button>
-                <button class="ql-strike"></button>
-            </span>
-            <span class="ql-formats">
-                <select class="ql-color"></select>
-                <select class="ql-background"></select>
-            </span>
-            <span class="ql-formats">
-                <button class="ql-list" value="ordered"></button>
-                <button class="ql-list" value="bullet"></button>
-                <select class="ql-align">
-                    <option selected=""></option>
-                    <option value="center"></option>
-                    <option value="right"></option>
-                    <option value="justify"></option>
-                </select>
-            </span>
-            <span class="ql-formats">
-                <button class="ql-link"></button>
-                <button class="ql-image"></button>
-            </span>
+    <div class="d-sm-flex align-items-center justify-content-between mg-b-20 mg-lg-b-25 mg-xl-b-30">
+        <div>
+            <nav aria-label="breadcrumb">
+            
+            </nav>
         </div>
-        <div class="btn-group flex-fill">
-            <button class="btn btn-white btn-xs active" v-on:click="onDeleteContenido" :id="'btn_deleteContentPage' + idCF_Formacion + '' + idCF_Version + '' + idCF_PaginaContent">Eliminar</button>
-            <button class="btn btn-white btn-xs" v-on:click="onUpdateContenido" :id="'btn_saveContentPage' + idCF_Formacion + '' + idCF_Version + '' + idCF_PaginaContent">Guardar</button>
+        <div class="d-none d-md-block">
+            
+            <button class="btn btn-sm pd-x-15 btn-white btn-uppercase" v-on:click="onDeleteContenido" data-toggle="tooltip" title="Eliminar este contenido"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-sm pd-x-15 btn-white btn-uppercase" v-on:click="onUpdateContenido" data-toggle="tooltip" title="Guardar cambios"><i class="fas fa-save"></i></button>
+        </div>
+    </div>
+    <div class="mb-3" v-if="publicada == true && page !== null">
+        {{ page.nombrePage }}
+        <hr>
+    </div>
+    <div ref="editor_container" >
+        <div ref="editor_body" :id="'container_' + idCF_PaginaContent">
         </div>
     </div>
 </div>
@@ -587,16 +587,12 @@ Vue.component('version-edit-page', {
         }
     },
     async mounted() {
-        // reply form
-        this.editorHTML = new Quill('#editor-html' + this.idCF_Formacion + '' + this.idCF_Version + '' + this.idCF_PaginaContent, {
-            modules: {
-                toolbar: '#toolbar-container' + this.idCF_Formacion + '' + this.idCF_Version + '' + this.idCF_PaginaContent
-            },
-            placeholder: 'Compose an epic...',
-            theme: 'snow'
-        });
+        
         await this.onDetailsVersion();
+        await this.onDetailsVersionPageHTML();
+        this.startEditor();
 
+        //this.editorHTML.root.innerHTML = this.contentHTML
         
     },
     watch: {
@@ -608,15 +604,28 @@ Vue.component('version-edit-page', {
         },
         idCF_PaginaContent: function (newVal, oldVal) {
             this.onDetailsVersion();
+        },
+        publicada: function (newVal, oldVal) {
+            console.log(newVal)
+            /*this.editorHTML.enable(!newVal);*/
+
+            if (newVal) {
+                this.$refs.editor_body.innerHTML = this.contentHTML
+            }
+
         }
     },
     renderTriggered({ key, target, type }) {
 
     },
     methods: {
-
+        startEditor: function () {
+            // reply form
+            this.editorHTML = GlobalQuill(this.$refs.editor_body);
+            this.editorHTML.root.innerHTML = this.contentHTML
+        },
         createFile: function () {
-            console.log(this.editorHTML)
+            //console.log(this.editorHTML)
         },
         onDetailsVersion: async function () {
             this.page = null
@@ -633,7 +642,8 @@ Vue.component('version-edit-page', {
         onDetailsVersionPageHTML: async function () {
             if (this.page.filePath !== '' && this.page.filePath !== null) {
                 await axios.get(`../${this.page.filePath}`, null, null).then(response => {
-                    this.editorHTML.root.innerHTML = response.data
+                    //this.editorHTML.root.innerHTML = response.data
+                    this.contentHTML = response.data
                 }).catch(error => {
 
                 }).finally(() => {
@@ -641,19 +651,20 @@ Vue.component('version-edit-page', {
                 })
             }
         },
-        onDeleteContenido: async function () {
-            let id_btn_add = 'btn_deleteContentPage' + this.idCF_Formacion + '' + this.idCF_Version + '' + this.idCF_PaginaContent
-            btn_loading(id_btn_add, 'Guardando')
+        onDeleteContenido: async function (event) {
+            let myButton = new BtnSpinner(event.target)
+            //myButton.start()
             await axios.delete(`../v2/api/Formacion/DeleteContenido/${this.idCF_Formacion}/${this.idCF_Version}/${this.page.idCF_PaginaContent}`, null, null).then(async (response) => {
+                myButton.complete();
                 this.$emit("deletePage")
             }).catch(error => {
-                btn_loading(id_btn_add, 'Eliminar', 'hide')
+                myButton.complete();
             }).finally(() => {
+                
             })
         },
-        onUpdateContenido: async function () {
-            let id_btn_add = 'btn_saveContentPage' + this.idCF_Formacion + '' + this.idCF_Version + '' + this.idCF_PaginaContent
-            btn_loading(id_btn_add, 'Guardando')
+        onUpdateContenido: async function (event) {
+            let myButton = new BtnSpinner(event.target)
             
             let file = new File([this.editorHTML.root.innerHTML], "foo.txt", {
                 type: "text/html",
@@ -671,12 +682,86 @@ Vue.component('version-edit-page', {
             }
             await axios.put(`../v2/api/Formacion/UpdateContenido/${this.idCF_Formacion}/${this.idCF_Version}/${this.page.idCF_PaginaContent}`, contenido, config).then(response => {
                 this.onDetailsVersion();
+                this.contentHTML = this.editorHTML.root.innerHTML
             }).catch(error => {
 
             }).finally(() => {
-                btn_loading(id_btn_add, 'Guardar', 'hide')
+                myButton.complete();
             })
         },
+    }
+})
+// version-details-page
+Vue.component('version-details-page', {
+    props: ['idCF_Formacion', 'idCF_Version', 'idCF_PaginaContent', 'publicada'],
+    template: `
+<div style="height: 100%;">
+    <div class="mb-3" v-if="publicada == true && page !== null">
+        {{ page.nombrePage }}
+        <hr>
+    </div>
+    <div ref="editor_container" >
+        <div ref="editor_body" :id="'container_' + idCF_PaginaContent" v-html="contentHTML">
+        </div>
+    </div>
+</div>
+    `,
+    data: function () {
+        return {
+            info: '',
+            page: null,
+            editorHTML: null,
+            contentHTML: ''
+        }
+    },
+    async mounted() {
+        await this.onDetailsVersion();
+        await this.onDetailsVersionPageHTML();
+    },
+    watch: {
+        idCF_Formacion: async function (newVal, oldVal) {
+            await this.onDetailsVersion();
+            await this.onDetailsVersionPageHTML();
+        },
+        idCF_Version: async function (newVal, oldVal) {
+            await this.onDetailsVersion();
+            await this.onDetailsVersionPageHTML();
+        },
+        idCF_PaginaContent: async function (newVal, oldVal) {
+            await this.onDetailsVersion();
+            await this.onDetailsVersionPageHTML();
+        },
+    },
+    renderTriggered({ key, target, type }) {
+
+    },
+    methods: {
+
+        onDetailsVersion: async function () {
+            this.page = null
+            await axios.get(`../v2/api/Formacion/DetailsContenido?IdCF_Version=${this.idCF_Version}&CF_PaginaContent=${this.idCF_PaginaContent}`, null, null).then(response => {
+                this.page = response.data
+                this.onDetailsVersionPageHTML();
+            }).catch(error => {
+
+            }).finally(() => {
+
+            })
+            this.$emit("updateNamePage", this.page)
+        },
+        onDetailsVersionPageHTML: async function () {
+            if (this.page.filePath !== '' && this.page.filePath !== null) {
+                await axios.get(`../${this.page.filePath}`, null, null).then(response => {
+                    //this.editorHTML.root.innerHTML = response.data
+                    this.contentHTML = response.data
+                }).catch(error => {
+
+                }).finally(() => {
+
+                })
+            }
+        },
+       
     }
 })
 
@@ -698,7 +783,7 @@ const principal = {
                     <span data-toggle="tooltip" title="Administrar capacitaciones" data-placement="right"><i class="fas fa-book"></i></span>
                 </router-link>
                 <router-link :to="{ name: 'admin-evaluacion'}" :class="'nav-link active '" >
-                    <span data-toggle="tooltip" title="Administrar evaluaciones" data-placement="right"><i class="fas fa-book"></i></span>
+                    <span data-toggle="tooltip" title="Administrar evaluaciones" data-placement="right"><i class="fas fa-vials"></i></span>
                 </router-link>
             </nav>
         </div><!-- contact-navleft -->
@@ -760,7 +845,7 @@ const admin_formacion_design = {
 <div class="contact-content">
     <div class="contact-content-header">
         <nav class="nav">
-            <router-link v-for="(version, version_index) in versiones" :to="{ name: 'admin-formacion-design-version', params: { idCF_Version : version.idCF_Version, idCF_Formacion: $route.params.idCF_Formacion }}"
+            <router-link v-for="(version, version_index) in versiones" :key="'version_' + version.idCF_Version" :to="{ name: 'admin-formacion-design-version', params: { idCF_Version : version.idCF_Version, idCF_Formacion: $route.params.idCF_Formacion }}"
                 :class="'nav-link ' + (parseInt($route.params.idCF_Version) === version.idCF_Version ? 'active' : '')">
                 {{version.folio}} <i class="fas fa-swatchbook"></i>
             </router-link>
@@ -812,9 +897,11 @@ const admin_formacion_design_version = {
     <div class="tab-content pd-20 pd-xl-25" style="height: auto;">
         <div class="d-flex align-items-center justify-content-between mg-b-30">
             <h6 class="tx-15 mg-b-0" v-if="version !== null && version.publicada === false">Esta versión no ha sido publicada</h6>
+            <h6 class="tx-15 mg-b-0" v-if="version !== null && version.publicada === true">Fecha publicacion: {{ version.fechaPubli | datetime_calendar }}</h6>
             
             <div class="btn-group  d-flex" role="group" aria-label="Basic example"  v-if="version !== null">
-                <button type="button" class="btn btn-white btn-sm" v-if="version.publicada === false">Publicar</button>
+                <button class="btn btn-sm pd-x-15 btn-white btn-uppercase" v-if="version.publicada === false" data-toggle="tooltip" title="Administrar evaluaciones para este contenido"><i class="fas fa-vials"></i></button>
+                <button type="button" class="btn btn-white btn-sm" v-on:click="onPublicarVersion" v-if="version.publicada === false" id="btn_publicar_form">Publicar</button>
                 <div class="dropdown dropright">
                     <button class="btn btn-white btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>
@@ -831,11 +918,11 @@ const admin_formacion_design_version = {
                         </p>
                         <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10 mt-2">Fe.Creación</label>
                         <p class="tx-13 mg-b-0">
-                            {{ version.createdAt }}
+                            {{ version.createdAt | datetime_calendar }}
                         </p>
                         <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Fe.Actualización</label>
                         <p class="tx-13 mg-b-0">
-                            {{ version.updatedAt }}
+                            {{ version.updatedAt  | datetime_calendar }}
                         </p>
                       </div>
                     </div>
@@ -846,28 +933,38 @@ const admin_formacion_design_version = {
             <li class="nav-item" v-for="(page, page_index) in pages">
                 <a :class="'nav-link '+ (selected === page_index ? 'active' : '')" v-on:click="selected = page_index"  data-toggle="tab" :href="'#tab_'+page.idCF_PaginaContent" role="tab" aria-controls="home" aria-selected="true">{{page.nombrePage}}</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" v-if="version !== null && version.publicada === false">
                 <button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Agregar nueva pagina" id="new_page_content"  v-on:click="onAddContenido">Nuevo</button>
             </li>
         </ul>
-        <div class="tab-content bd bd-gray-300 bd-t-0 pd-20" id="myTabContent" style="height: 100%;background: white;" v-if="pages.length > 0">
+        <div class="tab-content bd bd-gray-300 bd-t-0 pd-20" id="myTabContent" style="height: 100%;background: white;" v-if="pages.length > 0 && version !== null">
             <div v-for="(page, page_index) in pages" :class="'tab-pane fade '+ (selected === page_index ? ' show active' : '')" :id="'idtab_'+page.idCF_PaginaContent" role="tabpanel" aria-labelledby="home-tab" style="height: 100%;">
                 <version-edit-page
+                    v-if="version.publicada === false"
                     :idCF_Formacion="$route.params.idCF_Formacion"
                     :idCF_Version="$route.params.idCF_Version"
                     :idCF_PaginaContent="page.idCF_PaginaContent"
                     v-on:updateNamePage="updateNamePage"
+                    :publicada="version.publicada"
                     v-on:deletePage="pages.splice(selected, 1)"
                     >
                 </version-edit-page>
+                <version-details-page
+                    v-if="version.publicada === true"
+                    :idCF_Formacion="$route.params.idCF_Formacion"
+                    :idCF_Version="$route.params.idCF_Version"
+                    :idCF_PaginaContent="page.idCF_PaginaContent"
+                    :publicada="version.publicada"
+                >
+                </version-details-page>
             </div>
         </div>
         <div class="content content-fixed content-auth-alt mt-5"  v-if="pages.length <= 0">
             <div class="container ht-100p tx-center mt-5">
                 <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
-                    <h4 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5"></h4>
+                    <h4 class="tx-color-01 tx-15 tx-sm-23 tx-lg-29 mg-xl-b-5">Sin paginas de contenido</h4>
                     <div class="wd-70p wd-sm-250 wd-lg-500 mg-b-15"><img src="https://ouch-cdn2.icons8.com/l2mWE4hjgAocEqEARVpS-27gLwV2SdIyZtzfUrl3asw/rs:fit:912:912/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvMjMw/L2QwNGUzMGQyLWY2/OTMtNDE0OS05OTI2/LWY5N2UxNWQ4OTUw/My5zdmc.png" class="img-fluid" alt=""></div>
-                    <div class="mg-b-40">
+                    <div class="mg-b-40" v-if="version !== null && version.publicada === false">
                         <button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Agregar nueva pagina" id="new_page_content"  v-on:click="onAddContenido">Agregar primer página</button>
                     </div>
                 </div>
@@ -899,6 +996,17 @@ const admin_formacion_design_version = {
         });
     },
     methods: {
+        onPublicarVersion: async function () {
+            btn_loading("btn_publicar_form", 'Registrando')
+            
+            await axios.get(`../v2/api/Formacion/PublicarVersion/${this.$route.params.idCF_Formacion}/${this.$route.params.idCF_Version}`, null, null).then(response => {
+                this.version.publicada = true
+            }).catch(error => {
+
+            }).finally(() => {
+                btn_loading("btn_publicar_form", 'Publicar', 'hide')
+            })
+        },
         updateNamePage: function (new_name) {
             this.pages.find(x => x.idCF_PaginaContent === new_name.idCF_PaginaContent).nombrePage = new_name.nombrePage
         },
@@ -929,6 +1037,7 @@ const admin_formacion_design_version = {
                 nombrePage: 'new content',
                 noPage: 0
             }
+            
             btn_loading("new_page_content", 'Registrando')
             await axios.post(`../v2/api/Formacion/AddContenido/${this.$route.params.idCF_Formacion}/${this.$route.params.idCF_Version}`, contenido, null).then(response => {
                 this.pages.push(response.data)
@@ -936,11 +1045,157 @@ const admin_formacion_design_version = {
 
             }).finally(() => {
                 btn_loading("new_page_content", 'Nuevo', 'hide')
+                
             })
         }
     }
 }
 
+Vue.component('evaluacion-actions', {
+    props: ['idCF_Evaluacion'],
+    template: `
+<div>
+    <div class="contact-content-sidebar" v-if="evaluacion !== null">
+        
+        <h5 id="contactName" class="tx-18 tx-xl-20 mg-b-5">{{ evaluacion.folio }}</h5>
+        <p class="tx-13 tx-lg-12 tx-xl-13 tx-color-03 mg-b-20">{{ evaluacion.nombre }}</p>
+
+        <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Descripción</label>
+        <p class="tx-13 mg-b-0">
+            {{ evaluacion.descripcion }}
+        </p>
+
+        <hr class="mg-y-20">
+
+        <nav class="nav flex-column contact-content-nav mg-b-25 mt-3 mb-3">
+            <a class="nav-link" data-toggle="tooltip" title="Evaluacion activa" v-if="evaluacion.activa"><i class="fas fa-arrow-up"></i> Evaluacion activa</a>
+            <a class="nav-link" data-toggle="tooltip" title="Evaluacion inactiva" v-if="!evaluacion.activa"><i class="fas fa-arrow-down"></i> Evaluacion inactiva</a>
+        </nav>
+
+        <button class="btn btn-sm btn-white btn-block" v-on:click="beforeEvaEdit">Editar <i class="fas fa-pen"></i></button>
+
+    </div><!-- contact-content-sidebar -->
+    <div class="modal fade effect-scale" id="moda_edit_evaluacion" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document" v-if="evaluacion !== null">
+            <div class="modal-content">
+                <div class="modal-body pd-20 pd-sm-30">
+                    <button type="button" class="close pos-absolute t-15 r-20" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                    <h5 class="tx-18 tx-sm-20 mg-b-20">Editar evaluación</h5>
+                    <p class="tx-13 tx-color-03 mg-b-30">
+                        Por favor introduce la siguiente información,
+                    </p>
+
+                    <div class="d-sm-flex">
+                        <div class="flex-fill">
+                            <api-result class="mt-2 mb-2" v-if="proccess.api_form_edit !== null" :response_api="proccess.api_form_edit"></api-result>
+                            <div class="form-group mg-b-10">
+                                <label>Nombre</label>
+                                <textarea class="form-control" rows="4" placeholder="Agrega tu descripción" v-model="evaluacion_updModel.nombre"></textarea>
+                            </div><!-- form-group -->
+                            <div class="form-group mg-b-10">
+                                <label>Descripción</label>
+                                <textarea class="form-control" rows="15" placeholder="Agrega tu descripción" v-model="evaluacion_updModel.descripcion"></textarea>
+                            </div><!-- form-group -->
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" :id="'check_activa' + idCF_Evaluacion" v-model="evaluacion_updModel.activa">
+                                <label class="custom-control-label" :for="'check_activa' + idCF_Evaluacion">Activar evaluación</label>
+                            </div>
+                        </div><!-- col -->
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="wd-100p d-flex flex-column flex-sm-row justify-content-end">
+                        <button type="button" class="btn btn-secondary mg-sm-l-5" data-dismiss="modal" v-on:click="onCancelUpdate">Cancelar</button>
+                        <button type="button" class="btn btn-primary mg-b-5 mg-sm-b-0 ml-2" :disabled="evaluacion_updModel.nombre.trim() === '' || evaluacion_updModel.descripcion.trim() === ''" v-on:click="onEvaEdit">Guardar</button>
+                    </div>
+                </div><!-- modal-footer -->
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
+</div>
+    `,
+    data: function () {
+        return {
+            evaluacion: null,
+            evaluacion_updModel: null,
+            proccess: {
+                api_form_edit: null
+            }
+        }
+    },
+    async mounted() {
+        await this.onEvaDetails();
+        //new PerfectScrollbar('.contact-content-sidebar', {
+        //    suppressScrollX: true
+        //});
+    },
+    watch: {
+        idCF_Evaluacion: function (newVal, oldVal) {
+            this.onEvaDetails();
+        }
+    },
+    renderTriggered({ key, target, type }) {
+
+    },
+    methods: {
+        onCancelUpdate: function () {
+            this.evaluacion_updModel = {
+                idCF_Evaluacion: this.evaluacion.idCF_Evaluacion,
+                nombre: this.evaluacion.nombre,
+                descripcion: this.evaluacion.descripcion,
+                activa: this.evaluacion.activa,
+            }
+        },
+        onEvaEdit: async function () {
+            this.proccess.api_form_edit = {
+                loadding: true
+            }
+
+            await axios.put(`../v2/api/FormacionEva/EvaEdit/${this.idCF_Evaluacion}`, this.evaluacion_updModel, null).then(response => {
+                this.proccess.api_form_edit = null
+                $("#moda_edit_evaluacion").modal("hide")
+                this.evaluacion.idCF_Evaluacion = this.evaluacion_updModel.idCF_Evaluacion
+                this.evaluacion.nombre = this.evaluacion_updModel.nombre
+                this.evaluacion.descripcion = this.evaluacion_updModel.descripcion
+                this.evaluacion.activa = this.evaluacion_updModel.activa
+            }).catch(error => {
+                this.proccess.api_form_edit = {
+                    loadding: false,
+                    response_error: error
+                }
+            }).finally(() => {
+                formacion_updModel = null;
+            })
+        },
+        beforeEvaEdit: function () {
+            $("#moda_edit_evaluacion").modal({
+                backdrop: false, //remove ability to close modal with click
+                keyboard: false, //remove option to close with keyboard
+                show: true //Display loader!
+            });
+        },
+        onEvaDetails: async function () {
+            this.evaluacion = null
+            await axios.get(`../v2/api/FormacionEva/EvaDetails/${this.idCF_Evaluacion}`, null, null).then(response => {
+                this.evaluacion = response.data
+                this.evaluacion_updModel = {
+                    idCF_Evaluacion: response.data.idCF_Evaluacion,
+                    nombre: response.data.nombre,
+                    descripcion: response.data.descripcion,
+                    activa: response.data.activa,
+                }
+            }).catch(error => {
+
+            }).finally(() => {
+
+            })
+        }
+    }
+})
 //evaluacion - templates
 Vue.component('evaluacion-templates', {
     props: [],
@@ -1234,26 +1489,28 @@ Vue.component('version-btn-add-evaluacion', {
 })
 //eva - version - seccion - preguntas
 Vue.component('eva-version-seccion-preguntas', {
-    props: ['idCF_EvaluacionVersion','idCF_EvaluacionSeccion'],
+    props: ['idCF_EvaluacionVersion','idCF_EvaluacionSeccion', 'publicada'],
     template: `
 <div>
     <eva-pregunta v-if="preguntas.length > 0"
         :idCF_EvaluacionVersion="idCF_EvaluacionVersion"
         :idCF_EvaluacionSeccion="idCF_EvaluacionSeccion"
         v-for="(pregunta, pregunta_index) in preguntas"
+        :key="'pregunta_' + pregunta.idCF_EvaluacionPreg"
         :idCF_EvaluacionPreg="pregunta.idCF_EvaluacionPreg"
+        :publicada="publicada"
         v-on:onEvaPregDeleteSeccion="preguntas.splice(pregunta_index, 1)"
     ></eva-pregunta>
-    <a class="btn btn-xs btn-block btn-primary tx-white mt-4" v-on:click="onEvaPregCreateSeccion()" v-if="preguntas.length > 0" style="color: white;">
+    <a class="btn btn-xs btn-block btn-primary tx-white mt-4" v-on:click="onEvaPregCreateSeccion()" v-if="preguntas.length > 0 && publicada == false" style="color: white;">
         Agregar pregunta<i class="icon ion-md-add tx-white"></i>
     </a><!-- contact-add -->
     <div class="content content-fixed content-auth-alt mt-5"  v-if="preguntas.length <= 0">
         <div class="container ht-100p tx-center mt-5">
             <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
-                <h4 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5"></h4>
+                <h4 class="tx-color-01 tx-18 tx-sm-24 tx-lg-30 mg-xl-b-5">Sin preguntas</h4>
                 <div class="wd-70p wd-sm-250 wd-lg-400 mg-b-15"><img src="https://ouch-cdn2.icons8.com/l2mWE4hjgAocEqEARVpS-27gLwV2SdIyZtzfUrl3asw/rs:fit:912:912/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvMjMw/L2QwNGUzMGQyLWY2/OTMtNDE0OS05OTI2/LWY5N2UxNWQ4OTUw/My5zdmc.png" class="img-fluid" alt=""></div>
                 <div class="mg-b-40">
-                    <button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Agregar nueva seccion" :id="'new_preggunta' + idCF_EvaluacionVersion +''+ idCF_EvaluacionSeccion"  v-on:click="onEvaPregCreateSeccion">Agregar primer pregunta</button>
+                    <button v-if="publicada == false" class="btn btn-sm btn-primary" data-toggle="tooltip" title="Agregar nueva seccion" :id="'new_preggunta' + idCF_EvaluacionVersion +''+ idCF_EvaluacionSeccion"  v-on:click="onEvaPregCreateSeccion">Agregar primer pregunta</button>
                 </div>
             </div>
         </div><!-- container -->
@@ -1306,26 +1563,27 @@ Vue.component('eva-version-seccion-preguntas', {
 });
 //eva - version - preguntas
 Vue.component('eva-version-preguntas', {
-    props: ['idCF_EvaluacionVersion'],
+    props: ['idCF_EvaluacionVersion', 'publicada'],
     template: `
 <div>
-    
     <eva-pregunta v-if="preguntas.length > 0"
         :idCF_EvaluacionVersion="idCF_EvaluacionVersion"
         :idCF_EvaluacionSeccion="null"
         v-for="(pregunta, pregunta_index) in preguntas"
+        :key="'pregunta_' + pregunta.idCF_EvaluacionPreg"
         :idCF_EvaluacionPreg="pregunta.idCF_EvaluacionPreg"
+        :publicada="publicada"
         v-on:onEvaPregDeleteSeccion="preguntas.splice(pregunta_index, 1)"
     ></eva-pregunta>
-    <a class="btn btn-xs btn-block btn-primary tx-white mt-4" v-on:click="onEvaPregCreate()" ref="btn_add_pregunta" v-if="preguntas.length > 0" style="color: white;">
+    <a class="btn btn-xs btn-block btn-primary tx-white mt-4" v-on:click="onEvaPregCreate()" ref="btn_add_pregunta" v-if="preguntas.length > 0 && publicada == false" style="color: white;">
         Agregar pregunta
     </a><!-- contact-add -->
     <div class="content content-fixed content-auth-alt mt-5"  v-if="preguntas.length <= 0">
         <div class="container ht-100p tx-center mt-5">
             <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
-                <h4 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5"></h4>
+                <h4 class="tx-color-01 tx-18 tx-sm-24 tx-lg-30 mg-xl-b-5">Sin preguntas</h4>
                 <div class="wd-70p wd-sm-250 wd-lg-400 mg-b-15"><img src="https://ouch-cdn2.icons8.com/l2mWE4hjgAocEqEARVpS-27gLwV2SdIyZtzfUrl3asw/rs:fit:912:912/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvMjMw/L2QwNGUzMGQyLWY2/OTMtNDE0OS05OTI2/LWY5N2UxNWQ4OTUw/My5zdmc.png" class="img-fluid" alt=""></div>
-                <div class="mg-b-40">
+                <div class="mg-b-40" v-if="publicada == false">
                     <button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Agregar nueva seccion" ref="btn_add_pregunta"  v-on:click="onEvaPregCreate">Agregar primer pregunta</button>
                 </div>
             </div>
@@ -1376,22 +1634,25 @@ Vue.component('eva-version-preguntas', {
 });
 //eva - pregunta
 Vue.component('eva-pregunta', {
-    props: ['idCF_EvaluacionVersion', 'idCF_EvaluacionSeccion', 'idCF_EvaluacionPreg'],
+    props: ['idCF_EvaluacionVersion', 'idCF_EvaluacionSeccion', 'idCF_EvaluacionPreg', 'publicada'],
     template: `
 <div>
+
     <div v-if="pregunta !== null" class="mt-3 bd-l bd-2 bd-primary p-2 bg-white pb-3 pt-3">
-        <h6 class="mg-b-0 "> <span class="tx-primary">#</span> {{ pregunta.pregunta }}</h6>
+        <h6 class="mg-b-0 tx-primary"> {{ pregunta.pregunta }}</h6>
         <span v-if="pregunta.tipo !== ''" class="tx-11">{{ listTipo.find(x => x.value === pregunta.tipo).text }}</span>
         <span v-else class="tx-11">sin definición de tipo de pregunta</span>
+        <br>
+        <span class="tx-11">Ultima actualización: {{ pregunta.updatedAt  | datetime_calendar }}</span>
         <hr>
         <div v-html="contentHTML"></div>
         <div class="bd bg-gray-50" v-if="respuestas.length > 0">
             <h6 class="ml-2 mt-3">Respuestas:</h6>
             <ul>
-                <li v-for="(respuesta, respuesta_index) in respuestas">{{ respuesta.respuesta }}</li>
+                <li v-for="(respuesta, respuesta_index) in respuestas" :key="'resp_' + respuesta_index">{{ respuesta.respuesta }}</li>
             </ul>
         </div>
-        <nav class="nav nav-row mg-t-15">
+        <nav class="nav nav-row mg-t-15" v-if="publicada === false">
             <a v-on:click="openModalAdd" class="nav-link linkds" style="color: #0168fa !important;text-decoration: none !important;background-color: transparent !important;">Editar</a>
             <a v-on:click="onEvaPregDeleteSeccion" class="nav-link linkds" style="color: #0168fa !important;text-decoration: none !important;background-color: transparent !important;">Eliminar</a>
         </nav>
@@ -1440,7 +1701,7 @@ Vue.component('eva-pregunta', {
                                 </div>
                                 <div :id="'editor_html_pregunta' + idCF_EvaluacionVersion + '' + pregunta.idCF_EvaluacionPreg" class="tx-13 tx-lg-14 ht-100 mt-2" style="min-height: 200px;">
                                 </div>
-                                <div class="d-flex align-items-center justify-content-between mg-t-10">
+                                <div class="d-flex align-items-center justify-content-between mg-t-10" v-if="publicada === false">
                                     <div class="btn-group">
                                         <button class="btn btn-white btn-xs"
                                             :id="'btn_save_pregunta' + idCF_EvaluacionVersion + '' + pregunta.idCF_EvaluacionPreg"
@@ -1453,13 +1714,13 @@ Vue.component('eva-pregunta', {
                                 <table class="table table-sm table-hover">
                                     <tr>
                                         <th>Pregunta</th>
-                                        <th style="width: 50px;"></th>
+                                        <th style="width: 50px;" v-if="publicada === false"></th>
                                     </tr>
-                                     <tr v-for="(respuesta, respuesta_index) in respuestas">
+                                     <tr v-for="(respuesta, respuesta_index) in respuestas" >
                                         <td>
                                             <textarea class="form-control" rows="1" placeholder="Respuesta" v-model="respuesta.respuesta" v-on:change="onEvaPregRespEdit(respuesta.idCF_EvaluacionPregRes, respuesta_index)"></textarea>
                                         </td>
-                                        <td>
+                                        <td v-if="publicada === false">
                                             <button class="btn tx-danger tx-13" title="eliminar esta respuesta" v-on:click="onEvaPregRespDelete(respuesta.idCF_EvaluacionPregRes, respuesta_index)"><i class="typcn typcn-trash"></i></button>
                                         </td>
                                     </tr>
@@ -1467,8 +1728,8 @@ Vue.component('eva-pregunta', {
                                         <th>
                                             <textarea class="form-control" rows="1" placeholder="introduce aqui " v-model="new_respuesta" ref="text_new_resp"></textarea>
                                         </th>
-                                        <th>
-                                            <button class="btn btn-sm btn-primary" :disabled="new_respuesta.trim() === ''" v-on:click="onEvaPregRespCreate">Agregar</button>
+                                        <th v-if="publicada === false">
+                                            <button  class="btn btn-sm btn-primary" :disabled="new_respuesta.trim() === ''" v-on:click="onEvaPregRespCreate">Agregar</button>
                                         </th>
                                     </tr>
                                 </table>
@@ -1707,46 +1968,92 @@ Vue.component('eva-pregunta', {
 })
 //eva - version - secciones
 Vue.component('eva-version-secciones', {
-    props: ['idCF_Evaluacion', 'idCF_EvaluacionVersion'],
+    props: ['idCF_Evaluacion', 'idCF_EvaluacionVersion','publicada'],
     template: `
 <div>
-    <h1>Secciones</h1>
+    <h1 v-if="secciones.length > 0">Secciones</h1>
     <ul class="nav nav-tabs" id="myTab" role="tablist"  v-if="secciones.length > 0">
         <li class="nav-item"
             v-for="(seccion, seccion_index) in secciones">
             <a
+                v-if="publicada === false"
+                :class="'nav-link '+ (selected === seccion_index ? 'active' : '')"
+                v-on:dblclick="beforeEdit(seccion_index)"
+                :title="'doble click para editar: '+ seccion.nombre"
+                v-on:click="selected = seccion_index"  data-toggle="tab"
+                :href="'#tab_'+seccion.idCF_EvaluacionSeccion" role="tab" aria-controls="home" aria-selected="true">
+                    {{seccion.nombre}}
+                    <button   class="btn btn-x" v-on:click="onEvaSeccionDelete(seccion.idCF_EvaluacionSeccion, seccion_index )" title="Eliminar esta seccion">x</button>
+            </a>
+            <a
+                v-if="publicada === true"
                 :class="'nav-link '+ (selected === seccion_index ? 'active' : '')"
                 v-on:click="selected = seccion_index"  data-toggle="tab"
-                :href="'#tab_'+seccion.idCF_EvaluacionSeccion" role="tab" aria-controls="home" aria-selected="true">{{seccion.nombre}}
-                    <button class="btn btn-x" v-on:click="onEvaSeccionDelete(seccion.idCF_EvaluacionSeccion, seccion_index )" title="Eliminar esta seccion">x</button></a>
+                :href="'#tab_'+seccion.idCF_EvaluacionSeccion" role="tab" aria-controls="home" aria-selected="true">
+                {{seccion.nombre}}
+            </a>
             
         </li>
-        <li class="nav-item">
+        <li class="nav-item" v-if="publicada === false">
             <button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Agregar nueva seccion" id="new_seccion_content"  v-on:click="onEvaSeccionCreate">Nuevo</button>
         </li>
     </ul>
     <div class="tab-content bd bd-gray-300 bd-t-0 pd-20" id="myTabContent" style="height: 100%;background: white;" v-if="secciones.length > 0">
         <div
-        v-for="(seccion, seccion_index) in secciones"
+        v-for="(seccion, seccion_index) in secciones" 
         :class="'tab-pane fade '+ (selected === seccion_index ? ' show active' : '')"
         :id="'tab_'+seccion.idCF_EvaluacionSeccion" role="tabpanel" aria-labelledby="home-tab" style="height: 100%;">
             <eva-version-seccion-preguntas
                 :idCF_EvaluacionVersion="idCF_EvaluacionVersion"
                 :idCF_EvaluacionSeccion="seccion.idCF_EvaluacionSeccion"
+                :publicada="publicada"
             ></eva-version-seccion-preguntas>
         </div>
     </div>
     <div class="content content-fixed content-auth-alt mt-5"  v-if="secciones.length <= 0">
         <div class="container ht-100p tx-center mt-5">
             <div class="ht-100p d-flex flex-column align-items-center justify-content-center">
-                <h4 class="tx-color-01 tx-24 tx-sm-32 tx-lg-36 mg-xl-b-5"></h4>
+                <h5 class="tx-color-01 tx-18 tx-sm-26 tx-lg-30 mg-xl-b-5">Sin secciones</h5>
                 <div class="wd-70p wd-sm-250 wd-lg-500 mg-b-15"><img src="https://ouch-cdn2.icons8.com/l2mWE4hjgAocEqEARVpS-27gLwV2SdIyZtzfUrl3asw/rs:fit:912:912/czM6Ly9pY29uczgu/b3VjaC1wcm9kLmFz/c2V0cy9zdmcvMjMw/L2QwNGUzMGQyLWY2/OTMtNDE0OS05OTI2/LWY5N2UxNWQ4OTUw/My5zdmc.png" class="img-fluid" alt=""></div>
                 <div class="mg-b-40">
-                    <button class="btn btn-sm btn-primary" data-toggle="tooltip" title="Agregar nueva seccion" id="new_seccion_content"  v-on:click="onEvaSeccionCreate">Agregar primer seccion</button>
+                    <button class="btn btn-sm btn-primary" v-if="publicada === false" data-toggle="tooltip" title="Agregar nueva seccion" id="new_seccion_content"  v-on:click="onEvaSeccionCreate">Agregar primer seccion</button>
                 </div>
             </div>
         </div><!-- container -->
     </div><!-- content -->
+    <div class="modal fade effect-scale" id="model_edit_seccion" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content"  v-if="seccionEdit !== null">
+                <div class="modal-body pd-20 pd-sm-30">
+                    <button type="button" class="close pos-absolute t-15 r-20" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                    <h5 class="tx-18 tx-sm-20 mg-b-20">Editar sección</h5>
+                    <p class="tx-13 tx-color-03 mg-b-30">
+                        Por favor introduce la siguiente información para continuar
+                    </p>
+
+                    <div class="d-sm-flex">
+                        <div class="flex-fill">
+                            <api-result class="mt-2 mb-2" v-if="proccess.api_proc_add !== null" :response_api="proccess.api_proc_add"></api-result>
+                            <div class="form-group mg-b-10">
+                                <label>Nombre</label>
+                                <input type="text" class="form-control" placeholder="Nombre de la seccion" v-model="seccionEdit.nombre">
+                            </div><!-- form-group -->
+                        </div><!-- col -->
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="wd-100p d-flex flex-column flex-sm-row justify-content-end">
+                        <button type="button" class="btn btn-secondary mg-sm-l-5" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary mg-b-5 mg-sm-b-0 ml-2" :disabled="seccionEdit.nombre.trim() === ''" id="btn_save_section_changes" v-on:click="onEvaSeccionEdit()">Guardar</button>
+                    </div>
+                </div><!-- modal-footer -->
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- modal -->
 </div>
     `,
     data: function () {
@@ -1756,7 +2063,8 @@ Vue.component('eva-version-secciones', {
             selected: 0,
             proccess: {
                 api_proc_add: null
-            }
+            },
+            seccionEdit: null
         }
     },
     async mounted() {
@@ -1773,6 +2081,34 @@ Vue.component('eva-version-secciones', {
 
     },
     methods: {
+        onEvaSeccionEdit: async function () {
+            
+            let contenido = {
+                idCF_EvaluacionVersion: parseInt(this.seccionEdit.idCF_EvaluacionVersion),
+                idCF_EvaluacionSeccion: parseInt(this.seccionEdit.idCF_EvaluacionSeccion),
+                nombre: this.seccionEdit.nombre,
+            }
+            btn_loading("btn_save_section_changes", 'Registrando')
+            await axios.put(`../v2/api/FormacionEva/EvaSeccionEdit/${this.idCF_EvaluacionVersion}/${this.seccionEdit.idCF_EvaluacionSeccion}`, contenido, null).then(async (response) => {
+                btn_loading("btn_save_section_changes", 'Guardar', 'hide')
+                this.secciones.find(x => x.idCF_EvaluacionSeccion === contenido.idCF_EvaluacionSeccion).nombre = this.seccionEdit.nombre
+
+
+                $("#model_edit_seccion").modal('hide')
+            }).catch(error => {
+                btn_loading("btn_save_section_changes", 'Guardar', 'hide')
+            }).finally(() => {
+                
+            })
+        },
+        beforeEdit: function (index) {
+            this.seccionEdit = JSON.parse(JSON.stringify(this.secciones[index]));
+            $("#model_edit_seccion").modal({
+                backdrop: false, //remove ability to close modal with click
+                keyboard: false, //remove option to close with keyboard
+                show: true //Display loader!
+            });
+        },
         onEvaSeccionDelete: async function (idCF_EvaluacionSeccion, index) {
             await axios.delete(`../v2/api/FormacionEva/EvaSeccionDelete/${this.idCF_EvaluacionVersion}/${idCF_EvaluacionSeccion}`, null, null).then(response => {
                 this.secciones.splice(index,1)
@@ -1851,6 +2187,7 @@ const admin_evaluacion_design = {
         <version-btn-add-evaluacion  class="ml-2" :idCF_Evaluacion="$route.params.idCF_Evaluacion" v-on:addNew="addNew"></version-btn-add-evaluacion>
     </div><!-- contact-content-header -->
     <router-view></router-view>
+    <evaluacion-actions :idCF_Evaluacion="$route.params.idCF_Evaluacion"></evaluacion-actions>
 </div><!-- contact-content -->
     `,
     data: function () {
@@ -1890,10 +2227,11 @@ const admin_evaluacion_design_version = {
 <div class="contact-content-body">
     <div class="tab-content pd-20 pd-xl-25" style="height: auto;">
         <div class="d-flex align-items-center justify-content-between mg-b-30">
-            <h6 class="tx-15 mg-b-0" v-if="version !== null && version.publicada === false">Esta versión no ha sido publicada {{ $route.params.idCF_EvaluacionVersion}}</h6>
+            <h6 class="tx-15 mg-b-0" v-if="version !== null && version.publicada === false">Esta versión no ha sido publicada</h6>
+            <h6 class="tx-15 mg-b-0" v-if="version !== null && version.publicada === true">Fecha publicacion: {{ version.fechaPubli | datetime_calendar }}</h6>
 
             <div class="btn-group  d-flex" role="group" aria-label="Basic example"  v-if="version !== null">
-                <button type="button" class="btn btn-white btn-sm" v-if="version.publicada === false">Publicar</button>
+                <button type="button" class="btn btn-white btn-sm" v-if="version !== null && version.publicada === false" v-on:click="onEvaVersionPublicar">Publicar</button>
                 <div class="dropdown dropright">
                     <button class="btn btn-white btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="icon ion-md-time mg-r-5 tx-16 lh--9"></i>
@@ -1922,11 +2260,11 @@ const admin_evaluacion_design_version = {
                         </p>
                         <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10 mt-2">Fe.Creación</label>
                         <p class="tx-13 mg-b-0">
-                            {{ version.createdAt }}
+                            {{ version.createdAt | datetime_calendar }}
                         </p>
                         <label class="tx-10 tx-medium tx-spacing-1 tx-color-03 tx-uppercase tx-sans mg-b-10">Fe.Actualización</label>
                         <p class="tx-13 mg-b-0">
-                            {{ version.updatedAt }}
+                            {{ version.updatedAt | datetime_calendar }}
                         </p>
                       </div>
                     </div>
@@ -1937,11 +2275,13 @@ const admin_evaluacion_design_version = {
             v-if="version !== null && version.bySecciones"
             :idCF_Evaluacion="$route.params.idCF_Evaluacion"
             :idCF_EvaluacionVersion="$route.params.idCF_EvaluacionVersion"
+            :publicada="version.publicada"
         ></eva-version-secciones>
         <eva-version-preguntas
             v-if="version !== null && version.bySecciones === false"
             :idCF_Evaluacion="$route.params.idCF_Evaluacion"
             :idCF_EvaluacionVersion="$route.params.idCF_EvaluacionVersion"
+            :publicada="version.publicada"
         ></eva-version-preguntas>
         
     </div><!-- tab-content -->
@@ -1970,6 +2310,15 @@ const admin_evaluacion_design_version = {
         });
     },
     methods: {
+        onEvaVersionPublicar: async function () {
+            await axios.get(`../v2/api/FormacionEva/EvaVersionPublicar/${this.$route.params.idCF_Evaluacion}/${this.$route.params.idCF_EvaluacionVersion}`, null, null).then(response => {
+                this.version.publicada = true
+            }).catch(error => {
+
+            }).finally(() => {
+
+            })
+        },
         onEvaVersionDetails: async function () {
             this.version = null
             await axios.get(`../v2/api/FormacionEva/EvaVersionDetails/${this.$route.params.idCF_Evaluacion}/${this.$route.params.idCF_EvaluacionVersion}`, null, null).then(response => {

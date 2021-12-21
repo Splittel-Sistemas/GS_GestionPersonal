@@ -26,7 +26,8 @@ namespace GestionPersonal.Areas.v2.Services
         public Task<CF_Version> DetailsVersion(int IdCF_Formacion, int IdCF_Version);
         public Task<CF_Version> AddVersion(int IdCF_Formacion, CF_Version_addModel model);
         public Task<IEnumerable<CF_Version>> ListVersiones(int IdCF_Formacion, bool showInactiveToo = false);
-        
+        public Task PublicarVersion(int IdCF_Formacion, int IdCF_Version);
+
         public Task UpdateFormacion(int IdCF_Formacion, CF_Formacion_updModel model);
         public Task<CF_Formacion> AddFormacion(CF_Formacion_addModel model);
         public Task<CF_Formacion> DetailsFormacion(int IdCF_Formacion);
@@ -36,6 +37,11 @@ namespace GestionPersonal.Areas.v2.Services
         public bool ValidVersionExists(int IdCF_Formacion, int IdCF_Version);
         public bool ValidateContenido(int IdCF_Formacion, int IdCF_Version, int IdCF_PaginaContent);
         public bool ValidFormacionVerPub(int IdCF_Formacion, int IdCF_Version);
+
+        public Task<View_formacion_evaluacion> AddEval(int IdCF_Formacion, int IdCF_Version,CF_FormacionEva_addModel model);
+        public Task<IEnumerable<View_formacion_evaluacion>> ListEvalbyForm(int IdCF_Formacion, int IdCF_Version);
+        public Task DeleteEval(int IdCF_Formacion, int IdCF_Version, int IdCF_FormacionEval);
+
     }
     public class FormacionServ : IFormacion
     {
@@ -350,6 +356,58 @@ namespace GestionPersonal.Areas.v2.Services
         public async Task<CF_Version> DetailsVersion(int IdCF_Formacion, int IdCF_Version)
         {
             return await _context.CF_Version.FirstOrDefaultAsync(x => x.IdCF_Formacion == IdCF_Formacion && x.IdCF_Version == IdCF_Version);
+        }
+
+        public async Task PublicarVersion(int IdCF_Formacion, int IdCF_Version)
+        {
+            //valdiar que la version no se encuentre publicada
+            if (ValidFormacionVerPub(IdCF_Formacion, IdCF_Version))
+                throw new ApiException(_sms_versionPublicada, EnumStatusCodes.BadRequest);
+
+            var data = await _context.CF_Version.FirstOrDefaultAsync(x => x.IdCF_Formacion == IdCF_Formacion && x.IdCF_Version == IdCF_Version);
+
+            data.Publicada = true;
+            data.FechaPubli = DateTime.Now;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<View_formacion_evaluacion> AddEval(int IdCF_Formacion, int IdCF_Version, CF_FormacionEva_addModel model)
+        {
+            //valdiar que la version no se encuentre publicada
+            if (ValidFormacionVerPub(IdCF_Formacion, IdCF_Version))
+                throw new ApiException(_sms_versionPublicada, EnumStatusCodes.BadRequest);
+
+            if(model.IdCF_Version != IdCF_Version)
+                throw new ApiException("Datos incorrectos", EnumStatusCodes.BadRequest);
+
+            var eva = _mapper.Map<CF_FormacionEval>(model);
+
+            _context.CF_FormacionEval.Add(eva);
+
+            await _context.SaveChangesAsync();
+
+            return await _context.View_formacion_evaluacion.FirstOrDefaultAsync(x => x.IdCF_FormacionEval == eva.IdCF_FormacionEval);
+        }
+
+        public async Task DeleteEval(int IdCF_Formacion, int IdCF_Version, int IdCF_FormacionEval)
+        {
+            //valdiar que la version no se encuentre publicada
+            if (ValidFormacionVerPub(IdCF_Formacion, IdCF_Version))
+                throw new ApiException(_sms_versionPublicada, EnumStatusCodes.BadRequest);
+
+            var eva = await _context.CF_FormacionEval.FirstOrDefaultAsync(x => x.IdCF_FormacionEval == IdCF_FormacionEval && x.IdCF_Version == IdCF_Version);
+
+            if(eva is null)
+                throw new ApiException(EnumStatusCodes.NotFound);
+
+            _context.CF_FormacionEval.Remove(eva);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<View_formacion_evaluacion>> ListEvalbyForm(int IdCF_Formacion, int IdCF_Version)
+        {
+            return await _context.View_formacion_evaluacion.Where(x => x.EvaVersion == IdCF_Version).ToListAsync();
         }
     }
 }

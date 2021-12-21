@@ -50,6 +50,19 @@ namespace GestionPersonal.Areas.v2.Controllers
                 return  ValidException(ex);
             }
         }
+        [HttpGet("PublicarVersion/{IdCF_Formacion}/{IdCF_Version}")]
+        public async Task<ActionResult> PublicarVersion(int IdCF_Formacion, int IdCF_Version)
+        {
+            try
+            {
+                await _formacion.PublicarVersion(IdCF_Formacion, IdCF_Version);
+                return NoContent();
+            }
+            catch (ApiException ex)
+            {
+                return  ValidException(ex);
+            }
+        }
         [HttpPut("UpdateContenido/{IdCF_Formacion}/{IdCF_Version}/{IdCF_PaginaContent}")]
         public async Task<ActionResult> UpdateContenido(int IdCF_Formacion, int IdCF_Version, int IdCF_PaginaContent, [FromForm] CF_PaginaContent_updModel model)
         {
@@ -203,6 +216,45 @@ namespace GestionPersonal.Areas.v2.Controllers
             {
                 var data = await _formacion.ListFormaciones();
                 return Ok(data);
+            }
+            catch (ApiException ex)
+            {
+                return ValidException(ex);
+            }
+        }
+        [HttpPost("AddEval/{IdCF_Formacion}/{IdCF_Version}")]
+        public async Task<ActionResult<View_formacion_evaluacion>> AddEval(int IdCF_Formacion, int IdCF_Version, CF_FormacionEva_addModel model)
+        {
+            try
+            {
+                var data = await _formacion.AddEval(IdCF_Formacion, IdCF_Version, model);
+                return Ok(data);
+            }
+            catch (ApiException ex)
+            {
+                return ValidException(ex);
+            }
+        }
+        [HttpGet("ListEvalbyForm/{IdCF_Formacion}/{IdCF_Version}")]
+        public async Task<ActionResult<IEnumerable<View_formacion_evaluacion>>> ListEvalbyForm(int IdCF_Formacion, int IdCF_Version)
+        {
+            try
+            {
+                var data = await _formacion.ListEvalbyForm(IdCF_Formacion, IdCF_Version);
+                return Ok(data);
+            }
+            catch (ApiException ex)
+            {
+                return ValidException(ex);
+            }
+        }
+        [HttpGet("DeleteEval/{IdCF_Formacion}/{IdCF_Version}/{IdCF_FormacionEval}")]
+        public async Task<ActionResult> DeleteEval(int IdCF_Formacion, int IdCF_Version, int IdCF_FormacionEval)
+        {
+            try
+            {
+                await _formacion.DeleteEval(IdCF_Formacion, IdCF_Version, IdCF_FormacionEval);
+                return NoContent();
             }
             catch (ApiException ex)
             {

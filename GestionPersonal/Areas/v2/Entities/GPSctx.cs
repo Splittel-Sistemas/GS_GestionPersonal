@@ -18,6 +18,9 @@ namespace GestionPersonal.Areas.v2.Entities
         public DbSet<CF_EvaluacionSeccion> CF_EvaluacionSeccion { get; set; }
         public DbSet<CF_EvaluacionPreg> CF_EvaluacionPreg { get; set; }
         public DbSet<CF_EvaluacionPregRes> CF_EvaluacionPregRes { get; set; }
+        public DbSet<CF_FormacionEval> CF_FormacionEval { get; set; }
+        public DbSet<View_formacion_evaluacion> View_formacion_evaluacion { get; set; }
+        public DbSet<CF_versionObject> CF_versionObject { get; set; }
 
         public override int SaveChanges()
         {
